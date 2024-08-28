@@ -1,0 +1,36 @@
+# Build the docker images using docker compose and the command below
+#     docker-compose build
+# Run the services in the docker compose using the command below
+#     docker-compose up
+# Run the services in the docker compose with hot reload using the command below
+#     docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+# Remove the services in the docker compose using the command below
+#     docker-compose down
+
+# Specify the version of the Docker Compose.
+version: "3.9"
+
+# Define the services and applications that make up your application.
+services:
+  frontend-app:
+    build: ./infra/docker-images/local-develop-env/frontend # Path to the directory containing the Dockerfile for the frontend application
+    container_name: frontend_app
+    ports:
+      - 3000:3000 # Maps ports
+    # environment:
+    networks:
+      - nginx-network # Connects the frontend-app to the 'nginx-network' network.
+
+  nginx:
+    build: ./infra/docker-images/local-develop-env/nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    env_file:
+      - ./.env
+    networks:
+      - nginx-network
+
+networks:
+  nginx-network: # Defines a network named 'nginx-network'.
+    driver: bridge # Uses the bridge driver for the network, which is the default and most common network type in Docker.

@@ -1,0 +1,14 @@
+# Run the services in the docker compose using the command below
+#     docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+# This docker-compose file is for mounting the volume to the container for hot reloading
+
+# Specify the version of the Docker Compose.
+version: "3.9"
+
+# Define the services and applications that make up your application.
+services:
+  frontend-app:
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
