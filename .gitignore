@@ -1,0 +1,34 @@
+# Eclipse
+.classpath
+.project
+.settings/
+node_modules
+package-lock.json
+.serverless
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
+# Maven
+target/
+bin/
+/.metadata/
+/.recommenders/
+*dependency-reduced-pom.xml
+template.yml
+.serverless
+node_modules
+package-lock.json
+
+#SAM
+.serverless.template
+
+#sonarlint
+.sonarlint
+
+# Others
+**/.env
