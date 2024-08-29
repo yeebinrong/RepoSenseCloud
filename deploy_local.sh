@@ -2,3 +2,5 @@
 
 # Usage: bash deploy_local.sh <mode>
 # <mode> can be either 'all' or a specific module name(s) separated by comma
+
+## KIV use serverless-offline instead

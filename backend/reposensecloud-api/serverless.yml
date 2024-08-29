@@ -1,0 +1,19 @@
+service: api
+
+frameworkVersion: '4'
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: java8
+  region: ap-southeast-1
+
+functions:
+  hello:
+    handler: com.hamburger.company.reposense.api.handler.TestApiHandler::handleRequest
+    events:
+      - http:
+          path: hello
+          method: get
