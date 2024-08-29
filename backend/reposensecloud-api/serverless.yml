@@ -1,6 +1,6 @@
 service: api
 
-frameworkVersion: '4'
+frameworkVersion: ">=1.2.0 <2.0.0"
 
 plugins:
   - serverless-offline
@@ -10,10 +10,14 @@ provider:
   runtime: java8
   region: ap-southeast-1
 
+package:
+  artifact: target/reposensecloud-api-1.0.0-SNAPSHOT.zip
+
 functions:
-  hello:
-    handler: com.hamburger.company.reposense.api.handler.TestApiHandler::handleRequest
+  TestApi:
+    name: my-test-api
+    handler: com.hamburger.company.reposensecloud.api.handler.TestApiHandler::handleRequest
     events:
       - http:
-          path: hello
+          path: /api/test
           method: get

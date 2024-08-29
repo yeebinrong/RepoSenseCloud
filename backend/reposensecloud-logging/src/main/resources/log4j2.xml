@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration packages="com.amazonaws.services.lambda.runtime.log4j2">
+
+  <Properties>
+    <Property name="LOG_PATTERN_WITH_USER">{"level":"%p", "user":"%X{user}", "timestamp" : "%d{yyyy-MM-dd HH:mm:ss:SSS}", "apiGwRequestId":"%X{apiGwRequestId}","apiGwEndpoint":"%X{apiGwEndpoint}" , "class":"%c:%L","message":"%m"}%n</Property>
+    <Property name="LOG_PATTERN_WITHOUT_USER">{"level":"%p", "timestamp" : "%d{yyyy-MM-dd HH:mm:ss:SSS}", "apiGwRequestId":"%X{apiGwRequestId}","apiGwEndpoint":"%X{apiGwEndpoint}" , "class":"%c:%L","message":"%m"}%n</Property>
+  </Properties>
+
+  <Appenders>
+    <Lambda name="LambdaUnAuthenticated">
+      <ContextMapFilter onMatch="DENY" onMismatch="ACCEPT">
+	      <KeyValuePair key="isAuthenticated" value="true"/>
+      </ContextMapFilter>
+      <PatternLayout pattern="${LOG_PATTERN_WITHOUT_USER}">
+      </PatternLayout>
+    </Lambda>
+    <Lambda name="LambdaAuthenticated">
+      <ContextMapFilter onMatch="ACCEPT" onMismatch="DENY">
+        <KeyValuePair key="isAuthenticated" value="true"/>
+      </ContextMapFilter>
+      <PatternLayout pattern="${LOG_PATTERN_WITH_USER}">
+      </PatternLayout>
+    </Lambda>
+  </Appenders>
+  <Loggers>
+    <Root level="${env:LOG_LEVEL:-INFO}">
+      <AppenderRef ref="LambdaUnAuthenticated" />
+      <AppenderRef ref="LambdaAuthenticated" />
+    </Root>
+  </Loggers>
+</Configuration>

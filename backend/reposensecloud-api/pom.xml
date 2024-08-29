@@ -4,13 +4,66 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.hamburger.company</groupId>
     <artifactId>reposensecloud-api</artifactId>
-    <version>1.0-SNAPSHOT</version>
 
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
+	<dependencies>
+		<dependency>
+			<groupId>com.hamburger.company</groupId>
+			<artifactId>reposensecloud-logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.hamburger.company</groupId>
+			<artifactId>reposensecloud-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-lambda-java-core</artifactId>
+		</dependency>
+	</dependencies>
 
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-shade-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
+						<groupId>com.github.edwgiz</groupId>
+						<version>2.8.1</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer">
+								</transformer>
+							</transformers>
+						</configuration>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+				<groupId>org.apache.maven.plugins</groupId>
+				<version>2.4.3</version>
+			</plugin>
+		</plugins>
+	</build>
+
+	<parent>
+		<artifactId>reposensecloud-build</artifactId>
+		<groupId>com.hamburger.company</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../reposensecloud-build</relativePath>
+	</parent>
 </project>

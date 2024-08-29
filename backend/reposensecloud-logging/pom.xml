@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>reposensecloud-logging</artifactId>
+
+    <dependencies>
+      <dependency>
+        <artifactId>lombok</artifactId>
+        <groupId>org.projectlombok</groupId>
+      </dependency>
+      <dependency>
+        <artifactId>log4j-api</artifactId>
+        <groupId>org.apache.logging.log4j</groupId>
+      </dependency>
+      <dependency>
+        <artifactId>log4j-core</artifactId>
+        <groupId>org.apache.logging.log4j</groupId>
+      </dependency>
+      <dependency>
+        <artifactId>aws-lambda-java-log4j2</artifactId>
+        <groupId>com.amazonaws</groupId>
+      </dependency>
+    </dependencies>
+
+    <parent>
+      <artifactId>reposensecloud-build</artifactId>
+      <groupId>com.hamburger.company</groupId>
+      <relativePath>../reposensecloud-build</relativePath>
+      <version>1.0.0-SNAPSHOT</version>
+    </parent>
+</project>
