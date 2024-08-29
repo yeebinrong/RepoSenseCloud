@@ -25,7 +25,7 @@ ENV YQ_VERSION=${YQ_VERSION}
 ENV LC_ALL=${LOCALE}
 
 # Install Tini(https://github.com/krallin/tini)
-ARG TINI_VERSION=v0.19.0
+ARG TINI_VERSION="v0.19.0"
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-amd64 /tini
 RUN chmod +x /tini
 
@@ -52,16 +52,16 @@ RUN set -eux && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install
 RUN set -eux \
     && npm config set legacy-peer-deps true -g \
 	&& npm install -g serverless@~${SLS_CLI_VERSION} \
-        serverless-aws-alias@^1.0.21 \
-		serverless-prune-plugin@^1.5.0 \
-		serverless-plugin-dynamodb-autoscaling@^3.1.0 \
-		serverless-api-gateway-caching@^1.7.2 \
-		serverless-api-stage@^2.1.0 \
-		serverless-step-functions@^2.30.0 \
-		serverless-pseudo-parameters@^2.4.0 \
-		serverless-plugin-resource-tagging@^1.1.0 \
-		serverless-sts-caller-id@^1.0.1 \
-		serverless-plugin-ifelse@^1.0.7 \
+        # serverless-aws-alias@^1.0.21 \
+		# serverless-prune-plugin@^1.5.0 \
+		# serverless-plugin-dynamodb-autoscaling@^3.1.0 \
+		# serverless-api-gateway-caching@^1.7.2 \
+		# serverless-api-stage@^2.1.0 \
+		# serverless-step-functions@^2.30.0 \
+		# serverless-pseudo-parameters@^2.4.0 \
+		# serverless-plugin-resource-tagging@^1.1.0 \
+		# serverless-sts-caller-id@^1.0.1 \
+		# serverless-plugin-ifelse@^1.0.7 \
     && sls --version
 
 # Fix sls v1 for node v18 due to archiver https://github.com/serverless/serverless/issues/11118
