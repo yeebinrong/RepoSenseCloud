@@ -6,6 +6,8 @@ import Modal from "react-modal";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./state/store";
+import { SnackbarProvider } from "notistack";
+import { StyledMaterialDesignContent } from "./constants/snack-bar";
 
 Modal.setAppElement("#root");
 // Save a reference to the original ResizeObserver
@@ -32,9 +34,18 @@ for (let staticMethod in OriginalResizeObserver) {
 }
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <Provider store={store}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </Provider>
+  <SnackbarProvider
+    maxSnack={3}
+    autoHideDuration={3000}
+    Components={{
+      success: StyledMaterialDesignContent,
+      error: StyledMaterialDesignContent,
+    }}
+  >
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>
+  </SnackbarProvider>
 );
