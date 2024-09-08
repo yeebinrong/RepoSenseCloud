@@ -1,6 +1,7 @@
 import React from "react";
 import "./App.scss";
-import BasePage from "./pages/base-page";
+import HomePage from "./pages/home-page";
+import ErrorPage from "./pages/error-page";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 
 if (typeof setImmediate === "undefined") {
@@ -19,7 +20,8 @@ const App = () => {
   return (
     <Routes>
       <Route path="" exact element={<Navigate replace to="/home" />} />
-      <Route path="/home" exact element={<BasePage {...mainProps} />} />
+      <Route path="/home" exact element={<HomePage {...mainProps} />} />
+      <Route path="*" element={<ErrorPage {...mainProps} />} />
     </Routes>
   );
 };
