@@ -51,12 +51,16 @@ class BasePage extends React.Component {
               src="logo192.png"
               className={"app-bar-logo"}
               alt=""
-              onClick={() => {}}
+              onClick={() => {
+                this.props.navigate("/home");
+              }}
             />
             <div style={{ margin: "0 50px" }}>
               <Button
                 style={{ textTransform: "none" }}
-                onClick={() => {}}
+                onClick={() => {
+                  this.props.navigate("/home");
+                }}
                 disableRipple
                 variant="text"
                 size="large"
