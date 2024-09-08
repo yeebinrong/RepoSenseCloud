@@ -184,6 +184,7 @@ class BasePage extends React.Component {
             <CircularProgress color="inherit" />
           </Backdrop>
         </div>
+        {this.props.component(this.props)}
       </>
     );
   }
