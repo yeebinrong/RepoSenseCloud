@@ -3,6 +3,9 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import Modal from "react-modal";
+import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import store from "./state/store";
 
 Modal.setAppElement("#root");
 // Save a reference to the original ResizeObserver
@@ -28,4 +31,10 @@ for (let staticMethod in OriginalResizeObserver) {
   }
 }
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
+root.render(
+  <Provider store={store}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Provider>
+);
