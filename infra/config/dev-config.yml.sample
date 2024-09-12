@@ -1,0 +1,50 @@
+######## Config for development environment ########
+
+#### Dev specific environment variables start here ####
+nginx_local_dev_api_url: # this url should correspond to the api gateway url
+variant: # your unique initials eg. ybr for yee bin rong (make sure don't clash w other devs)
+
+#### Dev specific environment variables end here ####
+
+#### Serverless v1.83.0 specific properties starts here ####
+# https://github.com/serverless/serverless/tree/v1.83.0/docs/providers/aws/guide
+
+name: aws
+javaRuntime: java8.al2
+nodeRuntime: nodejs18.x
+region: ap-southeast-1 # singapore region
+deploymentBucket: ${self:provider.appCode}-${self:provider.stage}-lambda-deployment-bucket # s3 bucket for deploying lambda functions
+versionFunctions: false # on by default, disable to avoid creating versions for every function https://www.serverless.com/framework/docs/providers/aws/guide/functions#versioning-deployed-functions
+stackName: ${self:provider.appCode}-${self:provider.stage}-${self:service}-stack # service is pulled from the module's serverless.yml
+
+# custom serverless properties
+appCode: reposensecloud
+domain: reposensecloud.{self:provider.stage}.hamb-urger.com
+functionNamePrefix: ${self:custom.configFile.appCode}-${self:provider.stage}-${self:service}
+authorizerNamePrefix: ${self:custom.configFile.appCode}-${self:provider.stage}-authorizer
+apiGatewayName: ${self:custom.configFile.appCode}-${self:provider.stage}-api-gateway
+apiGatewayId: ${self:custom.configFile.appCode}-${self:provider.stage}-ApiGatewayRestApiId
+
+#### Serverless v1.83.0 specific properties ends here ####
+
+#### AWS specific properties starts here ####
+# CloudWatch metrics properties
+CW_ENDPOINT: monitoring.${self:provider.region}.amazonaws.com
+
+# DynamoDB Properties
+DDB_ENDPOINT: dynamodb.${self:provider.region}.amazonaws.com
+DDB_PITR: 'true' # Enable status for Point in time recovery for dynamoDB table
+
+# S3 Properties
+S3_ENDPOINT: s3.${self:provider.region}.amazonaws.com
+S3_OBJECT_ENDPOINT: s3-${self:provider.region}.amazonaws.com
+S3_STATIC_DEPLOY_BUCKET: ${self:provider.appCode}-${self:provider.stage}-static-deployment-bucket
+S3_STATIC_RESOURCE_HOST: https://static.${self:custom.configFile.domain}/
+S3_HOME_PAGE_PATH: /
+S3_CORS_ALLOW_ORIGINS: "*.hamb-urger.com"
+
+# Cognito Properties
+COGNITO_ENDPOINT: https://cognito-idp.${self:provider.region}.amazonaws.com
+COGNITO_CLIENT_CALLBACK_URL_DOMAIN: ${self:custom.configFile.domain}
+
+#### AWS specific properties ends here ####

@@ -87,7 +87,7 @@ http {
         proxy_set_header  X-Forwarded-Port  80;
     }
     location /api/ {
-        proxy_pass ${NGINX_LOCAL_DEVELOPMENT_API_URL};
+        proxy_pass ${nginx_local_dev_api_url};
         # websocket related header
         proxy_http_version 1.1;
         proxy_pass_header X-XSRF-TOKEN;
