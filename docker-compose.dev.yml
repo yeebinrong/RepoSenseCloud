@@ -5,11 +5,11 @@
 
 # Define the services and applications that make up your application.
 services:
-  rsc-frontend-app:
+  frontend-app:
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public
 
-  rsc-user-service-app:
+  user-service-app:
     volumes:
       - ./backend/rsc-user-service/target:/app/target
