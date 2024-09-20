@@ -45,11 +45,6 @@ RUN set -eux \
     && npm install -g serverless@~${SLS_CLI_VERSION} \
     && sls --version
 
-# Fix sls v1 for node v18 due to archiver https://github.com/serverless/serverless/issues/11118
-RUN set -eux \
-    && cd /usr/local/lib/node_modules/serverless \
-    && npm install archiver@5.3.2
-
 # Stage to build build image
 FROM deploy AS build
 
