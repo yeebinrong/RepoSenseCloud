@@ -3,9 +3,6 @@
 
 # This docker-compose file is for mounting the volume to the container for hot reloading
 
-# Specify the version of the Docker Compose.
-version: "3.9"
-
 # Define the services and applications that make up your application.
 services:
   frontend-app:

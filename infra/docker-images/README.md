@@ -1,13 +1,18 @@
 # docker-images is to manage the docker images used in the development / deployment of RepoSenseCloud
 
-## reposensecloud-cicd
-This is docker image is used for CICD
+Build the docker images manually using following command
+```
+docker build -t {IMAGE_NAME}:{TAG} -f Dockerfile .
+```
 
-Build docker image using following command
-```
-docker build -t reposensecloud-cicd:latest -f Dockerfile .
-```
-Run the docker image using following command
-```
-docker run -it reposensecloud-cicd:latests bash
-```
+## reposensecloud-cicd
+This docker image is used for CICD
+
+## reposensecloud-front
+This docker image is used for local development the frontend
+
+## reposensecloud-java8
+This docker image is used for backend services
+
+## reposensencloud-java11
+This docker image is used for Reposense jar execution
