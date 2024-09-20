@@ -34,3 +34,4 @@ package-lock.json
 **/.env
 .serverless-offline*
 .vscode
+dev-config.yml

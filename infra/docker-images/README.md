@@ -4,15 +4,19 @@ Build the docker images manually using following command
 ```
 docker build -t {IMAGE_NAME}:{TAG} -f Dockerfile .
 ```
+Run the docker image using following command
+```
+docker run -it -{IMAGE_NAME}:{TAG} bash
+```
 
-## reposensecloud-cicd
+## rsc-cicd
 This docker image is used for CICD
 
-## reposensecloud-front
+## rsc-frontend
 This docker image is used for local development the frontend
 
-## reposensecloud-java8
+## rsc-backend
 This docker image is used for backend services
 
-## reposensencloud-java11
-This docker image is used for Reposense jar execution
+## rsc-batch
+This docker image is used for RepoSense jar execution

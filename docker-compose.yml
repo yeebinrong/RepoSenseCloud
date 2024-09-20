@@ -11,15 +11,32 @@
 services:
   frontend-app:
     build:
-      context: ./ # Uses the current directory as the build context.
-      dockerfile: ./infra/docker-images/reposensecloud-front/Dockerfile # Path to the directory containing the Dockerfile for the frontend application
-    container_name: frontend_app
+      context: ./
+      dockerfile: ./infra/docker-images/rsc-frontend-image/Dockerfile
+    container_name: rsc_frontend
     ports:
-      - 3000:3000 # Maps ports
-    # environment:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    env_file:
+      - ./.env # docker-compose only works with .env file
     networks:
-      - reposensecloud-network # Connects the frontend-app to the 'reposensecloud-network' network.
+      - rsc-network
+
+  user-service-app:
+    build:
+      context: ./
+      dockerfile: ./infra/docker-images/rsc-backend-image/Dockerfile
+      args:
+        PORT: ${USER_SVC_PORT}
+        JAR_FILE_NAME: ${USER_SVC_JAR_FILE_NAME}
+    container_name: rsc_user_service
+    ports:
+      - ${USER_SVC_PORT}:${USER_SVC_PORT} # Maps ports
+    env_file:
+      - ./.env # docker-compose only works with .env file
+    networks:
+      - rsc-network
+
 
 networks:
-  reposensecloud-network: # Defines a network named 'reposensecloud-network'.
+  rsc-network: # Defines a network named 'rsc-network'.
     driver: bridge # Uses the bridge driver for the network, which is the default and most common network type in Docker.
