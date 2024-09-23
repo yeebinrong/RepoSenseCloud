@@ -10,7 +10,7 @@ variant: # your unique initials eg. ybr for yee bin rong (make sure don't clash 
 # https://github.com/serverless/serverless/tree/v1.83.0/docs/providers/aws/guide
 
 name: aws
-javaRuntime: java8.al2
+javaRuntime: java21.al2
 nodeRuntime: nodejs18.x
 region: ap-southeast-1 # singapore region
 deploymentBucket: ${self:provider.appCode}-${self:provider.stage}-lambda-deployment-bucket # s3 bucket for deploying lambda functions

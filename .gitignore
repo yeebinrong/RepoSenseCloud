@@ -30,6 +30,21 @@ package-lock.json
 #sonarlint
 .sonarlint
 
+# Ignore Terraform state and cache files
+.terraform/
+
+# Ignore other common files
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+.terraform.d
+
 # Others
 **/.env
 .serverless-offline*
