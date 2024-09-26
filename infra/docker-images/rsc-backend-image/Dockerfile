@@ -1,5 +1,5 @@
 # Use the official Amazon Corretto 8 base image with the specific version
-FROM amazoncorretto:8u322-al2
+FROM amazoncorretto:21.0.4-al2
 
 # Set the working directory
 WORKDIR /app

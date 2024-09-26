@@ -9,17 +9,20 @@
 
 # Define the services and applications that make up your application.
 services:
-  frontend-app:
-    build:
-      context: ./
-      dockerfile: ./infra/docker-images/rsc-frontend-image/Dockerfile
-    container_name: rsc_frontend
-    ports:
-      - ${FRONTEND_PORT}:${FRONTEND_PORT}
-    env_file:
-      - ./.env # docker-compose only works with .env file
-    networks:
-      - rsc-network
+  # frontend-app:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./infra/docker-images/rsc-frontend-image/Dockerfile
+  #   container_name: rsc_frontend
+  #   ports:
+  #     - ${FRONTEND_PORT}:${FRONTEND_PORT}
+  #   env_file:
+  #     - ./.env # docker-compose only works with .env file
+  #   volumes:
+  #     - ./frontend/src:/app/src
+  #     - ./frontend/public:/app/public
+  #   networks:
+  #     - rsc-network
 
   user-service-app:
     build:
@@ -30,12 +33,31 @@ services:
         JAR_FILE_NAME: ${USER_SVC_JAR_FILE_NAME}
     container_name: rsc_user_service
     ports:
-      - ${USER_SVC_PORT}:${USER_SVC_PORT} # Maps ports
+      - ${USER_SVC_PORT}:${USER_SVC_PORT}
     env_file:
       - ./.env # docker-compose only works with .env file
+    volumes:
+      - ./backend/rsc-user-service/target:/app/target
     networks:
       - rsc-network
 
+  localstack:
+    container_name: "localstack-persist"
+    image: gresau/localstack-persist:latest
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+      - DEBUG=0
+      - services=s3,dynamodb
+      - PERSIST_DEFAULT=0
+      - PERSIST_DYNAMODB=1
+      - PERSIST_S3=1
+    volumes:
+      - "./localstack:/persisted-data"
+    networks:
+      - rsc-network
 
 networks:
   rsc-network: # Defines a network named 'rsc-network'.
