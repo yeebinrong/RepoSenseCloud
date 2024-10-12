@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import "./App.scss";
+import LoginPage from "./pages/login-page";
 import HomePage from "./pages/home-page";
 import ErrorPage from "./pages/error-page";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
@@ -15,9 +16,9 @@ const App = () => {
   let navigate = useNavigate();
 
   useEffect(() => {
-    const isHomePage = window.location.pathname === "/home";
+    const isLoginPage = window.location.pathname === "/login";
 
-    if (isHomePage) {
+    if (isLoginPage) {
       showSuccessBar("Welcome to ReposenseCloud.");
     } else {
       navigate("/error");
@@ -31,7 +32,8 @@ const App = () => {
 
   return (
     <Routes>
-      <Route path="" exact element={<Navigate replace to="/home" />} />
+      <Route path="" exact element={<Navigate replace to="/login" />} />
+      <Route path="/login" exact element={<LoginPage {...mainProps} />} />
       <Route path="/home" exact element={<HomePage {...mainProps} />} />
       <Route path="*" element={<ErrorPage {...mainProps} />} />
     </Routes>
