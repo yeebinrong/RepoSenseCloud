@@ -132,7 +132,7 @@ class LoginComponent extends React.Component {
               color: "#F7A81B",
               fontWeight: "bold",
               width: "145px",
-              marginLeft: "225px",
+              marginLeft: "240px",
               justifyContent: "end",
             }}
             text="Forgot password?"

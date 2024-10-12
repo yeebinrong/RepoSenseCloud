@@ -1,0 +1,75 @@
+.forgot-container {
+  display: flex;
+  justify-content: center;
+  margin: 70px 0;
+}
+
+.main-logo {
+  width: 50%;
+  translate: 50%;
+}
+
+.forgot-panel-text-field {
+  margin: 0 32px 32px 32px !important;
+  background-color: #f8fdff;
+
+  div {
+    border-radius: 8px !important;
+  }
+}
+
+.forgot-panel-main-button {
+  background-color: #f7a81b !important;
+  color: white;
+  border-radius: 8px !important;
+  font-size: 18px !important;
+  display: flex;
+  width: 345px;
+  height: 48px;
+  padding: 14px 24px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.forgot-panel-main-title {
+  font-family: "DM Sans", sans-serif !important;
+  text-align: center;
+  padding: 10px 56px 0 56px;
+  color: #000000;
+  font-size: 28px !important;
+  font-weight: bold !important;
+}
+
+.forgot-panel-sub-title {
+  font-family: "DM Sans", sans-serif !important;
+  text-align: center;
+  padding: 18px 56px 36px 56px;
+  color: #000000;
+  font-size: 12px !important;
+  font-weight: lighter !important;
+}
+
+.form-login-control input {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+  padding: 20px;
+}
+
+.from-forgot-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 30px 70px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: white;
+}
+
+.main-panel-error {
+  margin: 0px 32px 16px 32px;
+}
