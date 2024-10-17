@@ -1,0 +1,15 @@
+.create-job-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+.create-job-header {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 10px;
+}
