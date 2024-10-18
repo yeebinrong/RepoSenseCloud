@@ -1,10 +1,12 @@
+body {
+    background-color: #fff;
+}
 .create-job-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 100vh;
     width: 100%;
-    background-color: #fff;
 }
 
 .create-job-header {
@@ -20,13 +22,44 @@
 }
 
 .create-job-page-status {
-    display: flex; /* Use flexbox to arrange items side by side */
-    align-items: center; /* Center items vertically */
-    justify-content: center; /* Center items horizontally */
-  }
+    display: flex;
+    /* Use flexbox to arrange items side by side */
+    align-items: center;
+    /* Center items vertically */
+    justify-content: center;
+    /* Center items horizontally */
+}
 
 .dotted-line {
-    border-top: 4px dotted #dedcdc; /* Creates a horizontal dotted line */
-    width: 40%; /* Adjust the width as needed */
-    margin: 30px ; /* Adjust the margin as needed */
+    border-top: 4px dotted #dedcdc;
+    /* Creates a horizontal dotted line */
+    width: 40%;
+    /* Adjust the width as needed */
+    margin: 30px;
+    /* Adjust the margin as needed */
+}
+
+.create-job-input-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1%;
+    width: 100vw;
+}
+
+.create-job-input-1 {
+    flex-grow:1;
+    width: 50%;
+    margin-right: 1%;
+}
+
+.create-job-input-2 {
+    flex-grow:1;
+    width: 50%;
+    margin-left: 1%;
+}
+
+.dotted-line-down {
+    border-left: 4px dotted #dedcdc;
+    height: 200px; /* Adjust the height as needed */
+    margin: 0 20px; /* Optional, for spacing around the line */
 }
