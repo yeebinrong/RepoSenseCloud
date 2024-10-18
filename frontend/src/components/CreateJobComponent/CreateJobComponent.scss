@@ -4,12 +4,29 @@
     align-items: center;
     height: 100vh;
     width: 100%;
+    background-color: #fff;
 }
 
 .create-job-header {
+    margin: 5%;
     text-align: center;
     justify-content: center;
     align-items: center;
     position: relative;
-    margin: 10px;
+}
+
+.create-job-header h1 {
+    margin-bottom: 26px;
+}
+
+.create-job-page-status {
+    display: flex; /* Use flexbox to arrange items side by side */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+  }
+
+.dotted-line {
+    border-top: 4px dotted #dedcdc; /* Creates a horizontal dotted line */
+    width: 40%; /* Adjust the width as needed */
+    margin: 30px ; /* Adjust the margin as needed */
 }
