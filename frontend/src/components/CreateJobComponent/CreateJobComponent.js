@@ -1,6 +1,6 @@
 import React from "react";
 import "./CreateJobComponent.scss";
-import { styled, Paper, Button, Grid2 } from "@mui/material";
+import { Stack, Grid2 } from "@mui/material";
 import PageIcon from "../../assets/icons/page-icon.svg";
 
 class CreateJobComponent extends React.Component {
@@ -18,11 +18,22 @@ class CreateJobComponent extends React.Component {
                     <img src = {PageIcon} alt="Page Icon" className="page-icon2"/>
                 </span>
                 <span className= "create-job-input-container">
-                    <div className="create-job-input-1">
-                        <h3>test2</h3>
+                    <div className="create-job-input-left">
+                        <div className="job-name-container">
+                            <text className = "job-name-label">Job Name</text>
+                            <input type="text" className = "job-name-textbox" placeholder="Enter Job Name"/>
+                        </div>
+                        <div className="target-repo-container">
+                            <text className = "target-repo-label">Target Repository</text>
+                            <span>
+                                <input type="text" className = "target-repo-textbox" placeholder="Paste Repo URL here"/>
+                                <button className="delete-repo-link-button">✕</button>
+                                <button className="add-repo-link-button">+ Add repository</button>
+                            </span>
+                        </div>
                     </div>
                     <div className = "dotted-line-down"/>
-                    <div className="create-job-input-2">
+                    <div className="create-job-input-right">
                         <h3>test3</h3>
                     </div>                   
                 </span>
