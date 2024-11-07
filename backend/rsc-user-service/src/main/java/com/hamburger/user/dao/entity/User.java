@@ -1,4 +1,4 @@
-package com.hamburger.user.dao.database.entity;
+package com.hamburger.user.dao.entity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

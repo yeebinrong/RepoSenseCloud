@@ -6,7 +6,8 @@ docker build -t {IMAGE_NAME}:{TAG} -f Dockerfile .
 ```
 Run the docker image using following command
 ```
-docker run -it -{IMAGE_NAME}:{TAG} bash
+docker run -it -v {/PATH/ON/HOST}:/home/workspace {IMAGE_NAME}:{TAG} bash
+docker run -it -v "%cd%":/home/workspace rsc-cicd-image:common bash (windows command to bind curr directory)
 ```
 
 ## rsc-cicd
