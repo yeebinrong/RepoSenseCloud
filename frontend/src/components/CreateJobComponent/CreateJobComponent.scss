@@ -1,5 +1,10 @@
 body {
+    font-weight: bold;
     background-color: #fff;
+    --general-text-color: #292D32;
+    --general-text-size: 14px;
+    --placeholder-color: #ADA7A7; 
+    --input-border-color: #D5D8E2;
 }
 .create-job-container {
     display: flex;
@@ -33,29 +38,10 @@ body {
 .dotted-line {
     border-top: 4px dotted #dedcdc;
     /* Creates a horizontal dotted line */
-    width: 40%;
+    width: 10%;
     /* Adjust the width as needed */
     margin: 30px;
     /* Adjust the margin as needed */
-}
-
-.create-job-input-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 1%;
-    width: 100vw;
-}
-
-.create-job-input-1 {
-    flex-grow:1;
-    width: 50%;
-    margin-right: 1%;
-}
-
-.create-job-input-2 {
-    flex-grow:1;
-    width: 50%;
-    margin-left: 1%;
 }
 
 .dotted-line-down {
@@ -63,3 +49,112 @@ body {
     height: 200px; /* Adjust the height as needed */
     margin: 0 20px; /* Optional, for spacing around the line */
 }
+
+.create-job-input-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1%;
+    width: 100vw;
+    font-size: var(--general-text-size);
+    color:var(--general-text-color);
+
+    .create-job-input-left {
+        display: grid;
+        flex-direction: column;
+        flex-grow: 1;
+        width: 50vw;
+        margin-right: 1%;
+
+        .job-name-container {
+            display: flex;
+            flex-direction: column;
+
+            .job-name-label {
+                text-align: left;
+                margin-left:20vw;
+                margin-bottom: 1%;
+            }
+    
+            .job-name-textbox {
+                margin-left:20vw;
+                margin-bottom: 1%;
+                width: 25vw;
+                height: 42px;
+                box-sizing: border-box;   
+                border-radius: 12px;
+                padding: 10px;
+                border: 2px solid var(--input-border-color);
+                color: var(--label-color); 
+            }
+        }
+
+        
+        .target-repo-container {
+            display: flex;
+            flex-direction: column;
+            justify-self: left;
+            margin-left: 20vw;
+            width: 25vw;
+            background-color: #F6F7F9;
+
+            border-radius: 12px;
+
+
+            .target-repo-label {
+                margin:3%;
+                text-align: left;
+            }
+
+            .target-repo-textbox {
+                margin-bottom: 1%;
+                width: 20vw;
+                height: 42px;
+                box-sizing: border-box;   
+                border-radius: 12px;
+                padding: 10px;
+                border: 2px solid var(--input-border-color);
+                color: var(--label-color); 
+            }
+
+            .delete-repo-link-button {
+                border-color: transparent;
+                background-color: transparent;
+                color: #000000;
+                margin-left: 2%;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .add-repo-link-button {
+                color: var(--placeholder-color);
+                background-color: #ffffff;
+                margin-left: 60%;
+                margin-top: 5%;
+                margin-bottom: 5%;
+                padding-top: 2%;
+                padding-bottom: 2%;
+                border: 2px solid var(--input-border-color);
+                border-radius: 6px;
+                cursor: pointer;
+            }
+        }
+    }
+    
+    .create-job-input-right {
+        flex-grow:1;
+        width: 50%;
+        margin-left: 1%;
+
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
