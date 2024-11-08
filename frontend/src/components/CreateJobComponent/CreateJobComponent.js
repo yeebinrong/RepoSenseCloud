@@ -28,13 +28,94 @@ class CreateJobComponent extends React.Component {
                             <span>
                                 <input type="text" className = "target-repo-textbox" placeholder="Paste Repo URL here"/>
                                 <button className="delete-repo-link-button">✕</button>
-                                <button className="add-repo-link-button">+ Add repository</button>
+                                <button className="add-repo-link-button"> + Add repository</button>
                             </span>
                         </div>
                     </div>
                     <div className = "dotted-line-down"/>
                     <div className="create-job-input-right">
-                        <h3>test3</h3>
+                        <div className="settings-container">
+                            <text className = "settings-header-label">Settings</text>
+                            <div className = "settings-input-container">
+                                <Grid2 container spacing={1}>
+                                    <Grid2 size={6} container alignItems="center">
+                                        <text className = "since-label">Since:</text>
+                                    </Grid2>
+                                    <Grid2 size={6}>
+                                        <input type="date" className = "since-date-input" placeholder="DD/MM/YYYY"/>
+                                    </Grid2>
+                                    <Grid2 size={6} container alignItems="center">
+                                        <text className = "until-label">Until:</text>
+                                    </Grid2>
+                                    <Grid2 size={6}>
+                                        <input type="date" className = "until-date-input" placeholder="DD/MM/YYYY"/>
+                                    </Grid2>
+                                    <Grid2 size={6} container alignItems="center">
+                                        <text className = "period-label">Period:</text>
+                                    </Grid2>
+                                    <Grid2 size={6}>
+                                        <select className="period-range-dropdown">
+                                            <option value="1-week">1 Week</option>
+                                            <option value="4-week">4 Week</option>
+                                            <option value="3-month">3 Months</option>
+                                            <option value="6-month">6 Months</option>
+                                        </select>
+                                    </Grid2>
+                                    <Grid2 size={6} container alignItems="center">
+                                        <text className="originality-label">Originality Threshold:</text>
+                                    </Grid2>
+                                    <Grid2 size={6}>
+                                        <input type="number" className = "originality-input" placeholder="0 to 1"/>
+                                    </Grid2>
+                                    <Grid2 size={6} container alignItems="center">
+                                        <text className="timezone-label">Time Zone:</text>
+                                    </Grid2>
+                                    <Grid2 size={6}>
+                                        <input type="text" className = "timezone-input" placeholder="e.g UTC+8"/>
+                                    </Grid2>
+                                    <Grid2 size={5} marginTop = {2} className = "left-checklist-container">
+                                        <Grid2 container spacing = {3} alignItems="center" justifyContent="space-between">
+                                            <Grid2 size={6}>
+                                                <text className="authorship-label">Analyse authorship:</text>
+                                            </Grid2>
+                                            <Grid2 size={6}>
+                                                <input type="checkbox" className = "authorship-checkbox"/>
+                                            </Grid2>
+                                            <Grid2 size={6}>
+                                                <text className="prev-author-label">Find previous authors:</text>
+                                            </Grid2>
+                                            <Grid2 size={6}>
+                                                <input type="checkbox" className = "prev-author-checkbox"/>
+                                            </Grid2>
+                                            <Grid2 size={6}>
+                                                <text className="shallow-clone-label">Shallow cloning:</text>
+                                            </Grid2>
+                                            <Grid2 size={6} >
+                                                <input type="checkbox" className = "shallow-clone-checkbox"/>
+                                            </Grid2>
+                                        </Grid2>
+                                    </Grid2>
+                                    <Grid2 size={7} marginTop = {2} paddingLeft ={6} className= "right-checklist-container">
+                                        <Grid2 container spacing={3} alignItems="center" justifyContent="space-between">
+                                            <Grid2 size={6} >
+                                                <text className="ignore-size-limit-label">Ignore file size limit:</text>
+                                            </Grid2>
+                                            <Grid2 size={6} >
+                                                <input type="checkbox" className="ignore-size-limit-checkbox" />
+                                            </Grid2>
+                                            <Grid2 size={6}>
+                                                <text className="Add-last-mod-label">Add last modified date:</text>
+                                            </Grid2>
+                                            <Grid2 size={6} >
+                                                <input type="checkbox" className="add-last-mod-checkbox" />
+                                            </Grid2>
+                                            
+                                        </Grid2>
+                                    </Grid2>
+
+                                </Grid2>
+                            </div>
+                        </div>
                     </div>                   
                 </span>
             </div>
