@@ -1,10 +1,45 @@
 import React, { useState } from "react";
 import "./CreateJobComponent.scss";
-import { Stack, Grid2 } from "@mui/material";
+import { Autocomplete, TextField, Grid2, Chip} from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
 
+const useStyles = makeStyles(() => ({
+    autocomplete: {
+        width: '100%',
+        marginTop: '16px',
+    },
+    chip: {
+        margin: '4px',
+        backgroundColor: '#e0f7fa',
+        color: '#00695c',
+    },
+    textField: {
+        backgroundColor: '#00000',
+        borderRadius: '10px', // Set the border radius for rounded corners
+    },
+}));
+
+
+
 const CreateJobComponent = () => {
+
+    const classes = useStyles();
+    const [currentPage, setCurrentPage] = useState(1);
     const [repoLink, setRepoLink] = useState([{ id: Date.now(), value: "" }]);
+    const [jobName, setJobName] = useState("");
+    const [sinceDate, setSinceDate] = useState("");
+    const [untilDate, setUntilDate] = useState("");
+    const [period, setPeriod] = useState("1-week");
+    const [originalityThreshold, setOriginalityThreshold] = useState("");
+    const [timeZone, setTimeZone] = useState("");
+    const [authorship, setAuthorship] = useState(false);
+    const [prevAuthors, setPrevAuthors] = useState(false);
+    const [shallowClone, setShallowClone] = useState(false);
+    const [ignoreSizeLimit, setIgnoreSizeLimit] = useState(false);
+    const [addLastMod, setAddLastMod] = useState(false);
+    const [jobType, setJobType] = useState("");
+    const [chipValues, setChipValues] = useState([]);
 
     const addRepoLink = () => {
         console.log("Adding repo link");
@@ -20,6 +55,10 @@ const CreateJobComponent = () => {
         console.log("Updating repo link with id", id, "to value", value);
         setRepoLink(repoLink.map(link => link.id === id ? { ...link, value } : link)); // Update the value of the repo link with the given id
     }
+
+    const handleChipChange = (event, value) => {
+        setChipValues(value);
+    };
 
     return (
         <div className="create-job-container">
@@ -89,8 +128,8 @@ const CreateJobComponent = () => {
                                     <Grid2 size={6}>
                                         <input type="text" className = "timezone-input" placeholder="e.g UTC+8"/>
                                     </Grid2>
-                                    <Grid2 size={5} marginTop = {2} className = "left-checklist-container">
-                                        <Grid2 container spacing = {3} alignItems="center" justifyContent="space-between">
+                                    <Grid2 size={6} marginTop = {2} className = "left-checklist-container">
+                                        <Grid2 container spacing = {3} justifyContent="space-between">
                                             <Grid2 size={6}>
                                                 <text className="authorship-label">Analyse authorship:</text>
                                             </Grid2>
@@ -111,8 +150,8 @@ const CreateJobComponent = () => {
                                             </Grid2>
                                         </Grid2>
                                     </Grid2>
-                                    <Grid2 size={7} marginTop = {2} paddingLeft ={6} className= "right-checklist-container">
-                                        <Grid2 container spacing={3} alignItems="center" justifyContent="space-between">
+                                    <Grid2 size={6} marginTop = {2} paddingLeft ={6} className= "right-checklist-container">
+                                        <Grid2 container spacing = {3} justifyContent="space-between">
                                             <Grid2 size={6} >
                                                 <text className="ignore-size-limit-label">Ignore file size limit:</text>
                                             </Grid2>
@@ -128,7 +167,39 @@ const CreateJobComponent = () => {
                                             
                                         </Grid2>
                                     </Grid2>
-
+                                    <Grid2 size={2} marginTop = {2}>
+                                        <text className="format-label">Format:</text>
+                                    </Grid2>
+                                    <Grid2 size={8}>
+                                        <Autocomplete
+                                            multiple
+                                            freeSolo
+                                            id="tags-filled"
+                                            options={[]}
+                                            value={chipValues}
+                                            onChange={handleChipChange}
+                                            renderTags={(value, getTagProps) =>
+                                                value.map((option, index) => (
+                                                    <Chip
+                                                        variant="outlined"
+                                                        label={option}
+                                                        {...getTagProps({ index })}
+                                                        className={classes.chip}
+                                                    />
+                                                ))
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    variant="filled"
+                                                    label="Enter File Format(s) To Scan"
+                                                    placeholder="e.g. Java, Python"
+                                                    className={classes.textField}
+                                                />
+                                            )}
+                                            className={classes.autocomplete}
+                                        />
+                                    </Grid2>
                                 </Grid2>
                             </div>
                         </div>
