@@ -46,13 +46,12 @@ body {
 
 .dotted-line-down {
     border-left: 4px dotted #dedcdc;
-    height: 200px; /* Adjust the height as needed */
+    height: 80wh; /* Adjust the height as needed */
     margin: 0 20px; /* Optional, for spacing around the line */
 }
 
 .create-job-input-container {
     display: flex;
-    justify-content: center;
     margin-top: 1%;
     width: 100vw;
     font-size: var(--general-text-size);
@@ -61,9 +60,8 @@ body {
     .create-job-input-left {
         display: grid;
         flex-direction: column;
-        flex-grow: 1;
         width: 50vw;
-        margin-right: 1%;
+        margin-right: 1%;;
 
         .job-name-container {
             display: flex;
@@ -141,9 +139,53 @@ body {
     }
     
     .create-job-input-right {
-        flex-grow:1;
-        width: 50%;
-        margin-left: 1%;
+        display: grid;
+        flex-direction: column;
+        flex-grow: 1;
+        width: 50vw;
+        margin-right: 1%;
+
+        .settings-container{
+            margin-left: 1vw;
+            display: flex;
+            flex-direction: column;
+
+            .settings-header-label {
+                font-size: 20px;
+                text-align: left;
+                margin-right: 20vw;
+                margin-bottom: 1%;
+            }
+    
+            .settings-input-container {
+                text-align: left;
+                align-items: center;
+                margin-right: 20vw;
+                margin-bottom: 1%;
+
+                .since-date-input, .until-date-input, .originality-input, .timezone-input{
+                    width: 15vw;
+                    height: 42px;
+                    border-radius: 12px;
+                    border: 2px solid var(--input-border-color);
+                    color: var(--placeholder-color);
+                    text-align: center;
+                }
+
+                .period-range-dropdown {
+                    width: 15.3vw;
+                    height: 45px;
+                    border-radius: 12px;
+                    color: var(--placeholder-color);
+                    border: 2px solid var(--input-border-color);
+                    text-align: center;
+                }
+
+            }
+        }
+
+
+        
 
     }
     
