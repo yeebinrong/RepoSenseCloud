@@ -1,12 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import "./CreateJobComponent.scss";
 import { Stack, Grid2 } from "@mui/material";
 import PageIcon from "../../assets/icons/page-icon.svg";
 
-class CreateJobComponent extends React.Component {
-  
+const CreateJobComponent = () => {
+    const [repoLink, setRepoLink] = useState([{ id: Date.now(), value: "" }]);
 
-  render() {
+    const addRepoLink = () => {
+        console.log("Adding repo link");
+        setRepoLink([...repoLink, { id: Date.now(), value: "" }]);
+    }
+
+    const deleteRepoLink = (id) => {
+        console.log("Deleting repo link with id", id);
+        setRepoLink(repoLink.filter((link) => link.id !== id));
+    }
+
+    const handleRepoLinkChange = (id, value) => {
+        console.log("Updating repo link with id", id, "to value", value);
+        setRepoLink(repoLink.map(link => link.id === id ? { ...link, value } : link)); // Update the value of the repo link with the given id
+    }
+
     return (
         <div className="create-job-container">
             <div className="create-job-header">
@@ -25,11 +39,13 @@ class CreateJobComponent extends React.Component {
                         </div>
                         <div className="target-repo-container">
                             <text className = "target-repo-label">Target Repository</text>
-                            <span>
-                                <input type="text" className = "target-repo-textbox" placeholder="Paste Repo URL here"/>
-                                <button className="delete-repo-link-button">✕</button>
-                                <button className="add-repo-link-button"> + Add repository</button>
-                            </span>
+                            {repoLink.map((link) => (
+                                <span>
+                                    <input type="text" className = "target-repo-textbox" placeholder="Paste Repo URL here" value = {link.value} onChange={(e) => handleRepoLinkChange(link.id, e.target.value)}/>
+                                    <button className="delete-repo-link-button" onClick={() => deleteRepoLink(link.id)}>✕</button>
+                                </span>
+                            ))}
+                            <button className="add-repo-link-button" onClick={addRepoLink}> + Add repository</button>
                         </div>
                     </div>
                     <div className = "dotted-line-down"/>
@@ -123,7 +139,6 @@ class CreateJobComponent extends React.Component {
                 
         </div>
     );
-  }
 }
 
 export default CreateJobComponent;
