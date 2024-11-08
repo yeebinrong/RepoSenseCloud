@@ -35,6 +35,11 @@ const App = () => {
     <Routes>
       <Route path="" exact element={<Navigate replace to="/login" />} />
       <Route path="/login" exact element={<LoginPage {...mainProps} />} />
+      <Route
+        path="/register"
+        exact
+        element={<LoginPage {...mainProps} isRegisterPage />}
+      />
       <Route path="/forgot" exact element={<ForgotPage {...mainProps} />} />
       <Route path="/home" exact element={<HomePage {...mainProps} />} />
       <Route path="*" element={<ErrorPage {...mainProps} />} />

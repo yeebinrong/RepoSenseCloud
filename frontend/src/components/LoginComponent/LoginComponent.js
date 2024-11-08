@@ -13,6 +13,7 @@ import NavigateButton from "../NavigateButton";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PersonIcon from "@mui/icons-material/Person";
+import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import { initialLoginPageState } from "../../constants/constants";
 
@@ -22,7 +23,19 @@ class LoginComponent extends React.Component {
 
     this.state = {
       ...initialLoginPageState,
+      isRegisterPage: this.props.isRegisterPage,
     };
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (prevState.isRegisterPage !== nextProps.isRegisterPage) {
+      return {
+        ...initialLoginPageState,
+        isRegisterPage: nextProps.isRegisterPage,
+      };
+    }
+    // Return null to indicate no change to state.
+    return null;
   }
 
   updateState = (target, value) => {
@@ -77,13 +90,18 @@ class LoginComponent extends React.Component {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              {target === "email" ? <PersonIcon /> : <LockIcon />}
+              {target === "username" && <PersonIcon />}
+              {target === "email" && <EmailIcon />}
+              {(target === "password" || target === "confirmPassword") && (
+                <LockIcon />
+              )}
             </InputAdornment>
           ),
           endAdornment: showPassTarget
             ? this.renderShowPasswordIcon(showPassTarget)
             : "",
         }}
+        helperText=""
         required
       />
     );
@@ -92,23 +110,6 @@ class LoginComponent extends React.Component {
   renderLoginForm = () => {
     return (
       <>
-        <img
-          draggable={false}
-          src="/static/hamburger_logo.png"
-          className="main-logo"
-          alt=""
-        />
-        <Typography className={"login-panel-main-title"}>
-          Login to your account
-        </Typography>
-        <Typography className={"login-panel-sub-title"}>
-          Enter to continue and explore within your grasp
-        </Typography>
-        {this.state.errorMessage !== "" && (
-          <Alert className="main-panel-error" severity="error">
-            {this.state.errorMessage}
-          </Alert>
-        )}
         {this.renderTextField(true, "email", this.state.email, "Email Address")}
         {this.renderTextField(
           true,
@@ -188,12 +189,123 @@ class LoginComponent extends React.Component {
     );
   };
 
+  renderRegisterForm = () => {
+    return (
+      <>
+        {this.renderTextField(
+          true,
+          "username",
+          this.state.username,
+          "Display Name"
+        )}
+        {this.renderTextField(
+          false,
+          "email",
+          this.state.email,
+          "Email Address"
+        )}
+        {this.renderTextField(
+          true,
+          "password",
+          this.state.password,
+          "Password",
+          this.state.showPassword,
+          "showPassword"
+        )}
+        {this.renderTextField(
+          true,
+          "confirmPassword",
+          this.state.confirmPassword,
+          "Retype password",
+          this.state.showConfirmPassword,
+          "showConfirmPassword"
+        )}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div
+            style={{
+              marginTop: "12px",
+              display: "flex",
+              width: "100%",
+              justifyContent: "center",
+            }}
+          >
+            <Button
+              type="submit"
+              size="large"
+              disabled={this.state.isButtonClicked}
+              className={"login-panel-main-button"}
+              variant="contained"
+            >
+              Sign up
+            </Button>
+          </div>
+          <inline
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "baseline",
+              marginTop: "12px",
+              color: "#7F5305",
+            }}
+          >
+            Already have an account?
+            <NavigateButton
+              url="/login"
+              disableRipple
+              style={{
+                backgroundColor: "transparent",
+              }}
+              text={
+                <inline
+                  style={{
+                    color: "#F7A81B",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Log in
+                </inline>
+              }
+            />
+          </inline>
+        </div>
+      </>
+    );
+  };
+
   render() {
     return (
       <div className="login-container">
         <form onSubmit={this.handleSubmit} className={"from-login-panel"}>
           <FormControl className={"form-login-control"}>
-            {this.renderLoginForm()}
+            <img
+              draggable={false}
+              src="/static/hamburger_logo.png"
+              className="main-logo"
+              alt=""
+            />
+            <Typography className={"login-panel-main-title"}>
+              {this.props.isRegisterPage
+                ? "Create your account"
+                : "Login to your account"}
+            </Typography>
+            <Typography className={"login-panel-sub-title"}>
+              {this.props.isRegisterPage
+                ? "Let's create an account and start a wonderful journey"
+                : "Enter to continue and explore within your grasp"}
+            </Typography>
+            {this.state.errorMessage !== "" && (
+              <Alert className="main-panel-error" severity="error">
+                {this.state.errorMessage}
+              </Alert>
+            )}
+            {this.props.isRegisterPage
+              ? this.renderRegisterForm()
+              : this.renderLoginForm()}
           </FormControl>
         </form>
       </div>

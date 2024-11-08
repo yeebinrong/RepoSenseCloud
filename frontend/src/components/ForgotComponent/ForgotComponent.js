@@ -8,7 +8,7 @@ import {
 import React from "react";
 import "./ForgotComponent.scss";
 import NavigateButton from "../NavigateButton";
-import PersonIcon from "@mui/icons-material/Person";
+import EmailIcon from "@mui/icons-material/Email";
 
 class ForgotComponent extends React.Component {
   constructor(props) {
@@ -37,11 +37,6 @@ class ForgotComponent extends React.Component {
             <Typography className={"forgot-panel-sub-title"}>
               Enter your email to reset your password
             </Typography>
-            {/* {this.state.errorMessage !== "" && (
-              <Alert className="main-panel-error" severity="error">
-                {this.state.errorMessage}
-              </Alert>
-            )} */}
             <TextField
               size="medium"
               className="forgot-panel-text-field"
@@ -52,7 +47,7 @@ class ForgotComponent extends React.Component {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <PersonIcon />
+                    <EmailIcon />
                   </InputAdornment>
                 ),
               }}
