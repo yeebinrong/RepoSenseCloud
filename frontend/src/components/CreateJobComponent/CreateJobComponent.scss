@@ -47,21 +47,22 @@ body {
 .dotted-line-down {
     border-left: 4px dotted #dedcdc;
     height: 80wh; /* Adjust the height as needed */
-    margin: 0 20px; /* Optional, for spacing around the line */
+    margin: 10px; /* Optional, for spacing around the line */
 }
 
 .create-job-input-container {
     display: flex;
     margin-top: 1%;
-    width: 100vw;
+    width: 100%;
     font-size: var(--general-text-size);
     color:var(--general-text-color);
 
     .create-job-input-left {
-        display: grid;
+        display: flex;
         flex-direction: column;
-        width: 50vw;
-        margin-right: 1%;;
+        width: auto;
+        margin-right:125px;
+        margin-left:125px;
 
         .job-name-container {
             display: flex;
@@ -69,14 +70,12 @@ body {
 
             .job-name-label {
                 text-align: left;
-                margin-left:20vw;
-                margin-bottom: 1%;
+                margin-bottom: 10px;
             }
     
             .job-name-textbox {
-                margin-left:20vw;
-                margin-bottom: 1%;
-                width: 25vw;
+                margin-bottom: 20px;
+                width: 350px;
                 height: 42px;
                 box-sizing: border-box;   
                 border-radius: 12px;
@@ -91,21 +90,22 @@ body {
             display: flex;
             flex-direction: column;
             justify-self: left;
-            margin-left: 20vw;
-            width: 25vw;
+            align-self: start;
+            height: auto;
+            width: 350px;
             background-color: #F6F7F9;
 
             border-radius: 12px;
 
 
             .target-repo-label {
-                margin:3%;
+                margin:15px;
                 text-align: left;
             }
 
             .target-repo-textbox {
                 margin-bottom: 1%;
-                width: 20vw;
+                width: 250px;
                 height: 42px;
                 box-sizing: border-box;   
                 border-radius: 12px;
@@ -126,7 +126,7 @@ body {
             .add-repo-link-button {
                 color: var(--placeholder-color);
                 background-color: #ffffff;
-                width: 8vw;
+                width: 125px;
                 margin-left: 60%;
                 margin-top: 5%;
                 margin-bottom: 5%;
@@ -140,28 +140,25 @@ body {
     }
     
     .create-job-input-right {
-        display: grid;
+        display: flex;
         flex-direction: column;
-        flex-grow: 1;
-        width: 50vw;
-        margin-right: 1%;
+        width: 600px;
 
         .settings-container{
-            margin-left: 1vw;
+            margin-left: 20px;
             display: flex;
             flex-direction: column;
+
 
             .settings-header-label {
                 font-size: 20px;
                 text-align: left;
-                margin-right: 20vw;
                 margin-bottom: 1%;
             }
     
             .settings-input-container {
                 text-align: left;
                 align-items: center;
-                margin-right: 20vw;
                 margin-bottom: 1%;
 
                 .since-date-input, .until-date-input, .originality-input, .timezone-input{
@@ -177,9 +174,18 @@ body {
                     width: 15.3vw;
                     height: 45px;
                     border-radius: 12px;
-                    color: var(--placeholder-color);
                     border: 2px solid var(--input-border-color);
                     text-align: center;
+                }
+
+
+
+                .left-checklist-container {
+                    width: 250px;
+                }
+
+                .right-checklist-container {
+                    width: 250px;
                 }
 
             }
