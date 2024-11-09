@@ -15,7 +15,7 @@ body {
 }
 
 .create-job-header {
-    margin: 5%;
+    margin: 0, 5%, 5%, 5%;
     text-align: center;
     justify-content: center;
     align-items: center;
@@ -51,6 +51,8 @@ body {
 }
 
 .create-job-input-container {
+    justify-content: center;
+    position: relative;
     display: flex;
     margin-top: 1%;
     width: 100%;
