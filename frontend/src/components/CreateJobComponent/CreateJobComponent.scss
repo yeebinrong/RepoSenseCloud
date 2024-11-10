@@ -5,13 +5,28 @@ body {
     --general-text-size: 14px;
     --placeholder-color: #ADA7A7; 
     --input-border-color: #D5D8E2;
+    --input-background-color: #F6F7F9;
+    ;
 }
 .create-job-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100vh;
+    height: 100%;
     width: 100%;
+
+}
+.navigation-buttons-container {
+    position: absolute;
+    bottom: 20px; // Distance from the bottom
+    right: 50px; // Distance from the right
+    display: flex;
+    gap: 8px; // Adjust spacing between buttons if needed
+}
+
+.navigation-button {
+    position: relative; // Remove absolute positioning if it was applied here
+    margin: 0 8px; // Adjust spacing between buttons if needed
 }
 
 .create-job-header {
@@ -20,185 +35,253 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
-}
 
-.create-job-header h1 {
-    margin-bottom: 26px;
-}
-
-.create-job-page-status {
-    display: flex;
-    /* Use flexbox to arrange items side by side */
-    align-items: center;
-    /* Center items vertically */
-    justify-content: center;
-    /* Center items horizontally */
-}
-
-.dotted-line {
-    border-top: 4px dotted #dedcdc;
-    /* Creates a horizontal dotted line */
-    width: 10%;
-    /* Adjust the width as needed */
-    margin: 30px;
-    /* Adjust the margin as needed */
-}
-
-.dotted-line-down {
-    border-left: 4px dotted #dedcdc;
-    height: 80wh; /* Adjust the height as needed */
-    margin: 10px; /* Optional, for spacing around the line */
-}
-
-.create-job-input-container {
-    justify-content: center;
-    position: relative;
-    display: flex;
-    margin-top: 1%;
-    width: 100%;
-    font-size: var(--general-text-size);
-    color:var(--general-text-color);
-
-    .create-job-input-left {
-        display: flex;
-        flex-direction: column;
-        width: auto;
-        margin-right:125px;
-        margin-left:125px;
-
-        .job-name-container {
-            display: flex;
-            flex-direction: column;
-
-            .job-name-label {
-                text-align: left;
-                margin-bottom: 10px;
-            }
-    
-            .job-name-textbox {
-                margin-bottom: 20px;
-                width: 350px;
-                height: 42px;
-                box-sizing: border-box;   
-                border-radius: 12px;
-                padding: 10px;
-                border: 2px solid var(--input-border-color);
-                color: var(--label-color); 
-            }
-        }
-
-        
-        .target-repo-container {
-            display: flex;
-            flex-direction: column;
-            justify-self: left;
-            align-self: start;
-            height: auto;
-            width: 350px;
-            background-color: #F6F7F9;
-
-            border-radius: 12px;
-
-
-            .target-repo-label {
-                margin:15px;
-                text-align: left;
-            }
-
-            .target-repo-textbox {
-                margin-bottom: 1%;
-                width: 250px;
-                height: 42px;
-                box-sizing: border-box;   
-                border-radius: 12px;
-                padding: 10px;
-                border: 2px solid var(--input-border-color);
-                color: var(--label-color); 
-            }
-
-            .delete-repo-link-button {
-                border-color: transparent;
-                background-color: transparent;
-                color: #000000;
-                margin-left: 2%;
-                font-weight: bold;
-                cursor: pointer;
-            }
-
-            .add-repo-link-button {
-                color: var(--placeholder-color);
-                background-color: #ffffff;
-                width: 125px;
-                margin-left: 60%;
-                margin-top: 5%;
-                margin-bottom: 5%;
-                padding-top: 2%;
-                padding-bottom: 2%;
-                border: 2px solid var(--input-border-color);
-                border-radius: 6px;
-                cursor: pointer;
-            }
-        }
+    .create-job-header h1 {
+        margin-bottom: 26px;
     }
-    
-    .create-job-input-right {
-        display: flex;
-        flex-direction: column;
-        width: 600px;
 
-        .settings-container{
+    .create-job-page-status {
+        display: flex;
+        /* Use flexbox to arrange items side by side */
+        align-items: center;
+        /* Center items vertically */
+        justify-content: center;
+        /* Center items horizontally */
+    }
+
+    .dotted-line {
+        border-top: 4px dotted #dedcdc;
+        /* Creates a horizontal dotted line */
+        width: 10%;
+        /* Adjust the width as needed */
+        margin: 30px;
+        /* Adjust the margin as needed */
+    }
+
+    .page-icon2 {
+        filter: grayscale(100%);
+    }
+}
+
+.create-job-page-1 {
+    .dotted-line-down {
+        border-left: 4px dotted #dedcdc;
+        height: 80wh;
+        /* Adjust the height as needed */
+        margin: 10px;
+        /* Optional, for spacing around the line */
+    }
+
+    .create-job-input-container {
+        justify-content: center;
+        position: relative;
+        display: flex;
+        margin-top: 1%;
+        width: 100%;
+        font-size: var(--general-text-size);
+        color: var(--general-text-color);
+
+        .create-job-input-left {
+            display: flex;
+            flex-direction: column;
+            width: auto;
+            margin-right: 80px;
             margin-left: 20px;
-            display: flex;
-            flex-direction: column;
 
+            .job-name-container {
+                display: flex;
+                flex-direction: column;
 
-            .settings-header-label {
-                font-size: 20px;
-                text-align: left;
-                margin-bottom: 1%;
-            }
-    
-            .settings-input-container {
-                text-align: left;
-                align-items: center;
-                margin-bottom: 1%;
+                .job-name-label {
+                    text-align: left;
+                    margin-bottom: 10px;
+                }
 
-                .since-date-input, .until-date-input, .originality-input, .timezone-input{
-                    width: 15vw;
+                .job-name-textbox {
+                    margin-bottom: 20px;
+                    width: 400px;
                     height: 42px;
+                    box-sizing: border-box;
                     border-radius: 12px;
+                    padding: 10px;
                     border: 2px solid var(--input-border-color);
+                    color: var(--label-color);
+                }
+            }
+
+
+            .target-repo-container {
+                display: flex;
+                flex-direction: column;
+                justify-self: left;
+                align-self: start;
+                height: auto;
+                width: 400px;
+                background-color: var(--input-background-color);
+                border-radius: 12px;
+
+
+                .target-repo-label {
+                    margin: 15px;
+                    text-align: left;
+                }
+
+                .target-repo-textbox {
+                    margin-bottom: 1%;
+                    margin-left: 15px;
+                    width: 340px;
+                    height: 42px;
+                    box-sizing: border-box;
+                    border-radius: 12px;
+                    padding: 10px;
+                    border: 2px solid var(--input-border-color);
+                    color: var(--label-color);
+                }
+
+                .delete-repo-link-button {
+                    border-color: transparent;
+                    background-color: transparent;
+                    color: #000000;
+                    margin-left: 2%;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+
+                .add-repo-link-button {
                     color: var(--placeholder-color);
-                    text-align: center;
-                }
-
-                .period-range-dropdown {
-                    width: 15.3vw;
-                    height: 45px;
-                    border-radius: 12px;
+                    background-color: #ffffff;
+                    width: 125px;
+                    margin-left: 60%;
+                    margin-top: 5%;
+                    margin-bottom: 5%;
+                    padding-top: 2%;
+                    padding-bottom: 2%;
                     border: 2px solid var(--input-border-color);
-                    text-align: center;
+                    border-radius: 6px;
+                    cursor: pointer;
                 }
-
-
-
-                .left-checklist-container {
-                    width: 250px;
-                }
-
-                .right-checklist-container {
-                    width: 250px;
-                }
-
             }
         }
 
+        .create-job-input-right {
+            display: flex;
+            flex-direction: column;
+            width: 500px;
 
-        
+            .settings-container {
+                margin-left: 20px;
+                display: flex;
+                flex-direction: column;
+
+
+                .settings-header-label {
+                    font-size: 20px;
+                    text-align: left;
+                    margin-bottom: 1%;
+                }
+
+                .settings-input-container {
+                    text-align: left;
+                    align-items: center;
+                    margin-bottom: 1%;
+
+                    .since-date-input,
+                    .until-date-input,
+                    .originality-input,
+                    .timezone-input {
+                        width: 239px;
+                        height: 42px;
+                        border-radius: 12px;
+                        border: 2px solid var(--input-border-color);
+                        color: var(--placeholder-color);
+                        text-align: center;
+                    }
+
+                    .period-range-dropdown {
+                        width: 243px;
+                        height: 45px;
+                        border-radius: 12px;
+                        border: 2px solid var(--input-border-color);
+                        text-align: center;
+                    }
+
+
+
+                    .left-checklist-container {
+                        width: 190px;
+                    }
+
+                    .right-checklist-container {
+                        width: 250px;
+                    }
+
+                }
+            }
+
+
+
+
+        }
 
     }
-    
 }
+
+.create-job-page-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+
+    .job-type-box-container {
+        background-color: var(--input-background-color);
+        border-radius: 12px;
+        width: 700px;
+        height: 100px;
+        margin-top: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .job-type-box {
+        background-color: #fff;
+        width: 600px;
+    }
+
+    .schedule-settings-labels {
+        height: 50px;
+        display: flex;
+        align-items: center;
+    }
+
+    .time-colon{
+        height: 50px;
+        display: flex;
+        align-items: center;
+        margin-left: 10px;
+    }
+
+    .time-dropdown{
+        margin-top: 5px;
+        width: 80px;
+        height: 42px;
+        border-color: var(--input-border-color);
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .start-date-input, .end-date-input {
+        width: 239px;
+        height: 42px;
+        border-radius: 12px;
+        border: 2px solid var(--input-border-color);
+        color: var(--placeholder-color);
+        text-align: center;
+    }
+
+
+}
+
 
 
 

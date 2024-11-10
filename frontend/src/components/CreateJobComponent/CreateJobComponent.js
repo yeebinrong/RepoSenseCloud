@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { Autocomplete, TextField, Grid2, Chip, Modal, Box, Button } from "@mui/material";
+import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
+    Button, Select, FormControl, InputLabel, MenuItem, Stack,
+    Menu,
+    Grid} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
 import "./CreateJobComponent.scss";
@@ -19,12 +22,12 @@ const useStyles = makeStyles(() => ({
         borderRadius: '10px',
     },
     modal: {
-        position: 'absolute',
+        position: 'relative',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '1500px',
-        height: '800px',
+        width: '1115px',
+        height: '788px',
         overflowY: 'auto', 
         backgroundColor: 'white',
         padding: '16px',
@@ -50,12 +53,16 @@ const CreateJobComponent = () => {
     const [shallowClone, setShallowClone] = useState(false);
     const [ignoreSizeLimit, setIgnoreSizeLimit] = useState(false);
     const [addLastMod, setAddLastMod] = useState(false);
+    const [format, setFormat] = useState([]);
+    const [frequency, setFrequency] = useState('monthly');
     const [jobType, setJobType] = useState("");
+    const [startMinute, setStartMinute] = useState('00');
+    const [startHour, setStartHour] = useState('00');
     const [chipValues, setChipValues] = useState([]);
     const [open, setOpen] = useState(false);
 
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const handleModalOpen = () => setOpen(true);
+    const handleModalClose = () => { console.log("close"); setOpen(false);}
 
     const addRepoLink = () => {
         console.log("Adding repo link");
@@ -75,8 +82,12 @@ const CreateJobComponent = () => {
     const handleChipChange = (event, value) => {
         setChipValues(value);
     };
-    
-    const page1 = () => {
+
+    const handleFrequencyChange = (event) => {
+        setFrequency(event.target.value);
+    };
+
+    const renderJobFormPage1 = () => {
         return (
             <div className="create-job-page-1">
                 <div className="create-job-container">
@@ -130,7 +141,7 @@ const CreateJobComponent = () => {
                                             <text className="originality-label">Originality Threshold:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <input type="number" className="originality-input" placeholder="0 to 1" />
+                                            <input type="text" className="originality-input" placeholder="0 to 1" />
                                         </Grid2>
                                         <Grid2 size={6} container alignItems="center">
                                             <text className="timezone-label">Time Zone:</text>
@@ -220,31 +231,148 @@ const CreateJobComponent = () => {
         );
     };
 
-    const page2 = () => {
-        return(
-            <text>Page 2</text>
+    const renderJobFormPage2 = () => {
+        return (
+            <Stack spacing={2} className="create-job-page-2">
+                <Box className="job-type-box-container">
+                    <Box className="job-type-box" >
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">Job Type</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={jobType}
+                                label="Job Type"
+                                onChange={(e) => setJobType(e.target.value)}
+                            >
+                                <MenuItem value={"manual"}>Manual</MenuItem>
+                                <MenuItem value={"scheduled"}>Scheduled</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
+                </Box>
+                <Box>
+                    {jobType === "scheduled" ? renderScheduledSettings() : null}
+                </Box>
+            </Stack>
         );
     };
 
+    const renderScheduledSettings = () => {
+        const hours = [
+            "00", "01","02", "03", "04", "05", "06", "07", "08", "09", "10", "11",
+           "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"
+        ];
+        const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
+
+        return (
+            <Grid2 container spacing={2} style={{ width: "580px" }}>
+                <Grid2 item size={4}>
+                    <text className="schedule-settings-labels">Frequency:</text>
+                </Grid2>
+                <Grid2 item size={8}>
+                    <Select labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={frequency}
+                        label="Frequency"
+                        defaultValue="monthly"
+                        onChange={handleFrequencyChange}>
+                        <MenuItem value={"weekly"}>Weekly</MenuItem>
+                        <MenuItem value={"monthly"}>Monthly</MenuItem>
+                        <MenuItem value={"quarterly"}>Quarterly</MenuItem>
+                    </Select>
+                </Grid2>
+                <Grid2 item size={4}>
+                    <text className="schedule-settings-labels" >Start Time:</text>
+                </Grid2>
+                <Grid2 item size={2}>
+                    <select
+                        value={startHour}
+                        onChange={(e) => setStartHour(e.target.value)}
+                        className="time-dropdown"
+                    >
+                        {hours.map(hour => (
+                            <option value={hour}>
+                                {hour}
+                            </option>
+                        ))}
+                    </select>
+                </Grid2>
+                <Grid2 item size={1}>
+                    <text className="time-colon">:</text>
+                </Grid2>
+                <Grid2 item size={2}>
+                    <select
+                            value={startMinute}
+                            onChange={(e) => setStartMinute(e.target.value)}
+                            className="time-dropdown"
+                        >
+                            {minutes.map(minute => (
+                                <option value={minute}>
+                                    {minute}
+                                </option>
+                            ))}
+                    </select>
+                </Grid2>
+                <Grid2 item size={4} container alignItems="center">
+                    <text className="start-date-label">Start Date:</text>
+                </Grid2>
+                <Grid2 item size={6}>
+                    <input type="date" className="start-date-input" placeholder="DD/MM/YYYY" />
+                </Grid2>
+                <Grid2 item size={4} container alignItems="center">
+                    <text className="end-date-label">End Date:</text>
+                </Grid2>
+                <Grid2 item size={6}>
+                    <input type="date" className="end-date-input" placeholder="DD/MM/YYYY" />
+                </Grid2>
+                
+            </Grid2>
+        )
+    }
+
+    const renderJobFormHeader = () => {
+        return (
+            <div className="create-job-header">
+                <h1 >Create a Job</h1>
+                <h4>Fill In Job Detail To Queue Or Run A New ReposenseCloud Job</h4>
+                <span className="create-job-page-status">
+                <img src={PageIcon} alt="Page Icon" />
+                    <div className="dotted-line" />
+                    <img src={PageIcon} alt="Page Icon" className= {currentPage === 1? "page-icon2" : "page-icon1"} />
+                </span>
+            </div>
+        )
+    }
+
+    const renderNavigationButtons = () => {
+        return (
+            <div className="navigation-buttons">
+                <Button variant="contained" color="primary" onClick={ () => currentPage === 2? setCurrentPage(1) : handleModalClose() }>
+                    Back
+                </Button>
+                <Button variant="contained" color="primary" onClick={() => currentPage === 1? setCurrentPage(2) : null}>
+                    Next
+                </Button>
+            </div>
+        )
+    }
+
     return (
         <div>
-            <Button variant="contained" color="primary" onClick={handleOpen} style={{ justifySelf: "center" }}>
+            <Button variant="contained" color="primary" onClick={handleModalOpen} style={{ justifySelf: "center" }}>
                 Create Job
             </Button>
-            <Modal open={open} onClose={handleClose} aria-labelledby="modal-title" aria-describedby="modal-description">
+            <Modal open={open} onClose={handleModalClose} aria-labelledby="modal-title" aria-describedby="modal-description">
                 <Box className= {classes.modal}>
-                    <div className="create-job-header">
-                        <h1 >Create a Job</h1>
-                        <h4>Fill In Job Detail To Queue Or Run A New ReposenseCloud Job</h4>
-                        <span className="create-job-page-status">
-                            <img src={PageIcon} alt="Page Icon" className="page-icon1" />
-                            <div className="dotted-line" />
-                            <img src={PageIcon} alt="Page Icon" className="page-icon2" />
-                        </span>
-                    </div>
-                    {currentPage === 1 ? page1() : page2()}
-                </Box>
+                            {renderJobFormHeader()}
+                            {currentPage === 1 ? renderJobFormPage1() : renderJobFormPage2()}
+                            <div className = "navigation-buttons-container">
+                                {renderNavigationButtons()}
+                            </div>
+                </Box>                
             </Modal>
+
         </div>
     );
 }
