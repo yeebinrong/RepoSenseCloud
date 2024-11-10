@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
-    Button, Select, FormControl, InputLabel, MenuItem, Stack,
-    Menu,
-    Grid} from "@mui/material";
+    Button, Select, FormControl, InputLabel, MenuItem, Stack, } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
 import "./CreateJobComponent.scss";
+import { showSuccessBar } from "../../constants/snack-bar";
 
 const useStyles = makeStyles(() => ({
     autocomplete: {
@@ -41,8 +40,12 @@ const CreateJobComponent = () => {
 
     const classes = useStyles();
     const [currentPage, setCurrentPage] = useState(1);
+    const [open, setOpen] = useState(false);
+    const handleModalOpen = () => setOpen(true);
+    const handleModalClose = () => { console.log("close"); setOpen(false);}
+
+    //Page 1 States
     const [repoLink, setRepoLink] = useState([{ id: Date.now(), value: "" }]);
-    const [jobName, setJobName] = useState("");
     const [sinceDate, setSinceDate] = useState("");
     const [untilDate, setUntilDate] = useState("");
     const [period, setPeriod] = useState("1-week");
@@ -53,17 +56,19 @@ const CreateJobComponent = () => {
     const [shallowClone, setShallowClone] = useState(false);
     const [ignoreSizeLimit, setIgnoreSizeLimit] = useState(false);
     const [addLastMod, setAddLastMod] = useState(false);
+    const [chipValues, setChipValues] = useState([]);
+
+    //Pagw 2 States
+    const [jobName, setJobName] = useState("");
     const [format, setFormat] = useState([]);
     const [frequency, setFrequency] = useState('monthly');
     const [jobType, setJobType] = useState("");
     const [startMinute, setStartMinute] = useState('00');
     const [startHour, setStartHour] = useState('00');
-    const [chipValues, setChipValues] = useState([]);
-    const [open, setOpen] = useState(false);
 
-    const handleModalOpen = () => setOpen(true);
-    const handleModalClose = () => { console.log("close"); setOpen(false);}
 
+
+    //State Change Functions
     const addRepoLink = () => {
         console.log("Adding repo link");
         setRepoLink([...repoLink, { id: Date.now(), value: "" }]);
@@ -86,6 +91,21 @@ const CreateJobComponent = () => {
     const handleFrequencyChange = (event) => {
         setFrequency(event.target.value);
     };
+
+    //Rendering Functions
+    const renderJobFormHeader = () => {
+        return (
+            <div className="create-job-header">
+                <h1 >Create a Job</h1>
+                <h4>Fill In Job Detail To Queue Or Run A New ReposenseCloud Job</h4>
+                <span className="create-job-page-status">
+                <img src={PageIcon} alt="Page Icon" />
+                    <div className="dotted-line" />
+                    <img src={PageIcon} alt="Page Icon" className= {currentPage === 1? "page-icon2" : "page-icon1"} />
+                </span>
+            </div>
+        )
+    }
 
     const renderJobFormPage1 = () => {
         return (
@@ -118,19 +138,19 @@ const CreateJobComponent = () => {
                                             <text className="since-label">Since:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <input type="date" className="since-date-input" placeholder="DD/MM/YYYY" />
+                                            <input type="date" className="since-date-input" onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
                                         </Grid2>
                                         <Grid2 size={6} container alignItems="center">
                                             <text className="until-label">Until:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <input type="date" className="until-date-input" placeholder="DD/MM/YYYY" />
+                                            <input type="date" className="until-date-input" onChange={(e) => setUntilDate(e.target.value)}placeholder="DD/MM/YYYY" />
                                         </Grid2>
                                         <Grid2 size={6} container alignItems="center">
                                             <text className="period-label">Period:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <select className="period-range-dropdown">
+                                            <select className="period-range-dropdown" onChange={(e) => setPeriod(e.target.value)}>
                                                 <option value="1-week">1 Week</option>
                                                 <option value="4-week">4 Week</option>
                                                 <option value="3-month">3 Months</option>
@@ -141,13 +161,13 @@ const CreateJobComponent = () => {
                                             <text className="originality-label">Originality Threshold:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <input type="text" className="originality-input" placeholder="0 to 1" />
+                                            <input type="text" className="originality-input" onChange={(e) => setOriginalityThreshold(e.target.value)} placeholder="0 to 1" />
                                         </Grid2>
                                         <Grid2 size={6} container alignItems="center">
                                             <text className="timezone-label">Time Zone:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <input type="text" className="timezone-input" placeholder="e.g UTC+8" />
+                                            <input type="text" className="timezone-input" onChange={(e) => setTimeZone(e.target.value)} placeholder="e.g UTC+8" />
                                         </Grid2>
                                         <Grid2 size={6} marginTop={2} className="left-checklist-container">
                                             <Grid2 container spacing={3} justifyContent="space-between">
@@ -155,19 +175,19 @@ const CreateJobComponent = () => {
                                                     <text className="authorship-label">Analyse authorship:</text>
                                                 </Grid2>
                                                 <Grid2 size={6}>
-                                                    <input type="checkbox" className="authorship-checkbox" />
+                                                    <input type="checkbox" className="authorship-checkbox" onChange={(e) => setAuthorship(e.target.value)} />
                                                 </Grid2>
                                                 <Grid2 size={6}>
                                                     <text className="prev-author-label">Find previous authors:</text>
                                                 </Grid2>
                                                 <Grid2 size={6}>
-                                                    <input type="checkbox" className="prev-author-checkbox" />
+                                                    <input type="checkbox" className="prev-author-checkbox" onChange={(e) => setPrevAuthors(e.target.value)} />
                                                 </Grid2>
                                                 <Grid2 size={6}>
                                                     <text className="shallow-clone-label">Shallow cloning:</text>
                                                 </Grid2>
                                                 <Grid2 size={6} >
-                                                    <input type="checkbox" className="shallow-clone-checkbox" />
+                                                    <input type="checkbox" className="shallow-clone-checkbox" onChange={(e) => setShallowClone(e.target.value)}/>
                                                 </Grid2>
                                             </Grid2>
                                         </Grid2>
@@ -177,13 +197,13 @@ const CreateJobComponent = () => {
                                                     <text className="ignore-size-limit-label">Ignore file size limit:</text>
                                                 </Grid2>
                                                 <Grid2 size={6} >
-                                                    <input type="checkbox" className="ignore-size-limit-checkbox" />
+                                                    <input type="checkbox" className="ignore-size-limit-checkbox" onChange={(e) => setIgnoreSizeLimit(e.target.value)} />
                                                 </Grid2>
                                                 <Grid2 size={6}>
                                                     <text className="Add-last-mod-label">Add last modified date:</text>
                                                 </Grid2>
                                                 <Grid2 size={6} >
-                                                    <input type="checkbox" className="add-last-mod-checkbox" />
+                                                    <input type="checkbox" className="add-last-mod-checkbox" onChange={(e) => setAddLastMod(e.target.value)} />
                                                 </Grid2>
 
                                             </Grid2>
@@ -331,33 +351,61 @@ const CreateJobComponent = () => {
         )
     }
 
-    const renderJobFormHeader = () => {
-        return (
-            <div className="create-job-header">
-                <h1 >Create a Job</h1>
-                <h4>Fill In Job Detail To Queue Or Run A New ReposenseCloud Job</h4>
-                <span className="create-job-page-status">
-                <img src={PageIcon} alt="Page Icon" />
-                    <div className="dotted-line" />
-                    <img src={PageIcon} alt="Page Icon" className= {currentPage === 1? "page-icon2" : "page-icon1"} />
-                </span>
-            </div>
-        )
-    }
-
     const renderNavigationButtons = () => {
+
         return (
             <div className="navigation-buttons">
-                <Button variant="contained" color="primary" onClick={ () => currentPage === 2? setCurrentPage(1) : handleModalClose() }>
-                    Back
+                <Button variant="contained" sx={{backgroundColor:'#FFFFFF', color:"#ADA7A7", width:"125px", marginRight: "50px"}} onClick={ () => currentPage === 2? setCurrentPage(1) : handleModalClose() }>
+                    {currentPage === 1 ? "Cancel" : "Back"}
                 </Button>
-                <Button variant="contained" color="primary" onClick={() => currentPage === 1? setCurrentPage(2) : null}>
-                    Next
+                <Button variant="contained" sx={{backgroundColor:'#F7A81B', width:"125px"}} onClick={() => currentPage === 1? setCurrentPage(2) : submitJobForm()}>
+                    {currentPage === 2 ? "Create" : "Next"}
                 </Button>
             </div>
         )
     }
 
+    //Submit Job Form
+    const submitJobForm = async () => {
+        handleModalClose();
+        showSuccessBar("Job Created Successfully");
+        console.log("Submitting job form for", localStorage.getItem("JWT"));
+        const formData = {
+            jobName,
+            repoLink,
+            sinceDate,
+            untilDate,
+            period,
+            originalityThreshold,
+            timeZone,
+            authorship,
+            prevAuthors,
+            shallowClone,
+            ignoreSizeLimit,
+            addLastMod,
+            chipValues,
+            jobType,
+            frequency,
+            startHour,
+            startMinute,
+        };
+        try {
+            const response = await fetch ('https://this-is-a-fake-url.com', {
+                method: "POST",
+                headers:{
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem("JWT")}`,
+                },
+                body: JSON.stringify(formData),
+            });
+        } catch (error) {
+            console.error("Error submitting job form:", error);
+        }
+
+    }
+
+
+    //Main Render
     return (
         <div>
             <Button variant="contained" color="primary" onClick={handleModalOpen} style={{ justifySelf: "center" }}>
