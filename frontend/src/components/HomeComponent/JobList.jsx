@@ -56,37 +56,37 @@ const jobData = [
 function JobList() {
     return (
         <table className={styles.jobListContainer}>
-            <tr className={styles.jobListHeader}>
-                <th >
-                    <input type="checkbox" className={styles.checkBox}/>
-                    <span className={styles.headerText}>Job Name</span>
-                    <img src="vector.svg" alt="" className={styles.sortIcon}/>
-                </th>
-                <th>
-                    <span className={styles.headerText}>Status</span>
-                    <img src="vector.svg" alt="" className={styles.sortIcon}/>
-                </th>
-                <th>
-                    <span className={styles.headerText}>Last Updated</span>
-                    <img src="vector.svg" alt="" className={styles.sortIcon}/>
-                </th>
-                <th>
-                    <span className={styles.headerText}>Next Scheduled Job</span>
-                    <img src="vector.svg" alt="" className={styles.sortIcon}/>
-                </th>
-                <th>
-                    <span className={styles.actionText}>View</span>
-                    <span className={styles.actionText}>Edit</span>
-                    <span className={styles.actionText}>Run</span>
-                </th>
-            </tr>
-
-                <hr/>
-
-            {jobData.map((job, index) => (
-                <JobItem key={index} {...job}/>
-            ))}
-
+            <thead>
+                <tr className={styles.jobListHeader}>
+                    <th>
+                        <input type="checkbox" className={styles.checkBox}/>
+                        <span className={styles.headerText}>Job Name</span>
+                        <img src="vector.svg" alt="" className={styles.sortIcon}/>
+                    </th>
+                    <th>
+                        <span className={styles.headerText}>Status</span>
+                        <img src="vector.svg" alt="" className={styles.sortIcon}/>
+                    </th>
+                    <th>
+                        <span className={styles.headerText}>Last Updated</span>
+                        <img src="vector.svg" alt="" className={styles.sortIcon}/>
+                    </th>
+                    <th>
+                        <span className={styles.headerText}>Next Scheduled Job</span>
+                        <img src="vector.svg" alt="" className={styles.sortIcon}/>
+                    </th>
+                    <th>
+                        <span className={styles.actionText}>View</span>
+                        <span className={styles.actionText}>Edit</span>
+                        <span className={styles.actionText}>Run</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {jobData.map((job, index) => (
+                    <JobItem key={index} {...job}/>
+                ))}
+            </tbody>
         </table>
     );
 }
