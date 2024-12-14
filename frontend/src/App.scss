@@ -1,5 +1,5 @@
 body {
-  background-color: #f7f7fc;
+  background-color: white;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -14,6 +14,7 @@ body {
 .app-bar {
   background-color: white !important;
   border-bottom: 1px solid lightgray;
+  padding: 0 55px;
 }
 
 .app-bar-logo {
