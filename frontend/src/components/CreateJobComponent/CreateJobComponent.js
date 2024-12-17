@@ -41,6 +41,7 @@ const useStyles = makeStyles(() => ({
 const CreateJobComponent = () => {
 
     const classes = useStyles();
+    const timezoneList = Intl.supportedValuesOf("timeZone");
 
     //Modal States
     const [currentPage, setCurrentPage] = useState(1);
@@ -203,8 +204,16 @@ const CreateJobComponent = () => {
                                             <text className="timezone-label">Time Zone:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <input type="text" className="timezone-input" onChange={(e) => setTimeZone(e.target.value)} placeholder="e.g UTC+8" />
+                                            <select className="timezone-dropdown" onChange={(e) => setTimeZone(e.target.value)}>
+                                                <option value="">Select a timezone</option>
+                                                {timezoneList.map((timezone) => (
+                                                    <option key={timezone} value={timezone}>{timezone}</option>
+                                                ))}
+                                            </select>
                                         </Grid2>
+                                        {/* <Grid2 size={6}>
+                                            <input type="text" className="timezone-input" onChange={(e) => setTimeZone(e.target.value)} placeholder="e.g UTC+8" />
+                                        </Grid2> */}
                                         <Grid2 size={6} marginTop={2} className="left-checklist-container">
                                             <Grid2 container spacing={3} justifyContent="space-between">
                                                 <Grid2 size={6}>
