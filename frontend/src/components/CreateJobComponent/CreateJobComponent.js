@@ -41,6 +41,8 @@ const useStyles = makeStyles(() => ({
 const CreateJobComponent = () => {
 
     const classes = useStyles();
+
+    //Modal States
     const [currentPage, setCurrentPage] = useState(1);
     const [open, setOpen] = useState(false);
     const handleModalOpen = () => setOpen(true);
@@ -63,8 +65,8 @@ const CreateJobComponent = () => {
     const [formatChipValues, setFormatChipValues] = useState([]);
 
     //Page 2 States
-    const [frequency, setFrequency] = useState('');
     const [jobType, setJobType] = useState("manual");
+    const [frequency, setFrequency] = useState('');
     const [startMinute, setStartMinute] = useState('');
     const [startHour, setStartHour] = useState('');
 
@@ -107,6 +109,7 @@ const CreateJobComponent = () => {
     }, [periodMode]);
 
     //State Change Functions
+    ///Repo Link Input
     const addRepoLink = () => {
         console.log("Adding repo link");
         setRepoLink([...repoLink, { id: Date.now(), value: "" }]);
@@ -122,15 +125,18 @@ const CreateJobComponent = () => {
         setRepoLink(repoLink.map(link => link.id === id ? { ...link, value } : link)); // Update the value of the repo link with the given id
     }
 
+    ///Format Chip Input
     const handleChipChange = (event, value) => {
         setFormatChipValues(value);
     };
 
+    ///Job Frequency onChange
     const handleFrequencyChange = (event) => {
         setFrequency(event.target.value);
     };
 
-    //Rendering Functions
+    //Sub-Component Rendering Functions
+    /// Header Render for both pages
     const renderJobFormHeader = () => {
         return (
             <div className="create-job-header">
@@ -145,110 +151,7 @@ const CreateJobComponent = () => {
         )
     }
 
-    const renderPeriodForSinceUntil = () => {
-        return (
-            <Grid2 container spacing={1}>
-                <Grid2 size={6} container alignItems="center">
-                    <text className="since-label">Since:</text>
-                </Grid2>
-                <Grid2 size={6}>
-                    <input type="date" className="since-date-input" onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
-                </Grid2>
-                <Grid2 size={6} container alignItems="center">
-                    <text className="until-label">Until:</text>
-                </Grid2>
-                <Grid2 size={6}>
-                    <input type="date" className="until-date-input" onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
-                </Grid2>
-            </Grid2>
-        )
-    }
-
-    const renderPeriodForSincePeriod = () => {
-        return (
-            <Grid2 container spacing={1}>
-                <Grid2 size={6} container alignItems="center">
-                    <text className="since-label">Since:</text>
-                </Grid2>
-                <Grid2 size={6}>
-                    <input type="date" className="since-date-input" onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
-                </Grid2>
-                <Grid2 size={6} container alignItems="center">
-                    <text className="period-label">Period:</text>
-                </Grid2>
-                <Grid2 size={6}>
-                    <select className="period-range-dropdown" onChange={(e) => setPeriod(e.target.value)}>
-                        <option value="1-week">1 Week</option>
-                        <option value="4-week">4 Week</option>
-                        <option value="3-month">3 Months</option>
-                        <option value="6-month">6 Months</option>
-                    </select>
-                </Grid2>
-            </Grid2>
-        )
-    }
-
-    const renderPeriodForUntilPeriod = () => {
-        return (
-            <Grid2 container spacing={1}>
-                <Grid2 size={6} container alignItems="center">
-                    <text className="until-label">Until:</text>
-                </Grid2>
-                <Grid2 size={6}>
-                    <input type="date" className="until-date-input" onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
-                </Grid2>
-                <Grid2 size={6} container alignItems="center">
-                    <text className="period-label">Period:</text>
-                </Grid2>
-                <Grid2 size={6}>
-                    <select className="period-range-dropdown" onChange={(e) => setPeriod(e.target.value)}>
-                        <option value="1-week">1 Week</option>
-                        <option value="4-week">4 Week</option>
-                        <option value="3-month">3 Months</option>
-                        <option value="6-month">6 Months</option>
-                    </select>
-                </Grid2>
-            </Grid2>
-        )
-    }
-
-    const renderPeriodForOnlyPeriod = () => {
-        return (
-            <Grid2 container spacing={1}>
-                <Grid2 size={6} container alignItems="center">
-                    <text className="period-label">Period:</text>
-                </Grid2>
-                <Grid2 size={6}>
-                        <select className="period-range-dropdown" onChange={(e) => setPeriod(e.target.value)}>
-                            <option value="1-week">1 Week</option>
-                            <option value="4-week">4 Week</option>
-                            <option value="3-month">3 Months</option>
-                            <option value="6-month">6 Months</option>
-                        </select>
-                </Grid2>
-                <Grid2 size={12} container alignItems="center">
-                    <text className="period-settings-label">{period} from Date Of Job Execution</text>
-                </Grid2>
-            </Grid2>
-        )
-    }
-
-    const periodSwitchCase = (periodMode) => {
-        switch (periodMode) {
-            case "since-until":
-                return renderPeriodForSinceUntil();
-            case "since-period":
-                return renderPeriodForSincePeriod();
-            case "until-period":
-                return renderPeriodForUntilPeriod();
-            case "only-period":
-                return renderPeriodForOnlyPeriod();
-            default:
-                return renderPeriodForSinceUntil();
-        }
-    }
-
-
+    /// Page 1 Render
     const renderJobFormPage1 = () => {
         return (
             <div className="create-job-page-1">
@@ -384,6 +287,112 @@ const CreateJobComponent = () => {
         );
     };
 
+    /// Page 1 - Period Modes Render
+    const renderPeriodForSinceUntil = () => {
+        return (
+            <Grid2 container spacing={1}>
+                <Grid2 size={6} container alignItems="center">
+                    <text className="since-label">Since:</text>
+                </Grid2>
+                <Grid2 size={6}>
+                    <input type="date" className="since-date-input" onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                </Grid2>
+                <Grid2 size={6} container alignItems="center">
+                    <text className="until-label">Until:</text>
+                </Grid2>
+                <Grid2 size={6}>
+                    <input type="date" className="until-date-input" onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                </Grid2>
+            </Grid2>
+        )
+    }
+
+    const renderPeriodForSincePeriod = () => {
+        return (
+            <Grid2 container spacing={1}>
+                <Grid2 size={6} container alignItems="center">
+                    <text className="since-label">Since:</text>
+                </Grid2>
+                <Grid2 size={6}>
+                    <input type="date" className="since-date-input" onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                </Grid2>
+                <Grid2 size={6} container alignItems="center">
+                    <text className="period-label">Period:</text>
+                </Grid2>
+                <Grid2 size={6}>
+                    <select className="period-range-dropdown" onChange={(e) => setPeriod(e.target.value)}>
+                        <option value="1-week">1 Week</option>
+                        <option value="4-week">4 Week</option>
+                        <option value="3-month">3 Months</option>
+                        <option value="6-month">6 Months</option>
+                    </select>
+                </Grid2>
+            </Grid2>
+        )
+    }
+
+    const renderPeriodForUntilPeriod = () => {
+        return (
+            <Grid2 container spacing={1}>
+                <Grid2 size={6} container alignItems="center">
+                    <text className="until-label">Until:</text>
+                </Grid2>
+                <Grid2 size={6}>
+                    <input type="date" className="until-date-input" onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                </Grid2>
+                <Grid2 size={6} container alignItems="center">
+                    <text className="period-label">Period:</text>
+                </Grid2>
+                <Grid2 size={6}>
+                    <select className="period-range-dropdown" onChange={(e) => setPeriod(e.target.value)}>
+                        <option value="1-week">1 Week</option>
+                        <option value="4-week">4 Week</option>
+                        <option value="3-month">3 Months</option>
+                        <option value="6-month">6 Months</option>
+                    </select>
+                </Grid2>
+            </Grid2>
+        )
+    }
+
+    const renderPeriodForOnlyPeriod = () => {
+        return (
+            <Grid2 container spacing={1}>
+                <Grid2 size={6} container alignItems="center">
+                    <text className="period-label">Period:</text>
+                </Grid2>
+                <Grid2 size={6}>
+                        <select className="period-range-dropdown" onChange={(e) => setPeriod(e.target.value)}>
+                            <option value="1-week">1 Week</option>
+                            <option value="4-week">4 Week</option>
+                            <option value="3-month">3 Months</option>
+                            <option value="6-month">6 Months</option>
+                        </select>
+                </Grid2>
+                <Grid2 size={12} container alignItems="center">
+                    <text className="period-settings-label">{period} from Date Of Job Execution</text>
+                </Grid2>
+            </Grid2>
+        )
+    }
+
+    const periodSwitchCase = (periodMode) => {
+        switch (periodMode) {
+            case "since-until":
+                return renderPeriodForSinceUntil();
+            case "since-period":
+                return renderPeriodForSincePeriod();
+            case "until-period":
+                return renderPeriodForUntilPeriod();
+            case "only-period":
+                return renderPeriodForOnlyPeriod();
+            default:
+                return renderPeriodForSinceUntil();
+        }
+    }
+
+
+    /// Page 2 Render
     const renderJobFormPage2 = () => {
         return (
             <Stack spacing={2} className="create-job-page-2">
@@ -411,6 +420,7 @@ const CreateJobComponent = () => {
         );
     };
 
+    /// Page 2 - Scheduled Settings Render
     const renderScheduledSettings = () => {
         const hours = ["--", ...Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'))];
         const minutes = ["--", ...Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'))];
@@ -481,6 +491,7 @@ const CreateJobComponent = () => {
         )
     }
 
+    /// Navigation Button For Both Pages
     const renderNavigationButtons = () => {
 
         return (
