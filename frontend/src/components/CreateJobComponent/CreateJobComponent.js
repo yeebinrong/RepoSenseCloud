@@ -47,10 +47,12 @@ const CreateJobComponent = () => {
     const handleModalClose = () => { console.log("close"); setOpen(false);}
 
     //Page 1 States
+    const [jobName, setJobName] = useState("");
     const [repoLink, setRepoLink] = useState([{ id: Date.now(), value: "" }]);
+    const [periodMode, setPeriodMode] = useState("since-until");
     const [sinceDate, setSinceDate] = useState("");
     const [untilDate, setUntilDate] = useState("");
-    const [period, setPeriod] = useState("1-week");
+    const [period, setPeriod] = useState("");
     const [originalityThreshold, setOriginalityThreshold] = useState("");
     const [timeZone, setTimeZone] = useState("");
     const [authorship, setAuthorship] = useState(false);
@@ -60,22 +62,23 @@ const CreateJobComponent = () => {
     const [addLastMod, setAddLastMod] = useState(false);
     const [formatChipValues, setFormatChipValues] = useState([]);
 
-    //Pagw 2 States
-    const [jobName, setJobName] = useState("");
-    const [frequency, setFrequency] = useState('monthly');
-    const [jobType, setJobType] = useState("");
-    const [startMinute, setStartMinute] = useState('00');
-    const [startHour, setStartHour] = useState('00');
-    const [periodMode, setPeriodMode] = useState("since-until");
+    //Page 2 States
+    const [frequency, setFrequency] = useState('');
+    const [jobType, setJobType] = useState("manual");
+    const [startMinute, setStartMinute] = useState('');
+    const [startHour, setStartHour] = useState('');
 
     
     // Reset state when modal closes
     useEffect(() => {
         if (!open) {
+            // page 1 states
+            setJobName("");
             setRepoLink([{ id: Date.now(), value: "" }]);
+            setPeriodMode("since-until");
             setSinceDate("");
             setUntilDate("");
-            setPeriod("1-week");
+            setPeriod("");
             setOriginalityThreshold("");
             setTimeZone("");
             setAuthorship(false);
@@ -84,8 +87,24 @@ const CreateJobComponent = () => {
             setIgnoreSizeLimit(false);
             setAddLastMod(false);
             setFormatChipValues([]);
+            // page 2 states
+            setJobType("manual");
+            setFrequency("");
+            setStartMinute("");
+            setStartHour("");
         }
     }, [open]);
+
+    //Reset period states when period mode changes
+    useEffect(() => {
+        setSinceDate("");
+        setUntilDate("");
+        if (periodMode !== "since-until" ){
+            setPeriod("1-week");
+        } else {
+            setPeriod("");
+        }
+    }, [periodMode]);
 
     //State Change Functions
     const addRepoLink = () => {
@@ -393,11 +412,8 @@ const CreateJobComponent = () => {
     };
 
     const renderScheduledSettings = () => {
-        const hours = [
-            "00", "01","02", "03", "04", "05", "06", "07", "08", "09", "10", "11",
-           "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"
-        ];
-        const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
+        const hours = ["--", ...Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'))];
+        const minutes = ["--", ...Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'))];
 
         return (
             <Grid2 container spacing={2} style={{ width: "580px" }}>
