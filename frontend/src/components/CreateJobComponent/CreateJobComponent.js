@@ -58,11 +58,10 @@ const CreateJobComponent = () => {
     const [shallowClone, setShallowClone] = useState(false);
     const [ignoreSizeLimit, setIgnoreSizeLimit] = useState(false);
     const [addLastMod, setAddLastMod] = useState(false);
-    const [chipValues, setChipValues] = useState([]);
+    const [formatChipValues, setFormatChipValues] = useState([]);
 
     //Pagw 2 States
     const [jobName, setJobName] = useState("");
-    const [format, setFormat] = useState([]);
     const [frequency, setFrequency] = useState('monthly');
     const [jobType, setJobType] = useState("");
     const [startMinute, setStartMinute] = useState('00');
@@ -84,7 +83,7 @@ const CreateJobComponent = () => {
             setShallowClone(false);
             setIgnoreSizeLimit(false);
             setAddLastMod(false);
-            setChipValues([]);
+            setFormatChipValues([]);
         }
     }, [open]);
 
@@ -105,7 +104,7 @@ const CreateJobComponent = () => {
     }
 
     const handleChipChange = (event, value) => {
-        setChipValues(value);
+        setFormatChipValues(value);
     };
 
     const handleFrequencyChange = (event) => {
@@ -239,14 +238,14 @@ const CreateJobComponent = () => {
                         <div className="create-job-input-left">
                             <div className="job-name-container">
                                 <text className="job-name-label">Job Name</text>
-                                <input type="text" className="job-name-textbox" placeholder="Enter Job Name" />
+                                <input type="text" className="job-name-textbox" placeholder="Enter Job Name" onChange={(e)=>setJobName(e.value)} />
                             </div>
                             <div className="target-repo-container">
                                 <text className="target-repo-label">Target Repository</text>
-                                {repoLink.map((link) => (
-                                    <span>
+                                {repoLink.map((link, index) => (
+                                    <span key={link.id}>
                                         <input type="text" className="target-repo-textbox" placeholder="Paste Repo URL here" value={link.value} onChange={(e) => handleRepoLinkChange(link.id, e.target.value)} />
-                                        <button className="delete-repo-link-button" onClick={() => deleteRepoLink(link.id)}>✕</button>
+                                        {index > 0 && (<button className="delete-repo-link-button" onClick={() => deleteRepoLink(link.id)}>✕</button>)}
                                     </span>
                                 ))}
                                 <button className="add-repo-link-button" onClick={addRepoLink}> + Add repository</button>
@@ -331,8 +330,8 @@ const CreateJobComponent = () => {
                                                 multiple
                                                 freeSolo
                                                 id="tags-filled"
-                                                options={[]}
-                                                value={chipValues}
+                                                options={["js", "java", "python", "c", "cpp", "html", "css"]}
+                                                value={formatChipValues}
                                                 onChange={handleChipChange}
                                                 renderTags={(value, getTagProps) =>
                                                     value.map((option, index) => (
@@ -349,7 +348,7 @@ const CreateJobComponent = () => {
                                                         {...params}
                                                         variant="filled"
                                                         label="Enter File Format(s) To Scan"
-                                                        placeholder="e.g. Java, Python"
+                                                        placeholder="e.g. js, py"
                                                         className={classes.textField}
                                                     />
                                                 )}
@@ -498,7 +497,7 @@ const CreateJobComponent = () => {
             shallowClone,
             ignoreSizeLimit,
             addLastMod,
-            chipValues,
+            formatChipValues,
             jobType,
             frequency,
             startHour,
