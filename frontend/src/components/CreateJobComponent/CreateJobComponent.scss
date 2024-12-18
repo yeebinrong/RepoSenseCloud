@@ -193,6 +193,18 @@ body {
                         
                     }
 
+                    .period-modifier-dropdown {
+                        width: 243px;
+                        height: 45px;
+                        border-radius: 12px;
+                        border: 2px solid var(--input-border-color);
+                        text-align: left;
+                        font-weight: bold;
+
+                    }
+
+
+
                     .period-mode-dropdown,
                     .timezone-dropdown,
                     .period-range-dropdown {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import moment from "moment";
 import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
     Button, Select, FormControl, InputLabel, MenuItem, Stack, } from "@mui/material";
 import { makeStyles } from "@mui/styles";
@@ -41,7 +42,18 @@ const useStyles = makeStyles(() => ({
 const CreateJobComponent = () => {
 
     const classes = useStyles();
-    const timezoneList = Intl.supportedValuesOf("timeZone");
+    const timezoneList = [
+        "GMT-1200","GMT-1100","GMT-1000","GMT-0900","GMT-0800","GMT-0700",
+        "GMT-0600","GMT-0500","GMT-0400","GMT-0330","GMT-0300","GMT-0200",
+        "GMT-0100","GMT+0000","GMT+0100","GMT+0200","GMT+0300","GMT+0330",
+        "GMT+0400","GMT+0430","GMT+0500","GMT+0530","GMT+0545","GMT+0600",
+        "GMT+0630","GMT+0700","GMT+0800","GMT+0845","GMT+0900","GMT+0930",
+        "GMT+1000","GMT+1030","GMT+1100","GMT+1200","GMT+1245","GMT+1300",
+        "GMT+1400"
+    ];
+
+    let todayDate = moment().format("DD/MM/YYYY");
+    let thirtyDaysBeforeTodayDate = moment().subtract(30, 'days').format('DD/MM/YYYY')
 
     //Modal States
     const [currentPage, setCurrentPage] = useState(1);
@@ -52,10 +64,11 @@ const CreateJobComponent = () => {
     //Page 1 States
     const [jobName, setJobName] = useState("");
     const [repoLink, setRepoLink] = useState([{ id: Date.now(), value: "" }]);
-    const [periodMode, setPeriodMode] = useState("since-until");
-    const [sinceDate, setSinceDate] = useState("");
-    const [untilDate, setUntilDate] = useState("");
+    const [periodMode, setPeriodMode] = useState("Specific Date Range");
+    const [sinceDate, setSinceDate] = useState(thirtyDaysBeforeTodayDate);
+    const [untilDate, setUntilDate] = useState(todayDate);
     const [period, setPeriod] = useState("");
+    const [periodModifier, setPeriodModifier] = useState("latest");
     const [originalityThreshold, setOriginalityThreshold] = useState("");
     const [timeZone, setTimeZone] = useState("");
     const [authorship, setAuthorship] = useState(false);
@@ -78,7 +91,7 @@ const CreateJobComponent = () => {
             // page 1 states
             setJobName("");
             setRepoLink([{ id: Date.now(), value: "" }]);
-            setPeriodMode("since-until");
+            setPeriodMode("Specific Date Range");
             setSinceDate("");
             setUntilDate("");
             setPeriod("");
@@ -100,12 +113,15 @@ const CreateJobComponent = () => {
 
     //Reset period states when period mode changes
     useEffect(() => {
-        setSinceDate("");
-        setUntilDate("");
-        if (periodMode !== "since-until" ){
-            setPeriod("1-week");
+        if (periodMode !== "Specific Date Range" ){
+            setPeriod("7d");
+            setSinceDate("");
+            setUntilDate("");
         } else {
             setPeriod("");
+            setPeriodModifier("latest");
+            setSinceDate("");
+            setUntilDate("");
         }
     }, [periodMode]);
 
@@ -186,10 +202,8 @@ const CreateJobComponent = () => {
                                         <Grid2 size={6}>
                                             <Grid2 size={6}>
                                                 <select className="period-mode-dropdown" onChange={(e) => setPeriodMode(e.target.value)}>
-                                                    <option value="since-until">Since & Until</option>
-                                                    <option value="since-period">Since & Period</option>
-                                                    <option value="until-period">Until & Period</option>
-                                                    <option value="only-period">Period Only</option>
+                                                    <option value="Specific Date Range">Specific Date Range</option>
+                                                    <option value="By Days/Weeks">By Days/Weeks</option>
                                                 </select>
                                             </Grid2>
                                         </Grid2>
@@ -304,37 +318,59 @@ const CreateJobComponent = () => {
                     <text className="since-label">Since:</text>
                 </Grid2>
                 <Grid2 size={6}>
-                    <input type="date" className="since-date-input" onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                    <input type="date" className="since-date-input" value={sinceDate} onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
                 </Grid2>
                 <Grid2 size={6} container alignItems="center">
                     <text className="until-label">Until:</text>
                 </Grid2>
                 <Grid2 size={6}>
-                    <input type="date" className="until-date-input" onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                    <input type="date" className="until-date-input" value={untilDate} onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
                 </Grid2>
             </Grid2>
         )
     }
 
-    const renderPeriodForSincePeriod = () => {
+    const renderPeriodModifierInput = () => {
+        switch (periodModifier) {
+            case "before":
+                return <input type="date" id="2" className="until-date-input" value={untilDate} onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                
+            case "after":
+                return <input type="date" id="2" className="since-date-input" value={sinceDate} onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                
+            default:
+                return <text> **{period} from date of job run</text>
+        }
+    }
+
+    const renderPeriodForPeriod = () => {
         return (
             <Grid2 container spacing={1}>
-                <Grid2 size={6} container alignItems="center">
-                    <text className="since-label">Since:</text>
-                </Grid2>
-                <Grid2 size={6}>
-                    <input type="date" className="since-date-input" onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
-                </Grid2>
                 <Grid2 size={6} container alignItems="center">
                     <text className="period-label">Period:</text>
                 </Grid2>
                 <Grid2 size={6}>
                     <select className="period-range-dropdown" onChange={(e) => setPeriod(e.target.value)}>
-                        <option value="1-week">1 Week</option>
-                        <option value="4-week">4 Week</option>
+                        <option value="7d">7 days</option>
+                        <option value="30d">30 days</option>
                         <option value="3-month">3 Months</option>
                         <option value="6-month">6 Months</option>
                     </select>
+                </Grid2>
+                <Grid2 size={3} container alignItems="center">
+                    <select className="period-modifier-dropdown" onChange={(e) => setPeriodModifier(e.target.value)}>
+                        <option value="latest">Latest</option>
+                        <option value="before">Before Date:</option>
+                        <option value="after">After Date:</option>
+                    </select>
+                </Grid2>
+                <Grid2 size={3}>
+                    <div>
+
+                    </div>
+                </Grid2>
+                <Grid2 size={6}>
+                    {renderPeriodModifierInput()}
                 </Grid2>
             </Grid2>
         )
@@ -387,14 +423,10 @@ const CreateJobComponent = () => {
 
     const periodSwitchCase = (periodMode) => {
         switch (periodMode) {
-            case "since-until":
+            case "Specific Date Range":
                 return renderPeriodForSinceUntil();
-            case "since-period":
-                return renderPeriodForSincePeriod();
-            case "until-period":
-                return renderPeriodForUntilPeriod();
-            case "only-period":
-                return renderPeriodForOnlyPeriod();
+            case "By Days/Weeks":
+                return renderPeriodForPeriod();
             default:
                 return renderPeriodForSinceUntil();
         }
