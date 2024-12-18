@@ -5,7 +5,7 @@ import { Autocomplete, TextField, Grid2, Chip, Modal, Box,
 import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
 import "./CreateJobComponent.scss";
-import { showSuccessBar } from "../../constants/snack-bar";
+import { showSuccessBar, showErrorBar } from "../../constants/snack-bar";
 
 const useStyles = makeStyles(() => ({
     autocomplete: {
@@ -147,11 +147,6 @@ const CreateJobComponent = () => {
         setFormatChipValues(value);
     };
 
-    ///Job Frequency onChange
-    const handleFrequencyChange = (event) => {
-        setFrequency(event.target.value);
-    };
-
     //Sub-Component Rendering Functions
     /// Header Render for both pages
     const renderJobFormHeader = () => {
@@ -219,7 +214,7 @@ const CreateJobComponent = () => {
                                         </Grid2>
                                         <Grid2 size={6}>
                                             <select className="timezone-dropdown" onChange={(e) => setTimeZone(e.target.value)}>
-                                                <option value="">Select a timezone</option>
+                                                <option value="">Select a time zone</option>
                                                 {timezoneList.map((timezone) => (
                                                     <option key={timezone} value={timezone}>{timezone}</option>
                                                 ))}
@@ -472,16 +467,12 @@ const CreateJobComponent = () => {
                     <text className="schedule-settings-labels">Frequency:</text>
                 </Grid2>
                 <Grid2 item size={8}>
-                    <Select labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={frequency}
-                        label="Frequency"
-                        defaultValue="monthly"
-                        onChange={handleFrequencyChange}>
-                        <MenuItem value={"weekly"}>Weekly</MenuItem>
-                        <MenuItem value={"monthly"}>Monthly</MenuItem>
-                        <MenuItem value={"quarterly"}>Quarterly</MenuItem>
-                    </Select>
+                    <select className="frequency-dropdown"
+                        onChange={(e) => setFrequency(e.target.value)}>
+                        <option value={"weekly"}>Weekly</option>
+                        <option value={"monthly"}>Monthly</option>
+                        <option value={"quarterly"}>Quarterly</option>
+                    </select>
                 </Grid2>
                 <Grid2 item size={4}>
                     <text className="schedule-settings-labels" >Start Time:</text>
@@ -547,34 +538,53 @@ const CreateJobComponent = () => {
         )
     }
 
+    const validateForm = () => {
+        return new Promise((resolve, reject) => {
+            const isValid = true; //mock test
+
+            if (isValid) {
+                resolve();
+           } else {
+                reject(new Error("Form validation failed"));
+           }
+        });
+    }
+
     //Submit Job Form
     const submitJobForm = async () => {
-        handleModalClose();
-        showSuccessBar("Job Created Successfully");
-        console.log("Submitting job form for", localStorage.getItem("JWT"));
-        const formData = {
-            jobName,
-            repoLink,
-            sinceDate,
-            untilDate,
-            period,
-            originalityThreshold,
-            timeZone,
-            authorship,
-            prevAuthors,
-            shallowClone,
-            ignoreSizeLimit,
-            addLastMod,
-            formatChipValues,
-            jobType,
-            frequency,
-            startHour,
-            startMinute,
-        };
+        let formData = {};
+        validateForm().then(() => {
+            handleModalClose();
+            showSuccessBar("Job Created Successfully");
+            console.log("Submitting job form for", localStorage.getItem("JWT"));
+            formData = {
+                jobName,
+                repoLink,
+                sinceDate,
+                untilDate,
+                period,
+                originalityThreshold,
+                timeZone,
+                authorship,
+                prevAuthors,
+                shallowClone,
+                ignoreSizeLimit,
+                addLastMod,
+                formatChipValues,
+                jobType,
+                frequency,
+                startHour,
+                startMinute,
+            };
+        }).catch((error) => {
+            console.error("Form Input Failed Validation", error);
+            showErrorBar("Failed To Create Job");
+        });
+
         try {
-            const response = await fetch ('https://this-is-a-fake-url.com', {
+            const response = await fetch('https://this-is-a-fake-url.com', {
                 method: "POST",
-                headers:{
+                headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem("JWT")}`,
                 },
@@ -594,13 +604,13 @@ const CreateJobComponent = () => {
                 Create Job
             </Button>
             <Modal open={open} onClose={handleModalClose} aria-labelledby="modal-title" aria-describedby="modal-description">
-                <Box className= {classes.modal}>
-                            {renderJobFormHeader()}
-                            {currentPage === 1 ? renderJobFormPage1() : renderJobFormPage2()}
-                            <div className = "navigation-buttons-container">
-                                {renderNavigationButtons()}
-                            </div>
-                </Box>                
+                <Box className={classes.modal}>
+                    {renderJobFormHeader()}
+                    {currentPage === 1 ? renderJobFormPage1() : renderJobFormPage2()}
+                    <div className="navigation-buttons-container">
+                        {renderNavigationButtons()}
+                    </div>
+                </Box>
             </Modal>
 
         </div>

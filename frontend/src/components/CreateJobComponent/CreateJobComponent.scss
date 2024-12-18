@@ -263,6 +263,14 @@ body {
         align-items: center;
     }
 
+    .frequency-dropdown {
+        width: 243px;
+        height: 45px;
+        border-radius: 12px;
+        border: 2px solid var(--input-border-color);
+        text-align: center; 
+    }
+
     .time-colon{
         height: 50px;
         display: flex;
