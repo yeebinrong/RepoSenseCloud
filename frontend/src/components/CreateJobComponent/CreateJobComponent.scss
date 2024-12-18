@@ -176,9 +176,17 @@ body {
                     align-items: center;
                     margin-bottom: 1%;
 
-                    .since-date-input,
-                    .until-date-input,
                     .originality-input {
+                        width: 239px;
+                        height: 42px;
+                        border-radius: 12px;
+                        border: 2px solid var(--input-border-color);
+                        color: var(--general-text-color);
+                        text-align: center;
+                    }
+
+                    .since-date-input,
+                    .until-date-input {
                         width: 239px;
                         height: 42px;
                         border-radius: 12px;
