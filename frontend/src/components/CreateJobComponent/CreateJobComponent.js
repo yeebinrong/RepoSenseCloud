@@ -470,13 +470,13 @@ const CreateJobComponent = () => {
                     <text className="start-date-label">Start Date:</text>
                 </Grid2>
                 <Grid2 item size={6}>
-                    <input type="date" className="start-date-input" onChange={(e) => setStartDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                    <input type="date" className="start-date-input" value = {startDate} onChange={(e) => setStartDate(e.target.value)} placeholder="DD/MM/YYYY" />
                 </Grid2>
                 <Grid2 item size={4} container alignItems="center">
                     <text className="end-date-label">End Date:</text>
                 </Grid2>
                 <Grid2 item size={6}>
-                    <input type="date" className="end-date-input" onChange={(e) => setEndDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                    <input type="date" className="end-date-input" value = {endDate} onChange={(e) => setEndDate(e.target.value)} placeholder="DD/MM/YYYY" />
                 </Grid2>
                 
             </Grid2>
@@ -500,41 +500,41 @@ const CreateJobComponent = () => {
 
     const validateForm = () => {
         return new Promise((resolve, reject) => {
-            //let isValid = true; //mock test
+            let isValid = true; //mock test
 
-            // if (jobName === "") {
-            //     return reject(new Error("Job name cannot be blank."));
-            // }
+            if (jobName === "") {
+                return reject(new Error("Job name cannot be blank."));
+            }
 
-            // if (repoLink[0].value === "") {
-            //     return reject(new Error("Repository link cannot be blank"));
-            // }
+            if (repoLink[0].value === "") {
+                return reject(new Error("Repository link cannot be blank"));
+            }
 
-            if (sinceDate !== "" && untilDate !== "" && moment(sinceDate, 'DD/MM/YYYY').isAfter(moment(untilDate, 'DD/MM/YYYY'))) {
+            if (sinceDate !== "" && untilDate !== "" && moment(sinceDate).isAfter(moment(untilDate))) {
                 return reject(new Error('"Since Date" should be earlier than "Until Date".'));
             }
 
-            // if (originalityThreshold < 0 || originalityThreshold > 1) {
-            //     return reject(new Error("Originality Threshold should be between 0 - 1."));
-            // }
+            if (originalityThreshold < 0 || originalityThreshold > 1) {
+                return reject(new Error("Originality Threshold should be between 0 - 1."));
+            }
 
-            // if (timeZone === ""){
-            //     return reject(new Error("Time Zone Not Selected."));
-            // }
+            if (timeZone === ""){
+                return reject(new Error("Time Zone Not Selected."));
+            }
 
-            // if (jobType === "scheduled"){
-            //     if (startHour === "--" || startMinute === "--") {
-            //         return reject(new Error("Start Time is incomplete."))
-            //     }
+            if (jobType === "scheduled"){
+                if (startHour === "--" || startMinute === "--") {
+                    return reject(new Error("Start Time is incomplete."))
+                }
     
-            //     if (startDate === "" || endDate === "") {
-            //         return reject(new Error("Start and End Date of schedule job is incomplete."))
-            //     }
+                if (startDate === "" || endDate === "") {
+                    return reject(new Error("Start and End Date of schedule job is incomplete."))
+                }
     
-            //     if (startDate !== "" && endDate !== "" && moment(startDate, 'DD/MM/YYYY').isAfter(moment(endDate, 'DD/MM/YYYY'))) {
-            //         return reject(new Error('"Start Date" should be earlier than "End Date".'))
-            //     }    
-            // }
+                if (startDate !== "" && endDate !== "" && moment(startDate).isAfter(moment(endDate))) {
+                    return reject(new Error('"Start Date" should be earlier than "End Date".'))
+                }    
+            }
 
             return resolve();
 
