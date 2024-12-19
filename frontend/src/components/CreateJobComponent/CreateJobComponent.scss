@@ -16,10 +16,6 @@ body {
     padding: 20px;
 }
 
-.navigation-button {
-   
-}
-
 .create-job-header {
     margin: 0, 5%, 5%, 5%;
     text-align: center;
@@ -27,26 +23,20 @@ body {
     align-items: center;
     position: relative;
 
-    .create-job-header h1 {
+    .h1 {
         margin-bottom: 26px;
     }
 
     .create-job-page-status {
         display: flex;
-        /* Use flexbox to arrange items side by side */
         align-items: center;
-        /* Center items vertically */
         justify-content: center;
-        /* Center items horizontally */
     }
 
     .dotted-line {
         border-top: 4px dotted #dedcdc;
-        /* Creates a horizontal dotted line */
         width: 10%;
-        /* Adjust the width as needed */
         margin: 30px;
-        /* Adjust the margin as needed */
     }
 
     .page-icon2 {
@@ -58,9 +48,7 @@ body {
     .dotted-line-down {
         border-left: 4px dotted #dedcdc;
         height: 80wh;
-        /* Adjust the height as needed */
         margin: 10px;
-        /* Optional, for spacing around the line */
     }
 
     .create-job-input-container {
@@ -231,15 +219,9 @@ body {
                     .right-checklist-container {
                         width: 260px;
                     }
-
                 }
             }
-
-
-
-
         }
-
     }
 }
 
@@ -247,7 +229,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-
 
     .job-type-box-container {
         background-color: var(--input-background-color);
@@ -295,7 +276,8 @@ body {
         text-align: center;
     }
 
-    .start-date-input, .end-date-input {
+    .start-date-input, 
+    .end-date-input {
         width: 239px;
         height: 42px;
         border-radius: 12px;
@@ -303,8 +285,6 @@ body {
         color: var(--placeholder-color);
         text-align: center;
     }
-
-
 }
 
 
