@@ -199,6 +199,26 @@ class LoginComponent extends React.Component {
     return null;
   };
 
+  validatePassword = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]*$/;
+    if (password.length > 0) {
+      if (password.length < 8) {
+        return "Must contain at least 8 or more characters";
+      }
+      if (!regex.test(password)) {
+        return "Must contain a mix of letters and numbers";
+      }
+    }
+    return null;
+  };
+
+  validateConfirmPassword = (password, confirmPassword) => {
+    if (password !== confirmPassword && confirmPassword.length > 0) {
+      return "Passwords did not match";
+    }
+    return null;
+  };
+
   renderRegisterForm = () => {
     return (
       <>
@@ -220,7 +240,7 @@ class LoginComponent extends React.Component {
           "password",
           this.state.password,
           "Password",
-          null,
+          this.validatePassword(this.state.password),
           this.state.showPassword,
           "showPassword"
         )}
@@ -229,7 +249,10 @@ class LoginComponent extends React.Component {
           "confirmPassword",
           this.state.confirmPassword,
           "Retype password",
-          null,
+          this.validateConfirmPassword(
+            this.state.password,
+            this.state.confirmPassword
+          ),
           this.state.showConfirmPassword,
           "showConfirmPassword"
         )}
