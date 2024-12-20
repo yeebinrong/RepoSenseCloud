@@ -74,6 +74,7 @@ class LoginComponent extends React.Component {
     target,
     value,
     label,
+    helperText,
     showPassword,
     showPassTarget
   ) => {
@@ -101,7 +102,8 @@ class LoginComponent extends React.Component {
             ? this.renderShowPasswordIcon(showPassTarget)
             : "",
         }}
-        helperText=""
+        error={helperText ? true : false}
+        helperText={helperText}
         required
       />
     );
@@ -189,6 +191,14 @@ class LoginComponent extends React.Component {
     );
   };
 
+  validateEmail = (email) => {
+    const regex = /[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!regex.test(email) && email.length > 0) {
+      return "Please enter a valid email address";
+    }
+    return null;
+  };
+
   renderRegisterForm = () => {
     return (
       <>
@@ -202,13 +212,15 @@ class LoginComponent extends React.Component {
           false,
           "email",
           this.state.email,
-          "Email Address"
+          "Email Address",
+          this.validateEmail(this.state.email)
         )}
         {this.renderTextField(
           true,
           "password",
           this.state.password,
           "Password",
+          null,
           this.state.showPassword,
           "showPassword"
         )}
@@ -217,6 +229,7 @@ class LoginComponent extends React.Component {
           "confirmPassword",
           this.state.confirmPassword,
           "Retype password",
+          null,
           this.state.showConfirmPassword,
           "showConfirmPassword"
         )}
