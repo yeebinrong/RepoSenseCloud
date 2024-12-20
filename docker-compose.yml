@@ -9,20 +9,20 @@
 
 # Define the services and applications that make up your application.
 services:
-  # frontend-app:
-  #   build:
-  #     context: ./
-  #     dockerfile: ./infra/docker-images/rsc-frontend-image/Dockerfile
-  #   container_name: rsc_frontend
-  #   ports:
-  #     - ${FRONTEND_PORT}:${FRONTEND_PORT}
-  #   env_file:
-  #     - ./.env # docker-compose only works with .env file
-  #   volumes:
-  #     - ./frontend/src:/app/src
-  #     - ./frontend/public:/app/public
-  #   networks:
-  #     - rsc-network
+  frontend-app:
+    build:
+      context: ./
+      dockerfile: ./infra/docker-images/rsc-frontend-image/Dockerfile
+    container_name: rsc_frontend
+    ports:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    env_file:
+      - ./.env # docker-compose only works with .env file
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    networks:
+      - rsc-network
 
   user-service-app:
     build:
