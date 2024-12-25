@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
-    Button, Select, FormControl, InputLabel, MenuItem, Stack, FormHelperText } from "@mui/material";
+    Button, Select, FormControl, InputLabel, MenuItem, Stack } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
 import "./CreateJobComponent.scss";
