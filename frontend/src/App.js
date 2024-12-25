@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import "./App.scss";
+import LoginPage from "./pages/login-page";
+import ForgotPage from "./pages/forgot-page";
 import HomePage from "./pages/home-page";
 import ErrorPage from "./pages/error-page";
 import CreateJobPage from "./pages/create-job-page";
@@ -16,10 +18,10 @@ const App = () => {
   let navigate = useNavigate();
 
   useEffect(() => {
-    const isHomePage = window.location.pathname === "/home";
+    const isLoginPage = window.location.pathname === "/login";
     const isCreateJobPage = window.location.pathname === "/create-job";
 
-    if (isHomePage || isCreateJobPage) {
+    if (isLoginPage || isCreateJobPage) {
       showSuccessBar("Welcome to ReposenseCloud.");
     } else {
       navigate("/error");
@@ -33,7 +35,14 @@ const App = () => {
 
   return (
     <Routes>
-      <Route path="" exact element={<Navigate replace to="/home" />} />
+      <Route path="" exact element={<Navigate replace to="/login" />} />
+      <Route path="/login" exact element={<LoginPage {...mainProps} />} />
+      <Route
+        path="/register"
+        exact
+        element={<LoginPage {...mainProps} isRegisterPage />}
+      />
+      <Route path="/forgot" exact element={<ForgotPage {...mainProps} />} />
       <Route path="/home" exact element={<HomePage {...mainProps} />} />
       {/* Below is a temp route to test create job TODO: remove this */}
       <Route path="/create-job" element={<CreateJobPage {...mainProps} />} />

@@ -48,7 +48,7 @@ const snackBarProps = (variant, callback) => {
 export const StyledMaterialDesignContent = styled(MaterialDesignContent)(
   () => ({
     "&.notistack-MuiContent-success": {
-      backgroundColor: "#5541D7 !important",
+      backgroundColor: "#7F5305 !important",
     },
     "&.notistack-MuiContent-error": {
       backgroundColor: "#FF6961 !important",

@@ -27,17 +27,18 @@ services:
   user-service-app:
     build:
       context: ./
-      dockerfile: ./infra/docker-images/rsc-backend-image/Dockerfile
+      dockerfile: ./infra/docker-images/rsc-local-backend-image/Dockerfile
       args:
         PORT: ${USER_SVC_PORT}
-        JAR_FILE_NAME: ${USER_SVC_JAR_FILE_NAME}
+        SERVICE_NAME: rsc-user-service
     container_name: rsc_user_service
     ports:
       - ${USER_SVC_PORT}:${USER_SVC_PORT}
     env_file:
       - ./.env # docker-compose only works with .env file
     volumes:
-      - ./backend/rsc-user-service/target:/app/target
+      - ./backend/rsc-user-service:/app/service
+      - ${HOME}/.m2:/root/.m2
     networks:
       - rsc-network
 
