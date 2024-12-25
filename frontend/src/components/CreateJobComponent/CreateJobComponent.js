@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
-    Button, Select, FormControl, InputLabel, MenuItem, Stack, } from "@mui/material";
+    Button, Select, FormControl, InputLabel, MenuItem, Stack, FormHelperText } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
 import "./CreateJobComponent.scss";
@@ -18,8 +18,7 @@ const useStyles = makeStyles(() => ({
         color: '#00695c',
     },
     textField: {
-        backgroundColor: '#00000',
-        borderRadius: '10px',
+        font: "DM Sans",
     },
     modal: {
         position: 'relative',
@@ -43,13 +42,13 @@ const CreateJobComponent = () => {
 
     const classes = useStyles();
     const timezoneList = [
-        "GMT-1200","GMT-1100","GMT-1000","GMT-0900","GMT-0800","GMT-0700",
-        "GMT-0600","GMT-0500","GMT-0400","GMT-0330","GMT-0300","GMT-0200",
-        "GMT-0100","GMT+0000","GMT+0100","GMT+0200","GMT+0300","GMT+0330",
-        "GMT+0400","GMT+0430","GMT+0500","GMT+0530","GMT+0545","GMT+0600",
-        "GMT+0630","GMT+0700","GMT+0800","GMT+0845","GMT+0900","GMT+0930",
-        "GMT+1000","GMT+1030","GMT+1100","GMT+1200","GMT+1245","GMT+1300",
-        "GMT+1400"
+        "UTC-12", "UTC-11", "UTC-10", "UTC-0930", "UTC-09", "UTC-08",
+        "UTC-07", "UTC-06", "UTC-05", "UTC-04", "UTC-0330", "UTC-03",
+        "UTC-02", "UTC-01", "UTC+00", "UTC+01", "UTC+02", "UTC+03",
+        "UTC+0330", "UTC+04", "UTC+0430", "UTC+05", "UTC+0530", "UTC+0545",
+        "UTC+06", "UTC+0630", "UTC+07", "UTC+08", "UTC+0845", "UTC+09",
+        "UTC+0930", "UTC+10", "UTC+1030", "UTC+11", "UTC+12", "UTC+1245",
+        "UTC+13", "UTC+14"
     ];
 
     let todayDate = moment().format("DD/MM/YYYY");
@@ -86,6 +85,18 @@ const CreateJobComponent = () => {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
 
+    //Form Validation States
+    const [jobNameError, setJobNameError] = useState(true);
+    const [repoLinkError, setRepoLinkError] = useState(true);
+    const [sinceUntilDateError, setSinceUntilDateError] = useState(false);
+    const [originalityThresholdError, setOriginalityThresholdError] = useState(false);
+    const [timeZoneError, setTimeZoneError] = useState(true);
+    const [startHourError, setStartHourError] = useState(true);
+    const [startMinuteError, setStartMinuteError] = useState(true);
+    const [dateError, setDateError] = useState(true);
+
+
+
     
     // Reset state when modal closes
     useEffect(() => {
@@ -113,6 +124,15 @@ const CreateJobComponent = () => {
             setStartHour("--");
             setStartDate("")
             setEndDate("");
+            // form validation states  
+            setJobNameError(true);
+            setRepoLinkError(true);
+            setSinceUntilDateError(false);
+            setOriginalityThresholdError(false);
+            setTimeZoneError(true);
+            setStartHourError(true);
+            setStartMinuteError(true);
+            setDateError(true);
         }
     }, [open]);
 
@@ -168,6 +188,95 @@ const CreateJobComponent = () => {
         )
     }
 
+    //Form Validation Rules
+    const validateJobName = () => {
+        if (jobName === "") {
+            setJobNameError(true);
+        } else {
+            setJobNameError(false);
+        }
+    }
+
+    const validateRepoLink = (id) => {
+        const link = repoLink.find(link => link.id === id);
+        if (link.value === "") {
+            setRepoLinkError(true);
+        } else {
+            setRepoLinkError(false);
+        }
+    }
+
+    const validateSinceUntilDate = () => {
+        if (sinceDate !== "" && untilDate !== "" && moment(sinceDate).isAfter(moment(untilDate))) {
+            console.log("Since Date is after Until Date");
+            setSinceUntilDateError(true);
+        } else {
+            setSinceUntilDateError(false);
+        }
+    }
+
+    const validateOriginalityThreshold = () => {
+        if (originalityThreshold < 0 || originalityThreshold > 1) {
+            setOriginalityThresholdError(true);
+        } else {
+            setOriginalityThresholdError(false);
+        }
+    }
+
+    const validateTimeZone = (tz) => {
+        if (tz === "" || tz === "Select a time zone") {
+            setTimeZoneError(true);
+        } else {
+            setTimeZoneError(false);
+        }
+        console.log("Time Zone:", tz);  
+        console.log("Time Zone Error:", timeZoneError);
+    }
+
+    const validatePage1 = (callback) => {
+        let hasError = false;
+    
+        if (jobNameError || repoLinkError || sinceUntilDateError || originalityThresholdError || timeZoneError) {
+            console.log("jobNameError", jobNameError);
+            console.log("repoLinkError", repoLinkError);
+            console.log("sinceUntilDateError", sinceUntilDateError);
+            console.log("originalityThresholdError", originalityThresholdError);
+            console.log("timeZoneError", timeZoneError);
+            hasError = true;
+        }
+    
+        if (callback) {
+            callback(hasError);
+        }
+    };
+
+    const validateStartHour = (sHour) => {
+        if (sHour === "--") {
+            setStartHourError(true);
+        } else {
+            setStartHourError(false);
+        }
+    }
+
+    const validateStartMinute = (sMin) => {
+        if (sMin === "--") {
+            setStartMinuteError(true);
+        } else {
+            setStartMinuteError(false);
+        }
+    }
+
+    const validateDate = (sDate, eDate) => {
+        if (sDate === "" || eDate === "" || moment(sDate).isAfter(moment(eDate))) {
+            console.log(`${moment(sDate)} is after ${moment(eDate)}`);
+            setDateError(true);
+        } else {
+            setDateError(false);
+        }
+    }
+
+
+
     /// Page 1 Render
     const renderJobFormPage1 = () => {
         return (
@@ -177,13 +286,18 @@ const CreateJobComponent = () => {
                         <div className="create-job-input-left">
                             <div className="job-name-container">
                                 <text className="job-name-label">Job Name</text>
-                                <input type="text" className="job-name-textbox" placeholder="Enter Job Name" value = {jobName} onChange={(e)=>setJobName(e.target.value)} />
+                                <TextField className="job-name-textbox" placeholder="Enter Job Name" value = {jobName} 
+                                    onChange={(e)=> { validateJobName(); setJobName(e.target.value)}} error={jobNameError}     
+                                    helperText={jobNameError ? "Please Enter Job Name" : ""}/>
                             </div>
                             <div className="target-repo-container">
                                 <text className="target-repo-label">Target Repository</text>
                                 {repoLink.map((link, index) => (
                                     <span key={link.id}>
-                                        <input type="text" className="target-repo-textbox" placeholder="Paste Repo URL here" value={link.value} onChange={(e) => handleRepoLinkChange(link.id, e.target.value)} />
+                                        <TextField className="target-repo-textbox" placeholder="Paste Repo URL here" value={link.value}
+                                            onChange={(e) => { validateRepoLink(link.id); handleRepoLinkChange(link.id, e.target.value) }}
+                                            error={repoLinkError}
+                                            helperText={repoLinkError ? "Please Paste Repository URL" : ""} />
                                         {index > 0 && (<button className="delete-repo-link-button" onClick={() => deleteRepoLink(link.id)}>✕</button>)}
                                     </span>
                                 ))}
@@ -212,22 +326,34 @@ const CreateJobComponent = () => {
                                             <text className="originality-label">Originality Threshold:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <input type="text" className="originality-input" value = {originalityThreshold} onChange={(e) => setOriginalityThreshold(e.target.value)} placeholder="0.5  (between 0 - 1)" />
+                                            <TextField type="text" className="originality-input" value = {originalityThreshold} 
+                                            onChange={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}} placeholder="0.5" 
+                                                helperText="Input between 0.0 to 1.0" />
                                         </Grid2>
                                         <Grid2 size={6} container alignItems="center">
                                             <text className="timezone-label">Time Zone:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <select className="timezone-dropdown" onChange={(e) => setTimeZone(e.target.value)}>
+                                            <select
+                                                className={`timezone-dropdown ${timeZoneError ? 'error' : ''}`}
+                                                value={timeZone}
+                                                onChange={(e) => {
+                                                    console.log("Selected Time Zone:", e.target.value); // Log the selected value
+                                                    setTimeZone(e.target.value);
+                                                    validateTimeZone(e.target.value);
+                                                }}
+                                                // onBlur={(e) => {
+                                                //     setTimeZone(e.target.value);
+                                                //     validateTimeZone();
+                                                // }}
+                                            >
                                                 <option value="">Select a time zone</option>
                                                 {timezoneList.map((timezone) => (
                                                     <option key={timezone} value={timezone}>{timezone}</option>
                                                 ))}
                                             </select>
+                                            {timeZoneError && <span className="error-message">Please select a time zone</span>}
                                         </Grid2>
-                                        {/* <Grid2 size={6}>
-                                            <input type="text" className="timezone-input" onChange={(e) => setTimeZone(e.target.value)} placeholder="e.g UTC+8" />
-                                        </Grid2> */}
                                         <Grid2 size={6} marginTop={2} className="left-checklist-container">
                                             <Grid2 container spacing={3} justifyContent="space-between">
                                                 <Grid2 size={6}>
@@ -318,13 +444,21 @@ const CreateJobComponent = () => {
                     <text className="since-label">Since:</text>
                 </Grid2>
                 <Grid2 size={6}>
-                    <input type="date" className="since-date-input" value={sinceDate} onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                    <TextField type="date" className="since-date-input" value={sinceDate} 
+                    onChange={(e) => setSinceDate(e.target.value)} 
+                    onBlur={(e) => { validateSinceUntilDate(); setSinceDate(e.target.value); }}
+                    placeholder="DD/MM/YYYY" />
+                    
                 </Grid2>
                 <Grid2 size={6} container alignItems="center">
                     <text className="until-label">Until:</text>
                 </Grid2>
                 <Grid2 size={6}>
-                    <input type="date" className="until-date-input" value={untilDate} onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                    <TextField type="date" className="until-date-input" value={untilDate} 
+                        onChange={(e) => {validateSinceUntilDate(); setUntilDate(e.target.value)}} 
+                        onBlur={(e) => { validateSinceUntilDate(); setUntilDate(e.target.value); }}
+                        placeholder="DD/MM/YYYY" 
+                        error = {sinceUntilDateError} helperText={sinceUntilDateError? "Improper Date Range" : "Default: last 30 days from date of job"}/>
                 </Grid2>
             </Grid2>
         )
@@ -333,11 +467,11 @@ const CreateJobComponent = () => {
     const renderPeriodModifierInput = () => {
         switch (periodModifier) {
             case "before":
-                return <input type="date" id="2" className="until-date-input" value={untilDate} onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
-                
+                return <TextField type="date" className="until-date-input2" value={untilDate} onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
+
             case "after":
-                return <input type="date" id="2" className="since-date-input" value={sinceDate} onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
-                
+                return <TextField type="date" className="since-date-input2" value={sinceDate} onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
+
             default:
                 return <text> **{period} from date of job run</text>
         }
@@ -439,9 +573,9 @@ const CreateJobComponent = () => {
                 </Grid2>
                 <Grid2 item size={2}>
                     <select
+                        className={`time-dropdown  ${startHourError ? 'error' : ''}`}
                         value={startHour}
-                        onChange={(e) => setStartHour(e.target.value)}
-                        className="time-dropdown"
+                        onChange={(e) => { setStartHour(e.target.value); validateStartHour(e.target.value);}}
                     >
                         {hours.map(hour => (
                             <option value={hour}>
@@ -455,9 +589,9 @@ const CreateJobComponent = () => {
                 </Grid2>
                 <Grid2 item size={2}>
                     <select
+                            className={`time-dropdown ${startMinuteError ? 'error' : ''}`}
                             value={startMinute}
-                            onChange={(e) => setStartMinute(e.target.value)}
-                            className="time-dropdown"
+                            onChange={(e) => { setStartMinute(e.target.value); validateStartMinute(e.target.value)}}
                         >
                             {minutes.map(minute => (
                                 <option value={minute}>
@@ -470,13 +604,20 @@ const CreateJobComponent = () => {
                     <text className="start-date-label">Start Date:</text>
                 </Grid2>
                 <Grid2 item size={6}>
-                    <input type="date" className="start-date-input" value = {startDate} onChange={(e) => setStartDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                    <TextField type="date" className="start-date-input" value = {startDate}
+                        onChange={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}} 
+                        onInput={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}} 
+                        error = {dateError} placeholder="DD/MM/YYYY" />
                 </Grid2>
                 <Grid2 item size={4} container alignItems="center">
                     <text className="end-date-label">End Date:</text>
                 </Grid2>
                 <Grid2 item size={6}>
-                    <input type="date" className="end-date-input" value = {endDate} onChange={(e) => setEndDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                    <TextField type="date" className="end-date-input" value = {endDate} 
+                        onChange={(e) => { setEndDate(e.target.value); validateDate(startDate, e.target.value)}} placeholder="DD/MM/YYYY" 
+                        onInput={(e) => {setEndDate(e.target.value); validateDate(startDate, e.target.value) }} 
+                        error = {dateError}
+                        helperText={(endDate!==""&& dateError)? "Improper Date Range":""}/>
                 </Grid2>
                 
             </Grid2>
@@ -485,13 +626,25 @@ const CreateJobComponent = () => {
 
     /// Navigation Button For Both Pages
     const renderNavigationButtons = () => {
-
         return (
             <div className="navigation-buttons">
                 <Button variant="contained" sx={{backgroundColor:'#FFFFFF', color:"#ADA7A7", width:"125px", marginRight: "50px"}} onClick={ () => currentPage === 2? setCurrentPage(1) : handleModalClose() }>
                     {currentPage === 1 ? "Cancel" : "Back"}
                 </Button>
-                <Button variant="contained" sx={{backgroundColor:'#F7A81B', width:"125px"}} onClick={() => currentPage === 1? setCurrentPage(2) : submitJobForm()}>
+                <Button variant="contained" sx={{ backgroundColor: '#F7A81B', width: "125px" }} onClick={() => {
+
+                    if (currentPage === 1) {
+                        validatePage1((hasError) => {
+                            if (hasError) {
+                                showErrorBar("incomplete form");
+                            } else {
+                                setCurrentPage(2);
+                            }
+                        });
+                    } else {
+                        submitJobForm();
+                    }
+                }}>
                     {currentPage === 2 ? "Create" : "Next"}
                 </Button>
             </div>

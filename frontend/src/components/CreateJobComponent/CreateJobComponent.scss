@@ -1,4 +1,5 @@
 body {
+    font-family: "DM Sans", sans-serif;
     font-weight: bold;
     background-color: #fff;
     --general-text-color: #292D32;
@@ -77,14 +78,8 @@ body {
                 }
 
                 .job-name-textbox {
-                    margin-bottom: 20px;
-                    width: 400px;
-                    height: 42px;
-                    box-sizing: border-box;
-                    border-radius: 12px;
-                    padding: 10px;
-                    border: 2px solid var(--input-border-color);
-                    color: var(--label-color);
+                    margin-bottom: 30px;
+
                 }
             }
 
@@ -106,18 +101,13 @@ body {
                 }
 
                 .target-repo-textbox {
-                    margin-bottom: 1%;
-                    margin-left: 15px;
-                    width: 340px;
-                    height: 42px;
-                    box-sizing: border-box;
-                    border-radius: 12px;
-                    padding: 10px;
-                    border: 2px solid var(--input-border-color);
-                    color: var(--label-color);
+                    margin-bottom: 5px;
+                    margin-left: 25px;
+                    width: 325px;
                 }
 
                 .delete-repo-link-button {
+                    margin-top: 15px;
                     border-color: transparent;
                     background-color: transparent;
                     color: #000000;
@@ -164,24 +154,49 @@ body {
                     align-items: center;
                     margin-bottom: 1%;
 
-                    .originality-input {
-                        width: 239px;
-                        height: 42px;
-                        border-radius: 12px;
-                        border: 2px solid var(--input-border-color);
-                        color: var(--general-text-color);
-                        text-align: center;
+                    .originality-label,
+                    .until-label {
+                        margin-bottom: 15px
                     }
 
                     .since-date-input,
-                    .until-date-input {
-                        width: 239px;
+                    .until-date-input,
+                    .originality-input {
+                        width: 243px;
                         height: 42px;
-                        border-radius: 12px;
-                        border: 2px solid var(--input-border-color);
-                        color: var(--placeholder-color);
-                        text-align: center;
+                        .MuiInputBase-root {
+                            height: 100%;
+                            width: 100%;
+                            border-radius: 12px;
+                            font-size: var(--general-text-size);
+                        }
+                        input {
+                            text-align: center;
+                        }
+                        
                     }
+
+                    .until-date-input,
+                    .originality-input {
+                        margin-bottom: 20px;
+                    }
+
+                    .since-date-input2,
+                    .until-date-input2 {
+                        width: 243px;
+                        height: 45px;
+                        .MuiInputBase-root {
+                            height: 100%;
+                            width: 100%;
+                            border-radius: 12px;
+                            font-size: var(--general-text-size);
+                        }
+                        input {
+                            text-align: center;
+                        }
+                        
+                    }
+
 
                     .period-settings-label{
                         margin: 10px 0 10px 0;
@@ -199,17 +214,28 @@ body {
 
                     }
 
-
-
                     .period-mode-dropdown,
                     .timezone-dropdown,
                     .period-range-dropdown {
                         width: 243px;
                         height: 45px;
                         border-radius: 12px;
-                        border: 2px solid var(--input-border-color);
                         text-align: center;
+                        border: 1px solid #cecece;
                     }
+
+                    .error {
+                        border: 1px solid rgba(177, 0, 0, 0.774);
+                    }
+                    
+                    .error-message {
+                        color: rgba(177, 0, 0, 0.774);
+                        font-family: "DM Sans", sans-serif;
+                        font-size: 12px;
+                        margin-left: 15px;
+                        margin-top: 4px;
+                    }
+
 
 
                     .left-checklist-container {
@@ -276,14 +302,24 @@ body {
         text-align: center;
     }
 
+    .error {
+        border: 1px solid rgba(177, 0, 0, 0.774);
+    }
+
     .start-date-input, 
     .end-date-input {
-        width: 239px;
-        height: 42px;
-        border-radius: 12px;
-        border: 2px solid var(--input-border-color);
-        color: var(--placeholder-color);
-        text-align: center;
+        width: 243px;
+        height: 45px;
+        .MuiInputBase-root {
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+            font-size: var(--general-text-size);
+        }
+        input {
+            text-align: center;
+        }
+        
     }
 }
 
