@@ -38,7 +38,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 
-const CreateJobComponent = () => {
+const CreateJobComponent = (jobId) => {
 
     const classes = useStyles();
     const timezoneList = [
@@ -51,14 +51,11 @@ const CreateJobComponent = () => {
         "UTC+13", "UTC+14"
     ];
 
-    let todayDate = moment().format("DD/MM/YYYY");
-    let thirtyDaysBeforeTodayDate = moment().subtract(30, 'days').format('DD/MM/YYYY')
-
     //Modal States
     const [currentPage, setCurrentPage] = useState(1);
     const [open, setOpen] = useState(false);
     const handleModalOpen = () => setOpen(true);
-    const handleModalClose = () => { console.log("close"); setOpen(false);}
+    const handleModalClose = () => setOpen(false);
 
     //Page 1 States
     const [jobName, setJobName] = useState("");
@@ -96,6 +93,39 @@ const CreateJobComponent = () => {
     const [dateError, setDateError] = useState(true);
 
 
+    //Retrieve Job Details for Editing
+    useEffect(() => {
+        if (jobId) {
+            // Retrieve job details from API
+            // Set the states with the retrieved job details
+            fetch(`/api/job/${jobId}`)
+                .then((response) => response.json())
+                .then(data => {
+                    setJobName(data.jobName);
+                    setRepoLink(data.repoLink);
+                    setPeriodMode(data.periodMode);
+                    setSinceDate(data.sinceDate);
+                    setUntilDate(data.untilDate);
+                    setOriginalityThreshold(data.originalityThreshold);
+                    setTimeZone(data.timeZone);
+                    setAuthorship(data.authorship);
+                    setPrevAuthors(data.prevAuthors);
+                    setShallowClone(data.shallowClone);
+                    setIgnoreSizeLimit(data.ignoreSizeLimit);
+                    setAddLastMod(data.addLastMod);
+                    setFormatChipValues(data.formatChipValues);
+                    setJobType(data.jobType);
+                    setFrequency(data.frequency);
+                    setStartHour(data.startHour);
+                    setStartMinute(data.startMinute);
+                    setStartDate(data.startDate);
+                    setEndDate(data.endDate);
+                })
+                .catch((error) => {
+                    console.error("Error fetching job details:", error);
+                });
+        }
+    }, [jobId]);
 
     
     // Reset state when modal closes
@@ -153,17 +183,14 @@ const CreateJobComponent = () => {
     //State Change Functions
     ///Repo Link Input
     const addRepoLink = () => {
-        console.log("Adding repo link");
         setRepoLink([...repoLink, { id: Date.now(), value: "" }]);
     }
 
     const deleteRepoLink = (id) => {
-        console.log("Deleting repo link with id", id);
         setRepoLink(repoLink.filter((link) => link.id !== id));
     }
 
     const handleRepoLinkChange = (id, value) => {
-        console.log("Updating repo link with id", id, "to value", value);
         setRepoLink(repoLink.map(link => link.id === id ? { ...link, value } : link)); // Update the value of the repo link with the given id
     }
 
@@ -208,7 +235,6 @@ const CreateJobComponent = () => {
 
     const validateSinceUntilDate = () => {
         if (sinceDate !== "" && untilDate !== "" && moment(sinceDate).isAfter(moment(untilDate))) {
-            console.log("Since Date is after Until Date");
             setSinceUntilDateError(true);
         } else {
             setSinceUntilDateError(false);
@@ -229,19 +255,12 @@ const CreateJobComponent = () => {
         } else {
             setTimeZoneError(false);
         }
-        console.log("Time Zone:", tz);  
-        console.log("Time Zone Error:", timeZoneError);
     }
 
     const validatePage1 = (callback) => {
         let hasError = false;
     
         if (jobNameError || repoLinkError || sinceUntilDateError || originalityThresholdError || timeZoneError) {
-            console.log("jobNameError", jobNameError);
-            console.log("repoLinkError", repoLinkError);
-            console.log("sinceUntilDateError", sinceUntilDateError);
-            console.log("originalityThresholdError", originalityThresholdError);
-            console.log("timeZoneError", timeZoneError);
             hasError = true;
         }
     
@@ -268,7 +287,6 @@ const CreateJobComponent = () => {
 
     const validateDate = (sDate, eDate) => {
         if (sDate === "" || eDate === "" || moment(sDate).isAfter(moment(eDate))) {
-            console.log(`${moment(sDate)} is after ${moment(eDate)}`);
             setDateError(true);
         } else {
             setDateError(false);
@@ -338,14 +356,9 @@ const CreateJobComponent = () => {
                                                 className={`timezone-dropdown ${timeZoneError ? 'error' : ''}`}
                                                 value={timeZone}
                                                 onChange={(e) => {
-                                                    console.log("Selected Time Zone:", e.target.value); // Log the selected value
                                                     setTimeZone(e.target.value);
                                                     validateTimeZone(e.target.value);
                                                 }}
-                                                // onBlur={(e) => {
-                                                //     setTimeZone(e.target.value);
-                                                //     validateTimeZone();
-                                                // }}
                                             >
                                                 <option value="">Select a time zone</option>
                                                 {timezoneList.map((timezone) => (
@@ -645,7 +658,7 @@ const CreateJobComponent = () => {
                         submitJobForm();
                     }
                 }}>
-                    {currentPage === 2 ? "Create" : "Next"}
+                    {currentPage === 2 ? "Save" : "Next"}
                 </Button>
             </div>
         )
@@ -690,12 +703,6 @@ const CreateJobComponent = () => {
             }
 
             return resolve();
-
-            //     if (isValid) {
-            //         resolve();
-            //    } else {
-            //         reject(new Error("Form validation failed"));
-            //    }
         });
     }
 
