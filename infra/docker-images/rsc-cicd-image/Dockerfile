@@ -9,7 +9,8 @@ WORKDIR /home
 ARG AWS_CLI_VERSION="2.4.15"
 ARG SLS_CLI_VERSION="4.4.0"
 ARG NODE_VERSION="18.18.2"
-ARG JAVA_VERSION="21.0.4.7.1-amzn"
+# 21.0.4.7.1-amzn
+ARG JAVA_VERSION="21.0.4-amzn"
 ARG MAVEN_VERSION="3.8.4"
 ARG YQ_VERSION="4.18.1"
 ARG LOCALE="C.UTF-8"
@@ -45,6 +46,13 @@ RUN set -eux \
     && npm install -g serverless@~${SLS_CLI_VERSION} \
     && sls --version
 
+# Install OpenTofu
+RUN curl --proto '=https' --tlsv1.2 -fsSL https://get.opentofu.org/install-opentofu.sh -o install-opentofu.sh \
+    && chmod +x install-opentofu.sh \
+    && ./install-opentofu.sh --install-method standalone \
+    && rm -f install-opentofu.sh \
+    && tofu --version
+
 # Stage to build build image
 FROM deploy AS build
 
@@ -79,3 +87,6 @@ RUN set -eux \
 # Install extra utilities
 RUN set -eux \
     && pip3 install networkx==2.6.3
+
+# Open the port for local development use with localstack
+EXPOSE 4566

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hamburger.user.dao.UserDao;
-import com.hamburger.user.dao.database.entity.User;
+import com.hamburger.user.dao.entity.User;
 import com.hamburger.user.dto.RegisterReqDto;
 
 @Service

@@ -3,7 +3,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Mulish", sans-serif !important;
+  font-family: "DM Sans", sans-serif !important;
   font-size: 16px;
 }
 
@@ -51,15 +51,6 @@ body {
 
 .margin-top {
   margin-top: 8px;
-}
-
-.profile-page-picture {
-  border: solid 1px rgb(0, 178, 210);
-  border-radius: 5px;
-  width: 200px;
-  height: 200px;
-  margin: auto;
-  object-fit: cover;
 }
 
 textarea {
