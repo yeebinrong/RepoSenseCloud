@@ -1,0 +1,335 @@
+body {
+    font-family: "DM Sans", sans-serif;
+    font-weight: bold;
+    background-color: #fff;
+    --general-text-color: #292D32;
+    --general-text-size: 14px;
+    --placeholder-color: #ADA7A7; 
+    --input-border-color: #D5D8E2;
+    --input-background-color: #F6F7F9;
+    
+}
+
+.navigation-buttons-container {
+    display: flex;
+    margin-top: auto; // Push the container to the bottom
+    justify-content: flex-end; // Align buttons to the right
+    padding: 20px;
+}
+
+.create-job-header {
+    margin: 0, 5%, 5%, 5%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    .h1 {
+        margin-bottom: 26px;
+    }
+
+    .create-job-page-status {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dotted-line {
+        border-top: 4px dotted #dedcdc;
+        width: 10%;
+        margin: 30px;
+    }
+
+    .page-icon2 {
+        filter: grayscale(100%);
+    }
+}
+
+.create-job-page-1 {
+    .dotted-line-down {
+        border-left: 4px dotted #dedcdc;
+        height: 80wh;
+        margin: 10px;
+    }
+
+    .create-job-input-container {
+        justify-content: center;
+        position: relative;
+        display: flex;
+        margin-top: 1%;
+        width: 100%;
+        font-size: var(--general-text-size);
+        color: var(--general-text-color);
+
+        .create-job-input-left {
+            display: flex;
+            flex-direction: column;
+            width: auto;
+            margin-right: 80px;
+            margin-left: 20px;
+
+            .job-name-container {
+                display: flex;
+                flex-direction: column;
+
+                .job-name-label {
+                    text-align: left;
+                    margin-bottom: 10px;
+                }
+
+                .job-name-textbox {
+                    margin-bottom: 30px;
+
+                }
+            }
+
+
+            .target-repo-container {
+                display: flex;
+                flex-direction: column;
+                justify-self: left;
+                align-self: start;
+                height: auto;
+                width: 400px;
+                background-color: var(--input-background-color);
+                border-radius: 12px;
+
+
+                .target-repo-label {
+                    margin: 15px;
+                    text-align: left;
+                }
+
+                .target-repo-textbox {
+                    margin-bottom: 5px;
+                    margin-left: 25px;
+                    width: 325px;
+                }
+
+                .delete-repo-link-button {
+                    margin-top: 15px;
+                    border-color: transparent;
+                    background-color: transparent;
+                    color: #000000;
+                    margin-left: 2%;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+
+                .add-repo-link-button {
+                    color: var(--placeholder-color);
+                    background-color: #ffffff;
+                    width: 125px;
+                    margin-left: 60%;
+                    margin-top: 5%;
+                    margin-bottom: 5%;
+                    padding-top: 2%;
+                    padding-bottom: 2%;
+                    border: 2px solid var(--input-border-color);
+                    border-radius: 6px;
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .create-job-input-right {
+            display: flex;
+            flex-direction: column;
+            width: 500px;
+
+            .settings-container {
+                margin-left: 20px;
+                display: flex;
+                flex-direction: column;
+
+
+                .settings-header-label {
+                    font-size: 20px;
+                    text-align: left;
+                    margin-bottom: 1%;
+                }
+
+                .settings-input-container {
+                    text-align: left;
+                    align-items: center;
+                    margin-bottom: 1%;
+
+                    .originality-label,
+                    .until-label {
+                        margin-bottom: 15px
+                    }
+
+                    .since-date-input,
+                    .until-date-input,
+                    .originality-input {
+                        width: 243px;
+                        height: 42px;
+                        .MuiInputBase-root {
+                            height: 100%;
+                            width: 100%;
+                            border-radius: 12px;
+                            font-size: var(--general-text-size);
+                        }
+                        input {
+                            text-align: center;
+                        }
+                        
+                    }
+
+                    .until-date-input,
+                    .originality-input {
+                        margin-bottom: 20px;
+                    }
+
+                    .since-date-input2,
+                    .until-date-input2 {
+                        width: 243px;
+                        height: 45px;
+                        .MuiInputBase-root {
+                            height: 100%;
+                            width: 100%;
+                            border-radius: 12px;
+                            font-size: var(--general-text-size);
+                        }
+                        input {
+                            text-align: center;
+                        }
+                        
+                    }
+
+
+                    .period-settings-label{
+                        margin: 10px 0 10px 0;
+                        color: var(--placeholder-color);
+                        
+                    }
+
+                    .period-modifier-dropdown {
+                        width: 243px;
+                        height: 45px;
+                        border-radius: 12px;
+                        border: 2px solid var(--input-border-color);
+                        text-align: left;
+                        font-weight: bold;
+
+                    }
+
+                    .period-mode-dropdown,
+                    .timezone-dropdown,
+                    .period-range-dropdown {
+                        width: 243px;
+                        height: 45px;
+                        border-radius: 12px;
+                        text-align: center;
+                        border: 1px solid #cecece;
+                    }
+
+                    .error {
+                        border: 1px solid rgba(177, 0, 0, 0.774);
+                    }
+                    
+                    .error-message {
+                        color: rgba(177, 0, 0, 0.774);
+                        font-family: "DM Sans", sans-serif;
+                        font-size: 12px;
+                        margin-left: 15px;
+                        margin-top: 4px;
+                    }
+
+
+
+                    .left-checklist-container {
+                        width: 200px;
+                    }
+
+                    .right-checklist-container {
+                        width: 260px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.create-job-page-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .job-type-box-container {
+        background-color: var(--input-background-color);
+        border-radius: 12px;
+        width: 700px;
+        height: 100px;
+        margin-top: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .job-type-box {
+        background-color: #fff;
+        width: 600px;
+    }
+
+    .schedule-settings-labels {
+        height: 50px;
+        display: flex;
+        align-items: center;
+    }
+
+    .frequency-dropdown {
+        width: 243px;
+        height: 45px;
+        border-radius: 12px;
+        border: 2px solid var(--input-border-color);
+        text-align: center; 
+    }
+
+    .time-colon{
+        height: 50px;
+        display: flex;
+        align-items: center;
+        margin-left: 10px;
+    }
+
+    .time-dropdown{
+        margin-top: 5px;
+        width: 80px;
+        height: 42px;
+        border-color: var(--input-border-color);
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .error {
+        border: 1px solid rgba(177, 0, 0, 0.774);
+    }
+
+    .start-date-input, 
+    .end-date-input {
+        width: 243px;
+        height: 45px;
+        .MuiInputBase-root {
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+            font-size: var(--general-text-size);
+        }
+        input {
+            text-align: center;
+        }
+        
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
