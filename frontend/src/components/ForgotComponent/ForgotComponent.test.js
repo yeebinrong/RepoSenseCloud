@@ -4,17 +4,17 @@ import { render } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import ForgotPage from "../../pages/forgot-page";
 
-describe("LoginComponent", () => {
+describe("ForgotComponent", () => {
   const navigate = jest.fn();
   const mainProps = {
     navigate: navigate,
   };
 
-  it("renders Login Page Title", () => {
+  it("renders Forgot Page Title", () => {
     const { getByText } = render(
-      <MemoryRouter initialEntries={["/login"]}>
+      <MemoryRouter initialEntries={["/forgot"]}>
         <Routes>
-          <Route path="/login" element={<ForgotPage {...mainProps} />} />
+          <Route path="/forgot" element={<ForgotPage {...mainProps} />} />
         </Routes>
       </MemoryRouter>
     );
