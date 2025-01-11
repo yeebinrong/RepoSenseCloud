@@ -7,21 +7,27 @@ const https = require('https');
 const TELEGRAM_BOT_TOKEN = '8138670411:AAEZVRNO0RSVGrRwVm5uFTH4829Ys0IXmbU'; // Replace with your Telegram bot token
 const TELEGRAM_CHAT_ID = '-1002362374639'; // Replace with your Telegram chat ID
 
-const handler = async (event) => {
+
+exports.handler = async (event) => {
   try {
-    // Get yesterday's date range
+    // Get today's date and calculate the first day of the current month
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
 
-    const startDate = yesterday.toISOString().split('T')[0];
-    const endDate = today.toISOString().split('T')[0];
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const startDate = yesterday.toISOString().split('T')[0]; // Yesterday's date
+    const endDate = today.toISOString().split('T')[0]; // Today's date
+    const startOfMonthStr = startOfMonth.toISOString().split('T')[0]; // Start of the month
+
+    // Day of the week
+    const dayOfWeek = yesterday.toLocaleString('en-US', { weekday: 'long' });
 
     // Initialize AWS SDK client
-    const costExplorer = new CostExplorer({ region: 'ap-southeast-1' });
+    const costExplorer = new CostExplorer({ region: 'us-east-1' });
 
-    // Fetch daily cost from AWS Cost Explorer
-    const costData = await costExplorer.getCostAndUsage({
+    // Fetch daily cost (yesterday)
+    const dailyCostData = await costExplorer.getCostAndUsage({
       TimePeriod: {
         Start: startDate,
         End: endDate,
@@ -30,18 +36,34 @@ const handler = async (event) => {
       Metrics: ['UnblendedCost'],
     });
 
-    const dailyCost = costData.ResultsByTime[0].Total.UnblendedCost.Amount;
-    const currency = costData.ResultsByTime[0].Total.UnblendedCost.Unit;
+    const dailyCost = dailyCostData.ResultsByTime[0].Total.UnblendedCost.Amount;
+    const currency = dailyCostData.ResultsByTime[0].Total.UnblendedCost.Unit;
+
+    // Fetch monthly cost (start of the month to yesterday)
+    const monthlyCostData = await costExplorer.getCostAndUsage({
+      TimePeriod: {
+        Start: startOfMonthStr,
+        End: endDate,
+      },
+      Granularity: 'MONTHLY',
+      Metrics: ['UnblendedCost'],
+    });
+
+    const monthlyCost = monthlyCostData.ResultsByTime[0].Total.UnblendedCost.Amount;
 
     // Telegram message content
-    const message = `\u{1F4C8} *AWS Daily Cost Report*
+    const message = `
+\u{1F4C8} *AWS Cost Report*
+------------------------
+*Date:* ${startDate} (${dayOfWeek})
+*Daily Cost:* ${dailyCost} ${currency}
+*Monthly Cost:* ${monthlyCost} ${currency}
+`;
 
-*Date:* ${startDate}
-*Cost:* ${dailyCost} ${currency}`;
+    // Send message to Telegram
+    const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
-    // Send message to Telegram using HTTPS
-    const telegramUrl = `/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    const postData = JSON.stringify({
+    const requestData = JSON.stringify({
       chat_id: TELEGRAM_CHAT_ID,
       text: message,
       parse_mode: 'Markdown',
@@ -49,12 +71,11 @@ const handler = async (event) => {
 
     const options = {
       hostname: 'api.telegram.org',
-      port: 443,
-      path: telegramUrl,
+      path: `/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Content-Length': postData.length,
+        'Content-Length': Buffer.byteLength(requestData),
       },
     };
 
@@ -62,29 +83,16 @@ const handler = async (event) => {
       const req = https.request(options, (res) => {
         let data = '';
 
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
-
-        res.on('end', () => {
-          if (res.statusCode === 200) {
-            console.log('Message sent successfully to Telegram');
-            resolve();
-          } else {
-            console.error('Failed to send message:', data);
-            reject(new Error(data));
-          }
-        });
+        res.on('data', (chunk) => (data += chunk));
+        res.on('end', () => resolve(data));
       });
 
-      req.on('error', (error) => {
-        console.error('Error with request:', error);
-        reject(error);
-      });
-
-      req.write(postData);
+      req.on('error', (e) => reject(e));
+      req.write(requestData);
       req.end();
     });
+
+    console.log('Message sent successfully to Telegram');
 
     return {
       statusCode: 200,
@@ -97,8 +105,4 @@ const handler = async (event) => {
       body: JSON.stringify({ message: 'Failed to send message to Telegram', error: error.message }),
     };
   }
-};
-
-module.exports = {
-  handler,
 };
