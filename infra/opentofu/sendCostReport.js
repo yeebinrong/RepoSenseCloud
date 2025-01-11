@@ -36,8 +36,8 @@ exports.handler = async (event) => {
       Metrics: ['UnblendedCost'],
     });
 
-    const dailyCost = dailyCostData.ResultsByTime[0].Total.UnblendedCost.Amount;
-    const currency = dailyCostData.ResultsByTime[0].Total.UnblendedCost.Unit;
+    const dailyCost = dailyCostData.ResultsByTime[0].Total.UnblendedCost.Amount * 1.35;
+   // const currency = dailyCostData.ResultsByTime[0].Total.UnblendedCost.Unit;
 
     // Fetch monthly cost (start of the month to yesterday)
     const monthlyCostData = await costExplorer.getCostAndUsage({
@@ -49,15 +49,15 @@ exports.handler = async (event) => {
       Metrics: ['UnblendedCost'],
     });
 
-    const monthlyCost = monthlyCostData.ResultsByTime[0].Total.UnblendedCost.Amount;
+    const monthlyCost = monthlyCostData.ResultsByTime[0].Total.UnblendedCost.Amount * 1.35;
 
     // Telegram message content
     const message = `
 \u{1F4C8} *AWS Cost Report*
 ------------------------
 *Date:* ${startDate} (${dayOfWeek})
-*Daily Cost:* ${dailyCost} ${currency}
-*Monthly Cost:* ${monthlyCost} ${currency}
+*Daily Cost:* ${dailyCost} SGD
+*Monthly Cost:* ${monthlyCost} SGD
 `;
 
     // Send message to Telegram
