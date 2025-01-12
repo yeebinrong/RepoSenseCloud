@@ -7,10 +7,18 @@
           <groupId>com.hamburger</groupId>
           <artifactId>reposensecloud</artifactId>
           <version>1.0-SNAPSHOT</version>
+          <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>com.hamburger</groupId>
     <artifactId>rsc-job-service</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

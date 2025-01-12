@@ -8,6 +8,7 @@
     <artifactId>reposensecloud</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    
     <modules>
         <module>rsc-common</module>
         <module>rsc-user-service</module>
