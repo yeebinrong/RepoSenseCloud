@@ -33,6 +33,12 @@ public class UserController {
             return ResponseEntity.status(400).body("Invalid password format");
         }
 
+        // Check if user already exists
+        User existingUser = userService.getUser(req.getUserName());
+        if (existingUser != null) {
+            return ResponseEntity.status(409).body("User already exists");
+        }
+
         System.out.println("Received request to register user: " + req.toString());
         userService.registerUser(req);
         return ResponseEntity.ok("User registered!");
