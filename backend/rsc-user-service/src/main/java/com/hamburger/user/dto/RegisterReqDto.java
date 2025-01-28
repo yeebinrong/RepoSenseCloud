@@ -27,6 +27,14 @@ public class RegisterReqDto {
         return email.matches(regex);
     }
 
+    public boolean isPasswordValid() {
+        if (password == null) {
+            return false;
+        }
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$";
+        return password.matches(regex);
+    }
+
     public String getHashedPassword() {
         System.out.println("Password hashed!");
         return PasswordUtil.hashPassword(password);

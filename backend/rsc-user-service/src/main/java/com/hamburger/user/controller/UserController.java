@@ -29,6 +29,9 @@ public class UserController {
         if (!req.isEmailValid()) {
             return ResponseEntity.status(400).body("Invalid email format");
         }
+        if (!req.isPasswordValid()) {
+            return ResponseEntity.status(400).body("Invalid password format");
+        }
 
         System.out.println("Received request to register user: " + req.toString());
         userService.registerUser(req);
