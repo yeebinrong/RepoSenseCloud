@@ -33,8 +33,11 @@ public class UserController {
     }
 
     @GetMapping("/{userName}")
-    public User getUser(@PathVariable String userName) {
-        // TODO - should return ResponseEntity
-        return userService.getUser(userName);
+    public ResponseEntity<User> getUser(@PathVariable String userName) {
+        User user = userService.getUser(userName);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(user);
     }
 }
