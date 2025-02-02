@@ -60,16 +60,19 @@ public class JobDbDaoIntegrationTest {
                 .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
 
-        dynamoDbClient.createTable(request);
+        if (!dynamoDbClient.listTables().tableNames().contains("rsc-localhost-job-data")) {
+            dynamoDbClient.createTable(request);
+        }
+
 
         jobDbDao = new JobDbDao(dynamoDbClient, enhancedClient);
     }
 
-    @AfterEach
-    public void tearDown() {
-        dynamoDbClient.deleteTable(DeleteTableRequest.builder().tableName("rsc-localhost-job-data").build());
-        dynamoDbClient.close();
-    }
+    // @AfterEach
+    // public void tearDown() {
+    //     dynamoDbClient.deleteTable(DeleteTableRequest.builder().tableName("rsc-localhost-job-data").build());
+    //     dynamoDbClient.close();
+    // }
 
     @Test
     public void testTableCreation() {

@@ -20,8 +20,9 @@ public class JobService {
         return jobDbDao.getAllJobs(owner);
     }
 
-    public List<Job> getJobsByPage(int page, int limit) {
-        return jobDbDao.getJobsByPage(page, limit);
+    public List<Job> getJobsByPage(String owner, int page, int limit) {
+        //TODO paginate ths response
+        return jobDbDao.getAllJobs(owner);
     }
 
     public Job getJobsById(int jobId) {

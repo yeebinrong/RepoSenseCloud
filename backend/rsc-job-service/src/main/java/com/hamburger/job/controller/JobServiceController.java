@@ -23,6 +23,7 @@ import com.hamburger.job.service.JobService;
 @RequestMapping("/api/jobs")
 public class JobServiceController {
     private final JobService jobService;
+    private final String env = "dev";
 
     @Autowired
     public JobServiceController (JobService jobService){
@@ -33,8 +34,8 @@ public class JobServiceController {
     public ResponseEntity<List<Job>> getAllJobs(@AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("retrieving jobs");
         //IMPORTANT TODO: change this! should only return specific user's jobs 
-        //String owner = userDetails.getUsername();
-        String owner = "*";
+        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
+        // String owner = "*";
         try {
             return ResponseEntity.ok(jobService.getAllJobs(owner));
         } catch (Exception e) {
@@ -43,10 +44,11 @@ public class JobServiceController {
     }
 
     @GetMapping(params = {"page", "limit"})
-    public ResponseEntity<List<Job>> getJobsByPage(@RequestParam int page, @RequestParam int limit) {
+    public ResponseEntity<List<Job>> getJobsByPage(@AuthenticationPrincipal UserDetails userDetails, @RequestParam int page, @RequestParam int limit) {
+        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
         System.out.println("retrieving " + page + " of jobs with " + limit + " jobs per page");
         try {
-            return ResponseEntity.ok(jobService.getJobsByPage(page, limit));
+            return ResponseEntity.ok(jobService.getJobsByPage(owner, page, limit));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

@@ -1,7 +1,9 @@
 package com.hamburger.job.models.dao;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -12,7 +14,13 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.Page;
+import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
+import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 @Repository
@@ -30,30 +38,43 @@ public class JobDbDao {
     }
 
     public List<Job> getAllJobs(String owner) {
-        try {
-            System.out.println("Getting all jobs for owner: " + owner);
-            // Create a query condition to find all items with the specified owner
-            QueryConditional queryConditional = QueryConditional.keyEqualTo(Key.builder()
-                    .partitionValue(owner)
-                    .build());
+        List<Job> jobs = new ArrayList<>();
+        Map<String, AttributeValue> lastEvaluatedKey = null;
+    
+    try {
+        QueryConditional queryConditional = QueryConditional.keyEqualTo(
+            Key.builder().partitionValue(owner).build()
+        );
 
-            System.out.println("Query Conditional: " + queryConditional);
-            return jobTable.query(r -> r.queryConditional(queryConditional))
-                    .stream()
-                    .flatMap(page -> page.items().stream())
-                    .toList();
+        do {
+            QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
+                    .queryConditional(queryConditional);
 
-        } catch (Exception e) {
-            System.out.println("Error getting all jobs: " + e.getMessage());
-        }
+            // Apply pagination only if there's a lastEvaluatedKey from the previous query
+            if (lastEvaluatedKey != null) {
+                requestBuilder.exclusiveStartKey(lastEvaluatedKey);
+            }
 
-        return null;
+            PageIterable<Job> queryResult = jobTable.query(requestBuilder.build());
+
+            for (Page<Job> page : queryResult) {
+                jobs.addAll(page.items()); // Collect jobs
+                lastEvaluatedKey = page.lastEvaluatedKey(); // Store lastEvaluatedKey for next iteration
+            }
+
+        } while (lastEvaluatedKey != null); // Keep paginating until no more results
+
+    } catch (Exception e) {
+        System.err.println("Error retrieving jobs: " + e.getMessage());
+        e.printStackTrace();
     }
 
-    public List<Job> getJobsByPage(int page, int limit) {
+    return jobs; // Return all retrieved jobs
+}
+    // public List<Job> getJobsByPage(String owner, int page, int limit) {
         
-        return null;
-    }
+    //     return null;
+    // }
 
     public Job getJobsById(int id) {
         
