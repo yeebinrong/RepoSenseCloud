@@ -1,6 +1,37 @@
 # RepoSenseCloud
 On cloud application based on https://reposense.org/
 
+# Setup update-aws-credentials.py
+1. Ensure you have already added a MFA device to your AWS account, it should prompt to add on login.
+2. (Can skip if already installed) Download and install python from python.org
+3. (Can skip if already installed) Install boto3 using pip `pip install boto3`
+
+   - If `pip` is not accessible, use `pip3`:
+
+     ```sh
+     pip3 install boto3
+     ```
+
+   - If `pip3` is not accessible, use `python3 -m pip`:
+
+     ```sh
+     python3 -m pip install boto3
+     ```
+
+4. Configure AWS SSO using `aws configure sso`
+
+    - SSO session name (Recommended): `my-sso-session`
+    - SSO start URL [None]: `https://hamb-urger.awsapps.com/start`
+    - SSO region: `ap-southeast-1`
+    - SSO registration scopes: `sso:account:access`
+    - Select `DeveloperPermissionSet` role
+    - CLI default client Region: `ap-southeast-1`
+    - CLI default output format: `None`
+    - CLI profile name: `default`
+
+4. Execute the `update-aws-credentials.py` python script to update your aws credentials
+5. (Highly recommended) You can use `alias` (available for both windows and mac) to setup shortcut to execute this script from any directory
+
 # Local development setup
 1. Copy .env.sample to .env and  if necessary update the values accordingly
 2. Run `docker-compose build` and `docker-compose up` to run the LocalStack application

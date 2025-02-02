@@ -1,0 +1,81 @@
+service: identity-center-permission-sets
+
+provider:
+  name: aws
+  region: ap-southeast-1
+  stage: common
+
+custom:
+  ssoInstanceArn: arn:aws:sso:::instance/ssoins-8210f4bb809b5d29
+
+resources:
+  Resources:
+    DeveloperPermissionSet:
+      Type: AWS::SSO::PermissionSet
+      Properties:
+        InstanceArn: ${self:custom.ssoInstanceArn}
+        Name: DeveloperPermissionSet
+        Description: "Developer access permissions"
+        SessionDuration: PT8H
+        ManagedPolicies:
+          - arn:aws:iam::aws:policy/ReadOnlyAccess
+        InlinePolicy:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - ec2:Describe*
+                - ec2:RunInstances
+                - ec2:TerminateInstances
+                - ec2:StartInstances
+                - ec2:StopInstances
+                - s3:CreateBucket
+                - s3:DeleteBucket
+                - s3:ListBucket
+                - s3:GetObject
+                - s3:PutObject
+                - s3:DeleteObject
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:DeleteItem
+                - lambda:InvokeFunction
+                - lambda:CreateFunction
+                - lambda:UpdateFunctionCode
+                - lambda:DeleteFunction
+                - apigateway:GET
+                - apigateway:POST
+                - apigateway:PUT
+                - apigateway:DELETE
+                - logs:DescribeLogGroups
+                - logs:DescribeLogStreams
+                - logs:GetLogEvents
+                - logs:FilterLogEvents
+                - cloudformation:CreateStack
+                - cloudformation:UpdateStack
+                - cloudformation:DeleteStack
+              Resource: "*"
+
+    PowerUserPermissionSet:
+      Type: AWS::SSO::PermissionSet
+      Properties:
+        InstanceArn: ${self:custom.ssoInstanceArn}
+        Name: PowerUserPermissionSet
+        Description: "Power user access permissions"
+        SessionDuration: PT8H
+        ManagedPolicies:
+          - arn:aws:iam::aws:policy/PowerUserAccess
+        InlinePolicy:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - ec2:*
+                - s3:*
+                - dynamodb:*
+                - lambda:*
+                - apigateway:*
+                - logs:*
+                - cloudformation:*
+              Resource: "*"
