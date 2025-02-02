@@ -16,16 +16,16 @@ public class JobService {
         this.jobDbDao = jobDbDao;
     }
 
-    public List<Job> getAllJobs() {
-        return jobDbDao.getAllJobs();
+    public List<Job> getAllJobs(String owner) {
+        return jobDbDao.getAllJobs(owner);
     }
 
     public List<Job> getJobsByPage(int page, int limit) {
         return jobDbDao.getJobsByPage(page, limit);
     }
 
-    public Job getJobsById(int id) {
-        return jobDbDao.getJobsById(id);
+    public Job getJobsById(int jobId) {
+        return jobDbDao.getJobsById(jobId);
     }
 
     public List<Job> getJobsByKeyword(String keyword) {

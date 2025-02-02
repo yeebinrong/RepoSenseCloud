@@ -1,4 +1,7 @@
-package com.hamburger.job.models;
+package com.hamburger.job.models.dto;
+
+import com.hamburger.job.models.Job;
+
 
 
 // API to Service
@@ -19,6 +22,7 @@ package com.hamburger.job.models;
 public class JobApiDto {
 
     private Job job;
+    
     
 
     

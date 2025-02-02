@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,10 +30,13 @@ public class JobServiceController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<Job>> getAllJobs() {
+    public ResponseEntity<List<Job>> getAllJobs(@AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("retrieving jobs");
+        //IMPORTANT TODO: change this! should only return specific user's jobs 
+        //String owner = userDetails.getUsername();
+        String owner = "*";
         try {
-            return ResponseEntity.ok(jobService.getAllJobs());
+            return ResponseEntity.ok(jobService.getAllJobs(owner));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

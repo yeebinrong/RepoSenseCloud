@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 @DynamoDbBean
 public class Job {
 
-    private String id; //set on create
+    private String jobId; //set on create
     private String jobName;
     private String repoLink;
     private String sinceDate;
@@ -31,14 +33,19 @@ public class Job {
     private String startHour;
     private String startDate;
     private String endDate;
+    private String owner;
+    private String status;
 
     public Job () {
-        this.id = UUID.randomUUID().toString();
+        this.jobId = UUID.randomUUID().toString();
     }
 
-    @DynamoDbPartitionKey
-    public String getId() {
-        return id;
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
+    @DynamoDbSortKey
+    public String getJobId() {
+        return jobId;
     }
 
     public String getJobName() {
@@ -191,5 +198,23 @@ public class Job {
 
     public void setEndDate(String endDate) {
         this.endDate = endDate;
+    }
+
+
+    @DynamoDbPartitionKey
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
