@@ -38,8 +38,8 @@ On cloud application based on https://reposense.org/
 3. Build the rsc-cicd-image
     a. Navigate to infra/docker-images/rsc-cicd-image
     b. Run `docker build -t rsc-cicd-image:common -f Dockerfile .` (TODO future improvement will store this image in cloud)
-4. Setup AWS credentials using `aws configure` in command prompt, copy access keys from https://hamb-urger.awsapps.com/start/#/?tab=accounts
-5. CD to the root ReposnseCloud project folder and run the image in interactive bash mode using the command
+4. Ensure AWS credentials are valid by running the `update-aws-credentials.py` from [Setup update-aws-credentials.py](#setup-update-aws-credentialspy)
+5. CD to the root ReposenseCloud project folder and run the image in interactive bash mode using the command
 
     a.
         Windows - `docker run -it -v "%cd%":/home/workspace -v "%userprofile%"/.aws:/root/.aws --network="host" rsc-cicd-image:common bash`, this command binds the current working directory to docker container's `/home/workspace`
@@ -59,12 +59,14 @@ On cloud application based on https://reposense.org/
 
     c. `tofu apply -var "environment=localhost"` (Applies the changes)
 
-7. For testing backend manually
+9. Hot reload
+
+    a. Should be already implemented for rsc-user-service when docker-compose up is ran
+
+8. For testing backend manually
 
     a. Run `mvn clean install` in backend folder (this stores the rsc-common module in local repository so it can be used by other modules), if you only have changes in `rsc-common`, you can run it in `backend/rsc-common` folder to speed this up
 
     b. Run `mvn clean package` in the respective module folder to build the jar, e.g. running it in `backend/rsc-user-service` will build the jar for user-service in the `target` folder, and it can be run by running `java -jar target/rsc-user-service-1.0-SNAPSHOT.jar`
 
     c. You should see something like `Started UserServiceApplication in 1.763 seconds (process running for 2.015)`
-
-    d. Hot reload not yet implemented so have to rebuild the jar and rerun it everytime.
