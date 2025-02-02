@@ -5,7 +5,7 @@ import boto3
 from configparser import ConfigParser
 
 # AWS SSO Profile Name
-SSO_PROFILE = "burger"
+SSO_PROFILE = "default"
 
 def run_sso_login(profile):
     """Runs AWS SSO login for the given profile."""
