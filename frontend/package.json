@@ -65,6 +65,7 @@
     },
     "transformIgnorePatterns": [
       "/node_modules/(?!(styleMock\\.js)$)"
-    ]
+    ],
+    "serverless-finch": "^4.0.4"
   }
 }
