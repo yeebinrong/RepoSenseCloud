@@ -21,8 +21,9 @@ public class JobService {
     }
 
     public List<Job> getJobsByPage(String owner, int page, int limit) {
-        //TODO paginate ths response
-        return jobDbDao.getAllJobs(owner);
+        //TODO: test this
+        List<Job> allJobs = jobDbDao.getAllJobs(owner);
+        return allJobs.subList((page - 1) * limit, Math.min(page * limit, allJobs.size()));
     }
 
     public Job getJobsById(int jobId) {
