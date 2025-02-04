@@ -94,23 +94,29 @@ public class JobDbDao {
 
     public Optional<List<Job>> getJobsByKeyword(String owner, String keyword) {
         //TODO: test this
-        List<Map<String, AttributeValue>> jobs= new ArrayList<>();
-
         try {
-            ScanRequest scanRequest = ScanRequest.builder()
-            .tableName("rsc-localhost-job-data")
-            .filterExpression("contains(jobName, :keyword)")
-            .expressionAttributeValues(Map.of(":keyword", AttributeValue.builder().s(keyword).build()))
-            .build();
+            // Build the filter expression
+            Expression filterExpression = Expression.builder()
+                    .expression("contains(jobName, :keyword) AND #owner = :owner")
+                    .putExpressionValue(":keyword", AttributeValue.builder().s(keyword).build())
+                    .putExpressionName("#owner","owner")
+                    .putExpressionValue(":owner", AttributeValue.builder().s(owner).build())
+                    .build();
+            System.out.println("filterExpression: " + filterExpression);
+            // Build the scan request
+            ScanEnhancedRequest scanRequest = ScanEnhancedRequest.builder()
+                    .filterExpression(filterExpression)
+                    .build();
 
-            ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
-            jobs.addAll(scanResponse.items());
+            // Execute the scan and return the results
+            List<Job> jobs = jobTable.scan(scanRequest).items().stream().collect(Collectors.toList());
+            System.out.println("jobs: " + jobs);
+            return Optional.of(jobs);
         } catch (Exception e) {
             System.err.println("Error retrieving jobs: " + e.getMessage());
             e.printStackTrace();
             return Optional.empty(); // Return an empty Optional on failure
         }
-        return null;
     }
 
     public String getReport (String jobId) {
@@ -265,7 +271,8 @@ public class JobDbDao {
     public List<Job> getJobsByOwner(String owner) {
         // Build the filter expression
         Expression filterExpression = Expression.builder()
-                .expression("owner = :owner")
+                .expression("#owner = :owner")
+                .putExpressionName("#owner", "owner")
                 .putExpressionValue(":owner", AttributeValue.builder().s(owner).build())
                 .build();
 
@@ -281,9 +288,11 @@ public class JobDbDao {
     public List<Job> getJobsByOwnerAndStatus(String owner, String status) {
         // Build the filter expression
         Expression filterExpression = Expression.builder()
-                .expression("owner = :owner and #status = :status")
+                .expression("#owner = :owner and #status = :status")
+                .putExpressionName("#owner", "owner")
                 .putExpressionValue(":owner", AttributeValue.builder().s(owner).build())
                 .putExpressionName("#status", "status")
+                .putExpressionValue(":status", AttributeValue.builder().s(status).build())
                 .build();
 
         // Build the scan request
