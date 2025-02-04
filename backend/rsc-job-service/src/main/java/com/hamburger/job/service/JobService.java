@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JobService {
@@ -16,25 +17,25 @@ public class JobService {
         this.jobDbDao = jobDbDao;
     }
 
-    public List<Job> getAllJobs(String owner) {
+    public Optional<List<Job>> getAllJobs(String owner) {
         return jobDbDao.getAllJobs(owner);
     }
 
     public List<Job> getJobsByPage(String owner, int page, int limit) {
         //TODO: test this
-        List<Job> allJobs = jobDbDao.getAllJobs(owner);
+        List<Job> allJobs = (jobDbDao.getAllJobs(owner) == null) ? List.of() : jobDbDao.getAllJobs(owner).get();
         return allJobs.subList((page - 1) * limit, Math.min(page * limit, allJobs.size()));
     }
 
-    public Job getJobsById(int jobId) {
-        return jobDbDao.getJobsById(jobId);
+    public Optional<Job> getJobsById(String owner, String jobId) {
+        return jobDbDao.getJobsById(owner, jobId);
     }
 
-    public List<Job> getJobsByKeyword(String keyword) {
-        return jobDbDao.getJobsByKeyword(keyword);
+    public Optional<List<Job>> getJobsByKeyword(String owner, String keyword) {
+        return jobDbDao.getJobsByKeyword(owner, keyword);
     }
 
-    public String getReport (int jobId) {
+    public String getReport (String jobId) {
         return jobDbDao.getReport(jobId);
         //return s3 presigned url
     }
@@ -47,27 +48,27 @@ public class JobService {
         jobDbDao.createJob(job);
     }
 
-    public void startJob(int jobId) {
-        jobDbDao.startJob(jobId);
+    public void startJob(String owner, String jobId) {
+        jobDbDao.startJob(owner, jobId);
     }
 
-    public void editJob(int jobId, Job job) {
-        jobDbDao.editJob(jobId, job);
+    public void editJob(Job job) {
+        jobDbDao.editJob(job);
     }
 
-    public void deleteJob(int jobId) {
+    public void deleteJob(String owner, String jobId) {
         jobDbDao.deleteJob(jobId);
     }
 
-    public void deleteAllJob() {
-        jobDbDao.deleteAllJob();
+    public void deleteAllJob(String owner) {
+        jobDbDao.deleteAllJob(owner);
     }
 
-    public void deleteAllScheduledJobs() {
-        jobDbDao.deleteAllScheduledJobs();
+    public void deleteAllScheduledJobs(String owner) {
+        jobDbDao.deleteAllScheduledJobs(owner);
     }
 
-    public void deleteAllCompletedJobs() {
-        jobDbDao.deleteAllCompletedJobs();
+    public void deleteAllCompletedJobs(String owner) {
+        jobDbDao.deleteAllCompletedJobs(owner);
     }
 }

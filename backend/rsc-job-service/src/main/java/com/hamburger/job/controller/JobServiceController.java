@@ -1,5 +1,6 @@
 package com.hamburger.job.controller;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,27 +56,29 @@ public class JobServiceController {
     }
 
     @GetMapping("/{id}")
-    public  ResponseEntity<Job> getJobById(@PathVariable int jobId) {
+    public  ResponseEntity<Optional<Job>> getJobById(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String jobId) {
+        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
         System.out.println("retrieving job with id " + jobId);
         try {
-            return ResponseEntity.ok(jobService.getJobsById(jobId));
+            return ResponseEntity.ok(jobService.getJobsById(owner, jobId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/search/{keyword}")
-    public  ResponseEntity<List<Job>> getJobsByKeyword(@PathVariable String keyword) {
+    public  ResponseEntity<Optional<List<Job>>> getJobsByKeyword(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String keyword) {
+        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
         System.out.println("retrieving jobs with keyword " + keyword);
         try {
-            return ResponseEntity.ok(jobService.getJobsByKeyword(keyword));
+            return ResponseEntity.ok(jobService.getJobsByKeyword(owner, keyword));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/report/{jobId}")
-    public ResponseEntity<String> getReport(@PathVariable int jobId) {
+    public ResponseEntity<String> getReport(@PathVariable String jobId) {
         System.out.println("retrieving report");
         try {
             return ResponseEntity.ok(jobService.getReport(jobId));
@@ -107,10 +110,11 @@ public class JobServiceController {
     }
 
     @PostMapping("/start/{jobId}")
-    public ResponseEntity<Void> startJob(@PathVariable int jobId) {
+    public ResponseEntity<Void> startJob(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String jobId) {
+        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
         System.out.println("starting job with id " + jobId);
         try {
-            jobService.startJob(jobId);
+            jobService.startJob(owner, jobId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -118,10 +122,10 @@ public class JobServiceController {
     }
 
     @PatchMapping("/edit/{jobId}")
-    public ResponseEntity<Void> updateJob(@PathVariable int jobId, @RequestBody Job job) {
-        System.out.println("updating job with id " + jobId);
+    public ResponseEntity<Void> updateJob(@RequestBody Job job) {
+        System.out.println("updating job with id " + job.getJobId());
         try {
-            jobService.editJob(jobId,job);
+            jobService.editJob(job);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -129,10 +133,11 @@ public class JobServiceController {
     }
 
     @DeleteMapping("/delete/{jobId}")
-    public ResponseEntity<Void> deleteJob(@PathVariable int jobId) {
+    public ResponseEntity<Void> deleteJob(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String jobId) {
+        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
         System.out.println("deleting job with id " + jobId);
         try {
-            jobService.deleteJob(jobId);
+            jobService.deleteJob(owner, jobId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -140,10 +145,11 @@ public class JobServiceController {
     }
 
     @DeleteMapping("/delete-all")
-    public ResponseEntity<Void> deleteAllJobs() {
+    public ResponseEntity<Void> deleteAllJobs(@AuthenticationPrincipal UserDetails userDetails) {
+        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
         System.out.println("deleting all jobs");
         try {
-            jobService.deleteAllJob();
+            jobService.deleteAllJob(owner);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -151,10 +157,11 @@ public class JobServiceController {
     }
 
     @DeleteMapping("/delete-all-scheduled")
-    public ResponseEntity<Void> deleteAllScheduledJobs() {
+    public ResponseEntity<Void> deleteAllScheduledJobs(@AuthenticationPrincipal UserDetails userDetails) {
+        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
         System.out.println("deleting all upcoming scheduled jobs");
         try {
-            jobService.deleteAllScheduledJobs();
+            jobService.deleteAllScheduledJobs(owner);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -162,10 +169,11 @@ public class JobServiceController {
     }
 
     @DeleteMapping("/delete-all-completed")
-    public ResponseEntity<Void> deleteAllCompletedJobs() {
+    public ResponseEntity<Void> deleteAllCompletedJobs(@AuthenticationPrincipal UserDetails userDetails) {
+        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
         System.out.println("deleting all completed jobs");
         try {
-            jobService.deleteAllCompletedJobs();
+            jobService.deleteAllCompletedJobs(owner);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -12,16 +13,19 @@ import com.hamburger.job.models.Job;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
-import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
+import software.amazon.awssdk.enhanced.dynamodb.model.UpdateItemEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
+import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
 @Repository
 public class JobDbDao {
@@ -37,7 +41,7 @@ public class JobDbDao {
                 .build();
     }
 
-    public List<Job> getAllJobs(String owner) {
+    public Optional<List<Job>> getAllJobs(String owner) {
         List<Job> jobs = new ArrayList<>();
         Map<String, AttributeValue> lastEvaluatedKey = null;
     
@@ -61,32 +65,53 @@ public class JobDbDao {
                 jobs.addAll(page.items()); // Collect jobs
                 lastEvaluatedKey = page.lastEvaluatedKey(); // Store lastEvaluatedKey for next iteration
             }
-
         } while (lastEvaluatedKey != null); // Keep paginating until no more results
-
+        return Optional.ofNullable(jobs);
     } catch (Exception e) {
         System.err.println("Error retrieving jobs: " + e.getMessage());
         e.printStackTrace();
+        return Optional.empty(); // Return an empty Optional on failure
     }
-
-    return jobs; // Return all retrieved jobs
 }
     // public List<Job> getJobsByPage(String owner, int page, int limit) {
         
     //     return null;
     // }
 
-    public Job getJobsById(int id) {
-        
+    public Optional<Job> getJobsById(String owner, String jobId) {
+        //TODO: test this
+        try{
+            Job job = jobTable.getItem(Key.builder().partitionValue(owner).sortValue(jobId).build());
+            return Optional.ofNullable(job);
+        } catch (Exception e) {
+            System.err.println("Error retrieving job: " + e.getMessage());
+            e.printStackTrace();
+            return Optional.empty(); // Return an empty Optional on failure   
+        }
+    }
+
+    public Optional<List<Job>> getJobsByKeyword(String owner, String keyword) {
+        //TODO: test this
+        List<Map<String, AttributeValue>> jobs= new ArrayList<>();
+
+        try {
+            ScanRequest scanRequest = ScanRequest.builder()
+            .tableName("rsc-localhost-job-data")
+            .filterExpression("contains(jobName, :keyword)")
+            .expressionAttributeValues(Map.of(":keyword", AttributeValue.builder().s(keyword).build()))
+            .build();
+
+            ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
+            jobs.addAll(scanResponse.items());
+        } catch (Exception e) {
+            System.err.println("Error retrieving jobs: " + e.getMessage());
+            e.printStackTrace();
+            return Optional.empty(); // Return an empty Optional on failure
+        }
         return null;
     }
 
-    public List<Job> getJobsByKeyword(String keyword) {
-        
-        return null;
-    }
-
-    public String getReport (int jobId) {
+    public String getReport (String jobId) {
         
         return null; //return s3 presigned url
     }
@@ -96,30 +121,75 @@ public class JobDbDao {
     }
 
     public void createJob(Job job) {
+        try{
+            jobTable.putItem(job);
+        }catch (Exception e) {
+            System.err.println("Error creating job: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void startJob(String owner, String jobId) {
+        //TODO: test this
+        String newStatus = "RUNNING";
+
+        try {
+            // Retrieve the existing job
+            Job job = jobTable.getItem(Key.builder()
+                    .partitionValue(owner)
+                    .sortValue(jobId)
+                    .build());
+    
+            if (job != null && "PENDING".equals(job.getStatus())) {
+                // Update the status
+                job.setStatus(newStatus);
+                jobTable.updateItem(job);
+                System.out.println("Job started successfully.");
+            } else {
+                System.err.println("Job cannot be started because it is not in the PENDING state or Job doesn't exist.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error starting job: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+
+    public void editJob(Job jobReplacement) {
+        //TODO: test this
+        try {
+            // Retrieve the existing job
+            Job jobTarget = jobTable.getItem(Key.builder()
+                    .partitionValue(jobReplacement.getOwner())
+                    .sortValue(jobReplacement.getJobId())
+                    .build());
+    
+            if (jobTarget != null && "COMPLETED".equals(jobTarget.getStatus())) {
+                // Update the status
+                jobTable.updateItem(jobReplacement);
+                System.out.println("Job updated  successfully.");
+            } else {
+                System.err.println("Job cannot be updated because it is completed or Job doesn't exist.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error starting job: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteJob(String jobId) {
         
     }
 
-    public void startJob(int jobId) {
+    public void deleteAllJob(String owner) {
         
     }
 
-    public void editJob(int jobId, Job job) {
+    public void deleteAllScheduledJobs(String owner) {
         
     }
 
-    public void deleteJob(int jobId) {
-        
-    }
-
-    public void deleteAllJob() {
-        
-    }
-
-    public void deleteAllScheduledJobs() {
-        
-    }
-
-    public void deleteAllCompletedJobs() {
+    public void deleteAllCompletedJobs(String owner) {
         
     }
 
