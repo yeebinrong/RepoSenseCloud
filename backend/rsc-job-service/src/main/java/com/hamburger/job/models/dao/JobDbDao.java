@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -21,6 +22,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.UpdateItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
@@ -177,20 +179,120 @@ public class JobDbDao {
         }
     }
 
-    public void deleteJob(String jobId) {
-        
+    public void deleteJob(String owner, String jobId) {
+        //TODO: test this
+        try {
+            // Retrieve the existing job
+            Job jobTarget = jobTable.getItem(Key.builder()
+                    .partitionValue(owner)
+                    .sortValue(jobId)
+                    .build());
+            
+            if (jobTarget != null) {
+                jobTable.deleteItem(jobTarget);
+                System.out.println("Job deleted successfully.");
+            } else {
+                System.err.println("Job doesn't exist.");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error deleting job: " + e.getMessage());
+            e.printStackTrace();
+
+        }
     }
 
     public void deleteAllJob(String owner) {
-        
+        //TODO: test this
+        try {
+            // Retrieve the existing jobs
+            List<Job> jobs = getJobsByOwner(owner);
+            
+            if (jobs != null) {
+                for (Job job : jobs) {
+                    jobTable.deleteItem(job);
+                }
+                System.out.println("All jobs deleted successfully.");
+            } else {
+                System.err.println("No jobs found.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error deleting all jobs: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void deleteAllScheduledJobs(String owner) {
-        
+        //TODO: test this
+        try {
+            // Retrieve jobs of owner and scheduled status
+            List<Job> jobs = getJobsByOwnerAndStatus(owner,"SCHEDULED");
+            
+            if (jobs != null) {
+                for (Job job : jobs) {
+                    jobTable.deleteItem(job);
+                }
+                System.out.println("All scheduled jobs deleted successfully.");
+            } else {
+                System.err.println("No jobs found.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error deleting all jobs: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void deleteAllCompletedJobs(String owner) {
-        
+                //TODO: test this
+                try {
+                    // Retrieve jobs of owner and completed status
+                    List<Job> jobs = getJobsByOwnerAndStatus(owner,"COMPLETED");
+                    
+                    if (jobs != null) {
+                        for (Job job : jobs) {
+                            jobTable.deleteItem(job);
+                        }
+                        System.out.println("All scheduled jobs deleted successfully.");
+                    } else {
+                        System.err.println("No jobs found.");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error deleting all jobs: " + e.getMessage());
+                    e.printStackTrace();
+                }
+    }
+
+    public List<Job> getJobsByOwner(String owner) {
+        // Build the filter expression
+        Expression filterExpression = Expression.builder()
+                .expression("owner = :owner")
+                .putExpressionValue(":owner", AttributeValue.builder().s(owner).build())
+                .build();
+
+        // Build the scan request
+        ScanEnhancedRequest scanRequest = ScanEnhancedRequest.builder()
+                .filterExpression(filterExpression)
+                .build();
+
+        // Execute the scan and return the results
+        return jobTable.scan(scanRequest).items().stream().collect(Collectors.toList());
+    }
+
+    public List<Job> getJobsByOwnerAndStatus(String owner, String status) {
+        // Build the filter expression
+        Expression filterExpression = Expression.builder()
+                .expression("owner = :owner and #status = :status")
+                .putExpressionValue(":owner", AttributeValue.builder().s(owner).build())
+                .putExpressionName("#status", "status")
+                .build();
+
+        // Build the scan request
+        ScanEnhancedRequest scanRequest = ScanEnhancedRequest.builder()
+                .filterExpression(filterExpression)
+                .build();
+
+        // Execute the scan and return the results
+        return jobTable.scan(scanRequest).items().stream().collect(Collectors.toList());
     }
 
 

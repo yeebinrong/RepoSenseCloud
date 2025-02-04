@@ -57,7 +57,7 @@ public class JobService {
     }
 
     public void deleteJob(String owner, String jobId) {
-        jobDbDao.deleteJob(jobId);
+        jobDbDao.deleteJob(owner, jobId);
     }
 
     public void deleteAllJob(String owner) {

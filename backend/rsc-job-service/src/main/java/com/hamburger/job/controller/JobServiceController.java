@@ -32,7 +32,7 @@ public class JobServiceController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<Job>> getAllJobs(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Optional<List<Job>>> getAllJobs(@AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("retrieving jobs");
         //IMPORTANT TODO: change this! should only return specific user's jobs 
         String owner = env.equals("dev") ? "*" : userDetails.getUsername();
