@@ -46,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "serverless-finch": "^4.0.4",
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-react": "^7.26.3",
