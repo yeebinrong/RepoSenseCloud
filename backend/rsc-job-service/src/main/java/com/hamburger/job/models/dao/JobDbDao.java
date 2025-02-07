@@ -38,9 +38,10 @@ public class JobDbDao {
     @Autowired
     public JobDbDao(DynamoDbClient dynamoDbClient, DynamoDbEnhancedClient enhancedDynamoDbClient) {
             this.jobTable = enhancedDynamoDbClient.table("rsc-localhost-job-data", TableSchema.fromBean(Job.class));
-            this.dynamoDbClient = DynamoDbClient.builder()
-                .endpointOverride(URI.create("http://localhost:4566"))
-                .build();
+            // this.dynamoDbClient = DynamoDbClient.builder()
+            //     .endpointOverride(URI.create("http://localhost:4566"))
+            //     .build();
+            this.dynamoDbClient = dynamoDbClient;
     }
 
     public Optional<List<Job>> getAllJobs(String owner) {
