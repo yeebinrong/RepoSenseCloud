@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+// import org.springframework.security.core.annotation.AuthenticationPrincipal;
+// import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +25,7 @@ import com.hamburger.job.service.JobService;
 public class JobServiceController {
     private final JobService jobService;
     private final String env = "dev";
+    private String username = "user1";
 
     @Autowired
     public JobServiceController (JobService jobService){
@@ -32,10 +33,10 @@ public class JobServiceController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Optional<List<Job>>> getAllJobs(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Optional<List<Job>>> getAllJobs() {
         System.out.println("retrieving jobs");
         //IMPORTANT TODO: change this! should only return specific user's jobs 
-        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
+        String owner = env.equals("dev") ? "*" : username;
         // String owner = "*";
         try {
             return ResponseEntity.ok(jobService.getAllJobs(owner));
@@ -45,8 +46,8 @@ public class JobServiceController {
     }
 
     @GetMapping(params = {"page", "limit"})
-    public ResponseEntity<List<Job>> getJobsByPage(@AuthenticationPrincipal UserDetails userDetails, @RequestParam int page, @RequestParam int limit) {
-        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
+    public ResponseEntity<List<Job>> getJobsByPage( @RequestParam int page, @RequestParam int limit) {
+        String owner = env.equals("dev") ? "*" : username;
         System.out.println("retrieving " + page + " of jobs with " + limit + " jobs per page");
         try {
             return ResponseEntity.ok(jobService.getJobsByPage(owner, page, limit));
@@ -56,8 +57,8 @@ public class JobServiceController {
     }
 
     @GetMapping("/{id}")
-    public  ResponseEntity<Optional<Job>> getJobById(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String jobId) {
-        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
+    public  ResponseEntity<Optional<Job>> getJobById( @PathVariable String jobId) {
+        String owner = env.equals("dev") ? "*" : username;
         System.out.println("retrieving job with id " + jobId);
         try {
             return ResponseEntity.ok(jobService.getJobsById(owner, jobId));
@@ -67,8 +68,8 @@ public class JobServiceController {
     }
 
     @GetMapping("/search/{keyword}")
-    public  ResponseEntity<Optional<List<Job>>> getJobsByKeyword(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String keyword) {
-        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
+    public  ResponseEntity<Optional<List<Job>>> getJobsByKeyword( @PathVariable String keyword) {
+        String owner = env.equals("dev") ? "*" : username;
         System.out.println("retrieving jobs with keyword " + keyword);
         try {
             return ResponseEntity.ok(jobService.getJobsByKeyword(owner, keyword));
@@ -110,8 +111,8 @@ public class JobServiceController {
     }
 
     @PostMapping("/start/{jobId}")
-    public ResponseEntity<Void> startJob(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String jobId) {
-        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
+    public ResponseEntity<Void> startJob( @PathVariable String jobId) {
+        String owner = env.equals("dev") ? "*" : username;
         System.out.println("starting job with id " + jobId);
         try {
             jobService.startJob(owner, jobId);
@@ -133,8 +134,8 @@ public class JobServiceController {
     }
 
     @DeleteMapping("/delete/{jobId}")
-    public ResponseEntity<Void> deleteJob(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String jobId) {
-        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
+    public ResponseEntity<Void> deleteJob( @PathVariable String jobId) {
+        String owner = env.equals("dev") ? "*" : username;
         System.out.println("deleting job with id " + jobId);
         try {
             jobService.deleteJob(owner, jobId);
@@ -145,8 +146,8 @@ public class JobServiceController {
     }
 
     @DeleteMapping("/delete-all")
-    public ResponseEntity<Void> deleteAllJobs(@AuthenticationPrincipal UserDetails userDetails) {
-        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
+    public ResponseEntity<Void> deleteAllJobs() {
+        String owner = env.equals("dev") ? "*" : username;
         System.out.println("deleting all jobs");
         try {
             jobService.deleteAllJob(owner);
@@ -157,8 +158,8 @@ public class JobServiceController {
     }
 
     @DeleteMapping("/delete-all-scheduled")
-    public ResponseEntity<Void> deleteAllScheduledJobs(@AuthenticationPrincipal UserDetails userDetails) {
-        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
+    public ResponseEntity<Void> deleteAllScheduledJobs() {
+        String owner = env.equals("dev") ? "*" : username;
         System.out.println("deleting all upcoming scheduled jobs");
         try {
             jobService.deleteAllScheduledJobs(owner);
@@ -169,8 +170,8 @@ public class JobServiceController {
     }
 
     @DeleteMapping("/delete-all-completed")
-    public ResponseEntity<Void> deleteAllCompletedJobs(@AuthenticationPrincipal UserDetails userDetails) {
-        String owner = env.equals("dev") ? "*" : userDetails.getUsername();
+    public ResponseEntity<Void> deleteAllCompletedJobs() {
+        String owner = env.equals("dev") ? "*" : username;
         System.out.println("deleting all completed jobs");
         try {
             jobService.deleteAllCompletedJobs(owner);
