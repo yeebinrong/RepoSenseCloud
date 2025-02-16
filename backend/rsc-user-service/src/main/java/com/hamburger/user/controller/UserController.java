@@ -54,6 +54,11 @@ public class UserController {
         if (user == null || !req.isPasswordValid(req.getPassword(), user.getHashedPassword())) {
             return ResponseEntity.status(400).body("Invalid username or password");
         }
+        String token = req.getToken(req.getUserName());
+        Cookie cookie = new Cookie("JWT", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
         return ResponseEntity.ok("Login successful");
     }
 
