@@ -38,6 +38,34 @@ class LoginComponent extends React.Component {
     return null;
   }
 
+  validateEmail = (email) => {
+    const regex = /[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!regex.test(email) && email.length > 0) {
+      return "Please enter a valid email address";
+    }
+    return null;
+  };
+
+  validatePassword = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]*$/;
+    if (password.length > 0) {
+      if (password.length < 8) {
+        return "Must contain at least 8 or more characters";
+      }
+      if (!regex.test(password)) {
+        return "Must contain a mix of letters and numbers";
+      }
+    }
+    return null;
+  };
+
+  validateConfirmPassword = (password, confirmPassword) => {
+    if (password !== confirmPassword && confirmPassword.length > 0) {
+      return "Passwords did not match";
+    }
+    return null;
+  };
+
   updateState = (target, value) => {
     this.setState({
       [target]: value,
