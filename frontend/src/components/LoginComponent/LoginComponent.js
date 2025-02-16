@@ -70,9 +70,36 @@ class LoginComponent extends React.Component {
   handleSubmit = async (e) => {
     e.preventDefault();
     this.setState({
+      errorMessage: "",
+      emailErrorMessage: "",
+      passwordErrorMessage: "",
+      confirmPasswordErrorMessage: "",
       isButtonClicked: true,
     });
-    const { username, email, password, isRegisterPage } = this.state;
+
+    const { username, email, password, confirmPassword, isRegisterPage } =
+      this.state;
+
+    const emailErrorMessage = this.validateEmail(email);
+    const passwordErrorMessage = this.validatePassword(password);
+    const confirmPasswordErrorMessage = this.validateConfirmPassword(
+      password,
+      confirmPassword
+    );
+
+    if (
+      emailErrorMessage ||
+      passwordErrorMessage ||
+      confirmPasswordErrorMessage
+    ) {
+      this.setState({
+        emailErrorMessage: emailErrorMessage,
+        passwordErrorMessage: passwordErrorMessage,
+        confirmPasswordErrorMessage: confirmPasswordErrorMessage,
+        isButtonClicked: false,
+      });
+      return;
+    }
 
     const url = isRegisterPage
       ? "http://localhost:3001/api/user/register"
@@ -92,7 +119,12 @@ class LoginComponent extends React.Component {
       });
 
       if (!response.ok) {
+        const errorMessage =
+          response.status === 409
+            ? "User already exists"
+            : "Invalid username or password";
         this.setState({
+          errorMessage: errorMessage,
           isButtonClicked: false,
         });
         return;
@@ -107,6 +139,7 @@ class LoginComponent extends React.Component {
       }
     } catch (error) {
       this.setState({
+        errorMessage: "An error occurred. Please try again.",
         isButtonClicked: false,
       });
     }
@@ -148,6 +181,7 @@ class LoginComponent extends React.Component {
     target,
     value,
     label,
+    errorMessage,
     showPassword,
     showPassTarget
   ) => {
@@ -161,6 +195,8 @@ class LoginComponent extends React.Component {
         value={value}
         label={label}
         type={showPassTarget && !showPassword ? "password" : "text"}
+        error={!!errorMessage}
+        helperText={errorMessage}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -194,6 +230,7 @@ class LoginComponent extends React.Component {
           "password",
           this.state.password,
           "Password",
+          this.state.passwordErrorMessage,
           this.state.showPassword,
           "showPassword"
         )}
@@ -277,12 +314,19 @@ class LoginComponent extends React.Component {
           "Username",
           null
         )}
-        {this.renderTextField(true, "email", this.state.email, "Email Address")}
+        {this.renderTextField(
+          true,
+          "email",
+          this.state.email,
+          "Email Address",
+          this.state.emailErrorMessage
+        )}
         {this.renderTextField(
           true,
           "password",
           this.state.password,
           "Password",
+          this.state.passwordErrorMessage,
           this.state.showPassword,
           "showPassword"
         )}
@@ -291,6 +335,7 @@ class LoginComponent extends React.Component {
           "confirmPassword",
           this.state.confirmPassword,
           "Retype password",
+          this.state.confirmPasswordErrorMessage,
           this.state.showConfirmPassword,
           "showConfirmPassword"
         )}
