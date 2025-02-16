@@ -74,7 +74,6 @@ class LoginComponent extends React.Component {
     target,
     value,
     label,
-    helperText,
     showPassword,
     showPassTarget
   ) => {
@@ -102,8 +101,6 @@ class LoginComponent extends React.Component {
             ? this.renderShowPasswordIcon(showPassTarget)
             : "",
         }}
-        error={helperText ? true : false}
-        helperText={helperText}
         required
       />
     );
@@ -112,7 +109,12 @@ class LoginComponent extends React.Component {
   renderLoginForm = () => {
     return (
       <>
-        {this.renderTextField(true, "email", this.state.email, "Email Address")}
+        {this.renderTextField(
+          true,
+          "username",
+          this.state.username,
+          "Username"
+        )}
         {this.renderTextField(
           true,
           "password",
@@ -191,34 +193,6 @@ class LoginComponent extends React.Component {
     );
   };
 
-  validateEmail = (email) => {
-    const regex = /[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regex.test(email) && email.length > 0) {
-      return "Please enter a valid email address";
-    }
-    return null;
-  };
-
-  validatePassword = (password) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]*$/;
-    if (password.length > 0) {
-      if (password.length < 8) {
-        return "Must contain at least 8 or more characters";
-      }
-      if (!regex.test(password)) {
-        return "Must contain a mix of letters and numbers";
-      }
-    }
-    return null;
-  };
-
-  validateConfirmPassword = (password, confirmPassword) => {
-    if (password !== confirmPassword && confirmPassword.length > 0) {
-      return "Passwords did not match";
-    }
-    return null;
-  };
-
   renderRegisterForm = () => {
     return (
       <>
@@ -226,21 +200,20 @@ class LoginComponent extends React.Component {
           true,
           "username",
           this.state.username,
-          "Display Name"
+          "Username",
+          null
         )}
         {this.renderTextField(
-          false,
+          true,
           "email",
           this.state.email,
           "Email Address",
-          this.validateEmail(this.state.email)
         )}
         {this.renderTextField(
           true,
           "password",
           this.state.password,
           "Password",
-          this.validatePassword(this.state.password),
           this.state.showPassword,
           "showPassword"
         )}
@@ -249,10 +222,6 @@ class LoginComponent extends React.Component {
           "confirmPassword",
           this.state.confirmPassword,
           "Retype password",
-          this.validateConfirmPassword(
-            this.state.password,
-            this.state.confirmPassword
-          ),
           this.state.showConfirmPassword,
           "showConfirmPassword"
         )}
