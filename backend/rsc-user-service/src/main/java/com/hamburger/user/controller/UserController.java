@@ -13,6 +13,10 @@ import com.hamburger.user.service.UserService;
 
 import com.hamburger.user.dao.entity.User;
 import com.hamburger.user.dto.RegisterReqDto;
+import com.hamburger.user.dto.LoginReqDto;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/user")
@@ -42,6 +46,15 @@ public class UserController {
         System.out.println("Received request to register user: " + req.toString());
         userService.registerUser(req);
         return ResponseEntity.ok("User registered!");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser(@RequestBody LoginReqDto req, HttpServletResponse response) {
+        User user = userService.getUser(req.getUserName());
+        if (user == null || !req.isPasswordValid(req.getPassword(), user.getHashedPassword())) {
+            return ResponseEntity.status(400).body("Invalid username or password");
+        }
+        return ResponseEntity.ok("Login successful");
     }
 
     @GetMapping("/{userName}")
