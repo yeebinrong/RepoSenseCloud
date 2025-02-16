@@ -72,19 +72,22 @@ class LoginComponent extends React.Component {
     this.setState({
       isButtonClicked: true,
     });
-    const { username, email, password } = this.state;
+    const { username, email, password, isRegisterPage } = this.state;
+
+    const url = isRegisterPage
+      ? "http://localhost:3001/api/user/register"
+      : "http://localhost:3001/api/user/login";
+    const body = isRegisterPage
+      ? JSON.stringify({ userName: username, email: email, password: password })
+      : JSON.stringify({ userName: username, password: password });
 
     try {
-      const response = await fetch("http://localhost:3001/api/user/register", {
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          userName: username,
-          email: email,
-          password: password,
-        }),
+        body: body,
         credentials: "include",
       });
 
@@ -94,8 +97,14 @@ class LoginComponent extends React.Component {
         });
         return;
       }
-      showSuccessBar("User Registered Successfully!");
-      this.props.navigate("/login");
+
+      if (!isRegisterPage) {
+        showSuccessBar("Welcome " + username + "!");
+        this.props.navigate("/home");
+      } else {
+        showSuccessBar("User Registered Successfully!");
+        this.props.navigate("/login");
+      }
     } catch (error) {
       this.setState({
         isButtonClicked: false,
@@ -268,12 +277,7 @@ class LoginComponent extends React.Component {
           "Username",
           null
         )}
-        {this.renderTextField(
-          true,
-          "email",
-          this.state.email,
-          "Email Address",
-        )}
+        {this.renderTextField(true, "email", this.state.email, "Email Address")}
         {this.renderTextField(
           true,
           "password",
