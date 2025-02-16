@@ -16,6 +16,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import { initialLoginPageState } from "../../constants/constants";
+import { showSuccessBar } from "../../constants/snack-bar";
 
 class LoginComponent extends React.Component {
   constructor(props) {
@@ -64,6 +65,42 @@ class LoginComponent extends React.Component {
       return "Passwords did not match";
     }
     return null;
+  };
+
+  handleSubmit = async (e) => {
+    e.preventDefault();
+    this.setState({
+      isButtonClicked: true,
+    });
+    const { username, email, password } = this.state;
+
+    try {
+      const response = await fetch("http://localhost:3001/api/user/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userName: username,
+          email: email,
+          password: password,
+        }),
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        this.setState({
+          isButtonClicked: false,
+        });
+        return;
+      }
+      showSuccessBar("User Registered Successfully!");
+      this.props.navigate("/login");
+    } catch (error) {
+      this.setState({
+        isButtonClicked: false,
+      });
+    }
   };
 
   updateState = (target, value) => {
