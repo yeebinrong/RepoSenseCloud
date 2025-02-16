@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hamburger.user.service.UserService;
+import com.hamburger.user.service.util.JwtUtil;
 
 import com.hamburger.user.dao.entity.User;
 import com.hamburger.user.dto.RegisterReqDto;
 import com.hamburger.user.dto.LoginReqDto;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
@@ -60,6 +62,23 @@ public class UserController {
         cookie.setPath("/");
         response.addCookie(cookie);
         return ResponseEntity.ok("Login successful");
+    }
+
+    @PostMapping("/auth")
+    public ResponseEntity<String> validateToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("JWT".equals(cookie.getName())) {
+                    String token = cookie.getValue();
+                    if (JwtUtil.validateToken(token)) {
+                        return ResponseEntity.ok("Token is valid");
+                    }
+                    break;
+                }
+            }
+        }
+        return ResponseEntity.status(401).body("Invalid or expired token");
     }
 
     @GetMapping("/{userName}")

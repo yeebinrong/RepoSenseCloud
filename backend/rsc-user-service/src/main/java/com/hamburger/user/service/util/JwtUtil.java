@@ -1,8 +1,11 @@
 package com.hamburger.user.service.util;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 
 import javax.crypto.SecretKey;
 
@@ -19,6 +22,20 @@ public class JwtUtil {
             .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
             .signWith(getSigningKey())
             .compact();
+    }
+
+    public static boolean validateToken(String token) {
+       try {
+           Jwts.parser().verifyWith(getSigningKey()).build().parse(token);
+           return true;
+       } catch (SignatureException e) {
+           System.out.println("Invalid JWT signature: " + e.getMessage());
+       } catch (MalformedJwtException e) {
+           System.out.println("Invalid JWT token: " + e.getMessage());
+       } catch (ExpiredJwtException e) {
+           System.out.println("JWT token is expired: " + e.getMessage());
+       }
+        return false;
     }
 
     private static SecretKey getSigningKey() {
