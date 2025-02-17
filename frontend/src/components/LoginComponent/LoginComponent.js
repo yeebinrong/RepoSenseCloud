@@ -16,6 +16,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import { initialLoginPageState } from "../../constants/constants";
+import { showSuccessBar } from "../../constants/snack-bar";
 
 class LoginComponent extends React.Component {
   constructor(props) {
@@ -37,6 +38,112 @@ class LoginComponent extends React.Component {
     // Return null to indicate no change to state.
     return null;
   }
+
+  validateEmail = (email) => {
+    const regex = /[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!regex.test(email) && email.length > 0) {
+      return "Please enter a valid email address";
+    }
+    return null;
+  };
+
+  validatePassword = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]*$/;
+    if (password.length > 0) {
+      if (password.length < 8) {
+        return "Must contain at least 8 or more characters";
+      }
+      if (!regex.test(password)) {
+        return "Must contain a mix of letters and numbers";
+      }
+    }
+    return null;
+  };
+
+  validateConfirmPassword = (password, confirmPassword) => {
+    if (password !== confirmPassword && confirmPassword.length > 0) {
+      return "Passwords did not match";
+    }
+    return null;
+  };
+
+  handleSubmit = async (e) => {
+    e.preventDefault();
+    this.setState({
+      errorMessage: "",
+      emailErrorMessage: "",
+      passwordErrorMessage: "",
+      confirmPasswordErrorMessage: "",
+      isButtonClicked: true,
+    });
+
+    const { username, email, password, confirmPassword, isRegisterPage } =
+      this.state;
+
+    const emailErrorMessage = this.validateEmail(email);
+    const passwordErrorMessage = this.validatePassword(password);
+    const confirmPasswordErrorMessage = this.validateConfirmPassword(
+      password,
+      confirmPassword
+    );
+
+    if (
+      emailErrorMessage ||
+      passwordErrorMessage ||
+      confirmPasswordErrorMessage
+    ) {
+      this.setState({
+        emailErrorMessage: emailErrorMessage,
+        passwordErrorMessage: passwordErrorMessage,
+        confirmPasswordErrorMessage: confirmPasswordErrorMessage,
+        isButtonClicked: false,
+      });
+      return;
+    }
+
+    const url = isRegisterPage
+      ? "http://localhost:3001/api/user/register"
+      : "http://localhost:3001/api/user/login";
+    const body = isRegisterPage
+      ? JSON.stringify({ userName: username, email: email, password: password })
+      : JSON.stringify({ userName: username, password: password });
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: body,
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorMessage =
+          response.status === 409
+            ? "User already exists"
+            : "Invalid username or password";
+        this.setState({
+          errorMessage: errorMessage,
+          isButtonClicked: false,
+        });
+        return;
+      }
+
+      if (!isRegisterPage) {
+        showSuccessBar("Welcome " + username + "!");
+        this.props.navigate("/home");
+      } else {
+        showSuccessBar("User Registered Successfully!");
+        this.props.navigate("/login");
+      }
+    } catch (error) {
+      this.setState({
+        errorMessage: "An error occurred. Please try again.",
+        isButtonClicked: false,
+      });
+    }
+  };
 
   updateState = (target, value) => {
     this.setState({
@@ -74,7 +181,7 @@ class LoginComponent extends React.Component {
     target,
     value,
     label,
-    helperText,
+    errorMessage,
     showPassword,
     showPassTarget
   ) => {
@@ -88,6 +195,8 @@ class LoginComponent extends React.Component {
         value={value}
         label={label}
         type={showPassTarget && !showPassword ? "password" : "text"}
+        error={!!errorMessage}
+        helperText={errorMessage}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -102,8 +211,6 @@ class LoginComponent extends React.Component {
             ? this.renderShowPasswordIcon(showPassTarget)
             : "",
         }}
-        error={helperText ? true : false}
-        helperText={helperText}
         required
       />
     );
@@ -112,12 +219,18 @@ class LoginComponent extends React.Component {
   renderLoginForm = () => {
     return (
       <>
-        {this.renderTextField(true, "email", this.state.email, "Email Address")}
+        {this.renderTextField(
+          true,
+          "username",
+          this.state.username,
+          "Username"
+        )}
         {this.renderTextField(
           true,
           "password",
           this.state.password,
           "Password",
+          this.state.passwordErrorMessage,
           this.state.showPassword,
           "showPassword"
         )}
@@ -191,34 +304,6 @@ class LoginComponent extends React.Component {
     );
   };
 
-  validateEmail = (email) => {
-    const regex = /[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regex.test(email) && email.length > 0) {
-      return "Please enter a valid email address";
-    }
-    return null;
-  };
-
-  validatePassword = (password) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]*$/;
-    if (password.length > 0) {
-      if (password.length < 8) {
-        return "Must contain at least 8 or more characters";
-      }
-      if (!regex.test(password)) {
-        return "Must contain a mix of letters and numbers";
-      }
-    }
-    return null;
-  };
-
-  validateConfirmPassword = (password, confirmPassword) => {
-    if (password !== confirmPassword && confirmPassword.length > 0) {
-      return "Passwords did not match";
-    }
-    return null;
-  };
-
   renderRegisterForm = () => {
     return (
       <>
@@ -226,21 +311,22 @@ class LoginComponent extends React.Component {
           true,
           "username",
           this.state.username,
-          "Display Name"
+          "Username",
+          null
         )}
         {this.renderTextField(
-          false,
+          true,
           "email",
           this.state.email,
           "Email Address",
-          this.validateEmail(this.state.email)
+          this.state.emailErrorMessage
         )}
         {this.renderTextField(
           true,
           "password",
           this.state.password,
           "Password",
-          this.validatePassword(this.state.password),
+          this.state.passwordErrorMessage,
           this.state.showPassword,
           "showPassword"
         )}
@@ -249,10 +335,7 @@ class LoginComponent extends React.Component {
           "confirmPassword",
           this.state.confirmPassword,
           "Retype password",
-          this.validateConfirmPassword(
-            this.state.password,
-            this.state.confirmPassword
-          ),
+          this.state.confirmPasswordErrorMessage,
           this.state.showConfirmPassword,
           "showConfirmPassword"
         )}
