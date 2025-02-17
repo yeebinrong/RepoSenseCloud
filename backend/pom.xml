@@ -27,6 +27,7 @@
         <spring.security.version>6.3.3</spring.security.version>
         <aws.version>2.28.9</aws.version>
         <lombok.version>1.18.34</lombok.version>
+        <jjwt.version>0.12.6</jjwt.version>
     </properties>
 
     <!-- Dependency management to manage the versions for dependencies -->
@@ -91,6 +92,21 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
             </dependency>
             <!-- END - Other dependencies -->
         </dependencies>
