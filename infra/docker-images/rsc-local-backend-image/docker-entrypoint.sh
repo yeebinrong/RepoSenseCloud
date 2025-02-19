@@ -11,4 +11,4 @@ do
 done >/dev/null 2>&1 &
 
 # Run the Spring Boot application
-mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dspring.devtools.restart.enabled=false"
