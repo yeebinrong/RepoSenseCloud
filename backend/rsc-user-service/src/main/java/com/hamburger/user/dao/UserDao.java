@@ -78,6 +78,7 @@ public interface UserDao {
                 .id(resp.get("id").s())
                 .userName(resp.get("userName").s())
                 .email(resp.get("email").s())
+                .hashedPassword(resp.get("hashedPassword").s())
                 .build();
         }
     }
