@@ -16,9 +16,9 @@ import com.hamburger.user.dao.entity.User;
 import com.hamburger.user.dto.RegisterReqDto;
 import com.hamburger.user.dto.LoginReqDto;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/user")
