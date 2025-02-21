@@ -144,40 +144,41 @@ public class JobServiceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    
 
-    @DeleteMapping("/delete-all")
-    public ResponseEntity<Void> deleteAllJobs() {
-        String owner = env.equals("dev") ? "*" : username;
-        System.out.println("deleting all jobs");
-        try {
-            jobService.deleteAllJob(owner);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+//     @DeleteMapping("/delete-all")
+//     public ResponseEntity<Void> deleteAllJobs() {
+//         String owner = env.equals("dev") ? "*" : username;
+//         System.out.println("deleting all jobs");
+//         try {
+//             jobService.deleteAllJob(owner);
+//             return ResponseEntity.ok().build();
+//         } catch (Exception e) {
+//             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//         }
+//     }
 
-    @DeleteMapping("/delete-all-scheduled")
-    public ResponseEntity<Void> deleteAllScheduledJobs() {
-        String owner = env.equals("dev") ? "*" : username;
-        System.out.println("deleting all upcoming scheduled jobs");
-        try {
-            jobService.deleteAllScheduledJobs(owner);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+//     @DeleteMapping("/delete-all-scheduled")
+//     public ResponseEntity<Void> deleteAllScheduledJobs() {
+//         String owner = env.equals("dev") ? "*" : username;
+//         System.out.println("deleting all upcoming scheduled jobs");
+//         try {
+//             jobService.deleteAllScheduledJobs(owner);
+//             return ResponseEntity.ok().build();
+//         } catch (Exception e) {
+//             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//         }
+//     }
 
-    @DeleteMapping("/delete-all-completed")
-    public ResponseEntity<Void> deleteAllCompletedJobs() {
-        String owner = env.equals("dev") ? "*" : username;
-        System.out.println("deleting all completed jobs");
-        try {
-            jobService.deleteAllCompletedJobs(owner);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+//     @DeleteMapping("/delete-all-completed")
+//     public ResponseEntity<Void> deleteAllCompletedJobs() {
+//         String owner = env.equals("dev") ? "*" : username;
+//         System.out.println("deleting all completed jobs");
+//         try {
+//             jobService.deleteAllCompletedJobs(owner);
+//             return ResponseEntity.ok().build();
+//         } catch (Exception e) {
+//             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//         }
+//     }
 }

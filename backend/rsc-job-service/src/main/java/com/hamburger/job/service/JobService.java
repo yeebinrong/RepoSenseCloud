@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Collections;
 
 @Service
 public class JobService {
@@ -23,7 +24,7 @@ public class JobService {
 
     public List<Job> getJobsByPage(String owner, int page, int limit) {
         //TODO: test this
-        List<Job> allJobs = (jobDbDao.getAllJobs(owner) == null) ? List.of() : jobDbDao.getAllJobs(owner).get();
+        List<Job> allJobs = (jobDbDao.getAllJobs(owner) == null) ? Collections.emptyList() : jobDbDao.getAllJobs(owner).get();
         return allJobs.subList((page - 1) * limit, Math.min(page * limit, allJobs.size()));
     }
 

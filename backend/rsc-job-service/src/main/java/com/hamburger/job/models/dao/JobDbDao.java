@@ -153,6 +153,7 @@ public class JobDbDao {
                 // Update the status
                 job.setStatus(newStatus);
                 jobTable.updateItem(job);
+                //TODO: Call to simple queue service to start the job
                 System.out.println("Job started successfully.");
             } else {
                 System.err.println("Job cannot be started because it is not in the PENDING state or Job doesn't exist.");
