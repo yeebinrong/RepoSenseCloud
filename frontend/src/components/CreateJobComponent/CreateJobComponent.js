@@ -94,10 +94,8 @@ const CreateJobComponent = (jobId) => {
 
 
     //Retrieve Job Details for Editing
-    useEffect(() => {
+    const loadJobDetails = (jobId) => {
         if (jobId) {
-            // Retrieve job details from API
-            // Set the states with the retrieved job details
             fetch(`/api/job/${jobId}`)
                 .then((response) => response.json())
                 .then(data => {
@@ -105,7 +103,7 @@ const CreateJobComponent = (jobId) => {
                     setRepoLink(data.repoLink);
                     setPeriodMode(data.periodMode);
                     setSinceDate(data.sinceDate);
-                    setUntilDate(data.untilDate);
+                    setUntilDate(data.untilDate); 
                     setOriginalityThreshold(data.originalityThreshold);
                     setTimeZone(data.timeZone);
                     setAuthorship(data.authorship);
@@ -124,6 +122,13 @@ const CreateJobComponent = (jobId) => {
                 .catch((error) => {
                     console.error("Error fetching job details:", error);
                 });
+        }
+    };
+
+    // Keep the useEffect but also expose the load function
+    useEffect(() => {
+        if (jobId != null) {
+            loadJobDetails(jobId);
         }
     }, [jobId]);
 
@@ -666,8 +671,6 @@ const CreateJobComponent = (jobId) => {
 
     const validateForm = () => {
         return new Promise((resolve, reject) => {
-            let isValid = true; //mock test
-
             if (jobName === "") {
                 return reject(new Error("Job name cannot be blank."));
             }
@@ -708,14 +711,13 @@ const CreateJobComponent = (jobId) => {
 
     //Submit Job Form
     const submitJobForm = async () => {
+        console.log("submit test");
         let formData = {};
-        validateForm().then(() => {
-            handleModalClose();
-            showSuccessBar("Job Created Successfully");
-            console.log("Submitting job form for", localStorage.getItem("JWT"));
+        try {
+            await validateForm();
             formData = {
                 jobName,
-                repoLink,
+                repoLink: repoLink.map(link => link.value).join(" "),
                 sinceDate,
                 untilDate,
                 period,
@@ -732,24 +734,29 @@ const CreateJobComponent = (jobId) => {
                 startHour,
                 startMinute,
             };
-        }).catch((error) => {
-            console.error("Form Input Failed Validation", error);
-            showErrorBar(error);
-        });
-
-        try {
-            const response = await fetch('https://this-is-a-fake-url.com', {
+            console.log(JSON.stringify(formData));
+    
+            const response = await fetch(`http://localhost:3002/api/jobs/create`, { // Use environment variable for API URL
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem("JWT")}`,
                 },
+                credentials: 'include',
                 body: JSON.stringify(formData),
             });
+    
+            if (response.ok) {
+                console.log("Job created successfully");
+                showSuccessBar("Job Created Successfully");
+                handleModalClose();
+            } else {
+                console.error("Error creating job: ", response.error);
+                showErrorBar("Error Creating Job");
+            }
         } catch (error) {
-            console.error("Error submitting job form:", error);
+            console.error("Form Submission Error: ", error);
+            showErrorBar(error.message);
         }
-
     }
 
 

@@ -30,7 +30,7 @@ public class JobServiceController {
     private final JobService jobService;
     private final JobUserAuth jobUserAuth;
     private final JwtHelper jwtHelper;
-    private final String env = "dev"; // change to prod to use auth
+    private final String env = "prod"; // change to prod to use auth
 
     String jwtToken;
     boolean isAuth;

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class JwtHelper {
     
     public String extractJwtFromRequest(HttpServletRequest request) {
+        System.out.println("Extracting JWT from request: " + request);
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {

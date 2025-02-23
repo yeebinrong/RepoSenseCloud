@@ -37,7 +37,12 @@ public class Job {
     private String status;
 
     public Job () {
-        this.jobId = UUID.randomUUID().toString();
+        if(this.jobId == null){
+            this.jobId = UUID.randomUUID().toString();
+        }
+        if(this.status == null){
+            this.status = "Pending";
+        }
     }
 
     public void setJobId(String jobId) {

@@ -15,6 +15,7 @@ public class JobUserAuth {
     }
 
     public Mono<String> authorizeAction (String jwtToken){
+        System.out.println("Authenticating:" + jwtToken);
         return webClient.post()
                 .uri("/authorize")
                 .cookie("JWT", jwtToken)
