@@ -9,12 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hamburger.user.dao.entity.User;
+import com.hamburger.user.dto.LoginReqDto;
+import com.hamburger.user.dto.RegisterReqDto;
 import com.hamburger.user.service.UserService;
 import com.hamburger.user.service.util.JwtUtil;
-
-import com.hamburger.user.dao.entity.User;
-import com.hamburger.user.dto.RegisterReqDto;
-import com.hamburger.user.dto.LoginReqDto;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -72,7 +71,7 @@ public class UserController {
                 if ("JWT".equals(cookie.getName())) {
                     String token = cookie.getValue();
                     if (JwtUtil.validateToken(token)) {
-                        return ResponseEntity.ok("Token is valid");
+                        return ResponseEntity.ok("Token is valid. Username: " + JwtUtil.extractUsername(token));
                     }
                     break;
                 }
