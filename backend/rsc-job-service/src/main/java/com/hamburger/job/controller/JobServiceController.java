@@ -50,7 +50,7 @@ public class JobServiceController {
         try {
             jwtToken = jwtHelper.extractJwtFromRequest(request);
             String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
-            if(owner.isEmpty()){
+            if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             return ResponseEntity.ok(jobService.getAllJobs(owner));
@@ -65,7 +65,7 @@ public class JobServiceController {
         try {
             jwtToken = jwtHelper.extractJwtFromRequest(request);
             String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
-            if(owner.isEmpty()){
+            if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             return ResponseEntity.ok(jobService.getJobsByPage(owner, page, limit));
@@ -80,7 +80,7 @@ public class JobServiceController {
         try {
             jwtToken = jwtHelper.extractJwtFromRequest(request);
             String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
-            if(owner.isEmpty()){
+            if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             return ResponseEntity.ok(jobService.getJobsById(owner, jobId));
@@ -95,7 +95,7 @@ public class JobServiceController {
         try {
             jwtToken = jwtHelper.extractJwtFromRequest(request);
             String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
-            if(owner.isEmpty()){
+            if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             return ResponseEntity.ok(jobService.getJobsByKeyword(owner, keyword));
@@ -110,7 +110,7 @@ public class JobServiceController {
         try {
             jwtToken = jwtHelper.extractJwtFromRequest(request);
             String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
-            if(owner.isEmpty()){
+            if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             return ResponseEntity.ok(jobService.getReport(jobId));
@@ -136,7 +136,7 @@ public class JobServiceController {
         try {
             jwtToken = jwtHelper.extractJwtFromRequest(request);
             String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
-            if(owner.isEmpty()){
+            if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             job.setOwner(owner);
@@ -153,7 +153,7 @@ public class JobServiceController {
         try {
             jwtToken = jwtHelper.extractJwtFromRequest(request);
             String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
-            if(owner.isEmpty()){
+            if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             jobService.startJob(owner, jobId);
@@ -169,7 +169,7 @@ public class JobServiceController {
         try {
             jwtToken = jwtHelper.extractJwtFromRequest(request);
             String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
-            if(owner.isEmpty()){
+            if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             job.setOwner(owner);
@@ -186,7 +186,7 @@ public class JobServiceController {
         try {
             jwtToken = jwtHelper.extractJwtFromRequest(request);
             String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
-            if(owner.isEmpty()){
+            if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             jobService.deleteJob(owner, jobId);

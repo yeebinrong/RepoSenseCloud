@@ -1,5 +1,5 @@
 
-
+/*
 # IAM Role for Lambda
 resource "aws_iam_role" "lambda_execution_role" {
   name               = "lambda_cost_report_execution_role"
@@ -89,3 +89,4 @@ resource "aws_lambda_permission" "allow_eventbridge_invoke" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.daily_trigger.arn
 }
+*/

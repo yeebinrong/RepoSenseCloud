@@ -131,6 +131,7 @@ public class JobDbDao {
 
     public void createJob(Job job) {
         try{
+            System.out.println("Creating job: " + job);
             jobTable.putItem(job);
         }catch (Exception e) {
             System.err.println("Error creating job: " + e.getMessage());

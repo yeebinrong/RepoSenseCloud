@@ -16,16 +16,23 @@ public class JobUserAuth {
 
     public Mono<String> authorizeAction (String jwtToken){
         System.out.println("Authenticating:" + jwtToken);
+        if(jwtToken == null){
+            System.out.println("Missing Token");
+            return null;
+        }
         return webClient.post()
-                .uri("/authorize")
+                .uri("/auth")
                 .cookie("JWT", jwtToken)
                 .retrieve()
                 .bodyToMono(String.class)
                 .map(response -> {
+                    System.out.println("Response: " + response);
                     if (response.contains("Token is valid")) {
+                        System.out.println("Token Authenticated");
                         return response.split("Username: ")[1];
                     } else {
-                        throw new RuntimeException("Unauthorized");
+                        System.out.println("Token Invalid");
+                        throw new RuntimeException("Unauthenticated: Invalid Token");
                     }
                 });
     }
