@@ -65,12 +65,15 @@ public class UserController {
 
     @PostMapping("/auth")
     public ResponseEntity<String> validateToken(HttpServletRequest request) {
+        System.out.println("Received request to validate token");
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("JWT".equals(cookie.getName())) {
                     String token = cookie.getValue();
+                    System.out.println("Found JWT cookie: " + token);
                     if (JwtUtil.validateToken(token)) {
+                        System.out.println("username: " + JwtUtil.extractUsername(token));
                         return ResponseEntity.ok("Token is valid. Username: " + JwtUtil.extractUsername(token));
                     }
                     break;

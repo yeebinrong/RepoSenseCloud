@@ -710,6 +710,8 @@ const CreateJobComponent = (jobId) => {
     }
 
     //Submit Job Form
+    const jobServiceUrl = process.env.REACT_APP_JOB_SERVICE_URL;
+
     const submitJobForm = async () => {
         console.log("submit test");
         let formData = {};
@@ -763,9 +765,7 @@ const CreateJobComponent = (jobId) => {
     //Main Render
     return (
         <div>
-            <Button variant="contained" color="primary" onClick={handleModalOpen} style={{ justifySelf: "center" }}>
-                Create Job
-            </Button>
+            <button className="create-job-button" onClick={handleModalOpen} >Create Job</button>
             <Modal open={open} onClose={handleModalClose} aria-labelledby="modal-title" aria-describedby="modal-description">
                 <Box className={classes.modal}>
                     {renderJobFormHeader()}

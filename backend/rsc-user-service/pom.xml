@@ -34,7 +34,7 @@
             <artifactId>jjwt-impl</artifactId>
             <scope>runtime</scope> <!-- Implementation as runtime -->
         </dependency>
-        <!-- <dependency>
+        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
             <scope>runtime</scope> <!-- Jackson provider as runtime -->

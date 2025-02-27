@@ -23,6 +23,8 @@ services:
       - ./frontend/public:/app/public
     networks:
       - rsc-network
+    environment:
+      - REACT_APP_JOB_SERVICE_URL=http://job-service-app:3002/api/jobs
 
   user-service-app:
     build:

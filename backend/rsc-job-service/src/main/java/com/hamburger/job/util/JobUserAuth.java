@@ -11,7 +11,7 @@ public class JobUserAuth {
     private final WebClient webClient;
     
     public JobUserAuth(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://localhost:3001/api/user").build();
+        this.webClient = webClientBuilder.baseUrl("http://user-service-app:3001/api/user").build();
     }
 
     public Mono<String> authorizeAction (String jwtToken){
@@ -25,13 +25,14 @@ public class JobUserAuth {
                 .cookie("JWT", jwtToken)
                 .retrieve()
                 .bodyToMono(String.class)
+                .doOnNext(response -> System.out.println("Response: " + response))
+                .doOnError(e -> System.err.println("Authorization error: " + e))
                 .map(response -> {
-                    System.out.println("Response: " + response);
                     if (response.contains("Token is valid")) {
                         System.out.println("Token Authenticated");
                         return response.split("Username: ")[1];
                     } else {
-                        System.out.println("Token Invalid");
+                        System.err.println("Token Invalid");
                         throw new RuntimeException("Unauthenticated: Invalid Token");
                     }
                 });
