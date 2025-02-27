@@ -737,6 +737,10 @@ const CreateJobComponent = (jobId) => {
                 frequency,
                 startHour,
                 startMinute,
+                lastUpdated: {
+                    time: moment().format("HH:mm:ss"),
+                    date: moment().format("YYYY-MM-DD")
+                }
             };
             console.log(JSON.stringify(formData));
     

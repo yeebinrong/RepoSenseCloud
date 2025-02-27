@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -103,7 +104,7 @@ public class JobServiceController {
         }
     }
 
-    @GetMapping("/report/{jobId}")
+    @GetMapping("/report/{jobId}") //TODO: returns s3 link
     public ResponseEntity<String> getReport(@PathVariable String jobId, HttpServletRequest request) {
         System.out.println("retrieving report");
         try {
@@ -146,7 +147,7 @@ public class JobServiceController {
         }
     }
 
-    @PostMapping("/start/{jobId}")
+    @PatchMapping("/start/{jobId}")
     public ResponseEntity<Void> startJob( @PathVariable String jobId, HttpServletRequest request) {
         System.out.println("starting job with id " + jobId);
         try {

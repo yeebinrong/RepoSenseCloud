@@ -61,15 +61,15 @@ public class JobService {
         jobDbDao.deleteJob(owner, jobId);
     }
 
-    public void deleteAllJob(String owner) {
-        jobDbDao.deleteAllJob(owner);
-    }
+    // public void deleteAllJob(String owner) {
+    //     jobDbDao.deleteAllJob(owner);
+    // }
 
-    public void deleteAllScheduledJobs(String owner) {
-        jobDbDao.deleteAllScheduledJobs(owner);
-    }
+    // public void deleteAllScheduledJobs(String owner) {
+    //     jobDbDao.deleteAllScheduledJobs(owner);
+    // }
 
-    public void deleteAllCompletedJobs(String owner) {
-        jobDbDao.deleteAllCompletedJobs(owner);
-    }
+    // public void deleteAllCompletedJobs(String owner) {
+    //     jobDbDao.deleteAllCompletedJobs(owner);
+    // }
 }

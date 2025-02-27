@@ -1,13 +1,12 @@
 package com.hamburger.job.models;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 @DynamoDbBean
@@ -35,6 +34,8 @@ public class Job {
     private String endDate;
     private String owner;
     private String status;
+    private Map<String,String> lastUpdated;
+    private Map<String,String> nextScheduled;
 
     public Job () {
         if(this.jobId == null){
@@ -43,6 +44,10 @@ public class Job {
         if(this.status == null){
             this.status = "Pending";
         }
+        //TODO: schedule date time logic
+        this.nextScheduled = new HashMap<>();
+        this.nextScheduled.put("time", "Not Scheduled");
+        this.nextScheduled.put("date", "");
     }
 
     public void setJobId(String jobId) {
@@ -205,7 +210,6 @@ public class Job {
         this.endDate = endDate;
     }
 
-
     @DynamoDbPartitionKey
     public String getOwner() {
         return owner;
@@ -221,5 +225,21 @@ public class Job {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Map<String,String> getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Map<String,String> lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public Map<String,String> getNextScheduled() {
+        return nextScheduled;
+    }
+
+    public void setNextScheduled(Map<String,String> nextScheduled) {
+        this.nextScheduled = nextScheduled;
     }
 }
