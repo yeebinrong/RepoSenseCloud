@@ -43,23 +43,7 @@ public class JobServiceController {
     }
 
 
-    @GetMapping("/")
-    public ResponseEntity<Optional<List<Job>>> getAllJobs(HttpServletRequest request) {
-        System.out.println("retrieving jobs");
-        //IMPORTANT TODO: change this! should only return specific user's jobs 
-        try {
-            jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
-            if(owner == null){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-            return ResponseEntity.ok(jobService.getAllJobs(owner));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping(params = {"page", "limit"})
+    @GetMapping(value = "/", params = {"page", "limit"})
     public ResponseEntity<List<Job>> getJobsByPage( @RequestParam int page, @RequestParam int limit, HttpServletRequest request) {
         System.out.println("retrieving " + page + " of jobs with " + limit + " jobs per page");
         try {
@@ -74,7 +58,7 @@ public class JobServiceController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{jobId}")
     public  ResponseEntity<Optional<Job>> getJobById( @PathVariable String jobId, HttpServletRequest request) {
         System.out.println("retrieving job with id " + jobId);
         try {
@@ -84,6 +68,21 @@ public class JobServiceController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             return ResponseEntity.ok(jobService.getJobsById(owner, jobId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<Optional<List<Job>>> getAllJobs(HttpServletRequest request) {
+        System.out.println("retrieving jobs");
+        try {
+            jwtToken = jwtHelper.extractJwtFromRequest(request);
+            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
+            if(owner == null){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            return ResponseEntity.ok(jobService.getAllJobs(owner));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

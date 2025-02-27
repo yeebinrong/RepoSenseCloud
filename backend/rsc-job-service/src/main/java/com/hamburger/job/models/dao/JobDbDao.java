@@ -37,70 +37,84 @@ public class JobDbDao {
 
     @Autowired
     public JobDbDao(DynamoDbClient dynamoDbClient, DynamoDbEnhancedClient enhancedDynamoDbClient) {
-            this.jobTable = enhancedDynamoDbClient.table("rsc-localhost-job-data", TableSchema.fromBean(Job.class));
-            // this.dynamoDbClient = DynamoDbClient.builder()
-            //     .endpointOverride(URI.create("http://localhost:4566"))
-            //     .build();
-            this.dynamoDbClient = dynamoDbClient;
+        this.jobTable = enhancedDynamoDbClient.table("rsc-localhost-job-data", TableSchema.fromBean(Job.class));
+        // this.dynamoDbClient = DynamoDbClient.builder()
+        // .endpointOverride(URI.create("http://localhost:4566"))
+        // .build();
+        this.dynamoDbClient = dynamoDbClient;
     }
 
     public Optional<List<Job>> getAllJobs(String owner) {
         List<Job> jobs = new ArrayList<>();
         Map<String, AttributeValue> lastEvaluatedKey = null;
-    
-    try {
-        QueryConditional queryConditional = QueryConditional.keyEqualTo(
-            Key.builder().partitionValue(owner).build()
-        );
 
-        do {
-            QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
-                    .queryConditional(queryConditional);
+        try {
+            QueryConditional queryConditional = QueryConditional.keyEqualTo(
+                    Key.builder().partitionValue(owner).build());
 
-            // Apply pagination only if there's a lastEvaluatedKey from the previous query
-            if (lastEvaluatedKey != null) {
-                requestBuilder.exclusiveStartKey(lastEvaluatedKey);
-            }
+            do {
+                QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
+                        .queryConditional(queryConditional);
 
-            PageIterable<Job> queryResult = jobTable.query(requestBuilder.build());
+                // Apply pagination only if there's a lastEvaluatedKey from the previous query
+                if (lastEvaluatedKey != null) {
+                    requestBuilder.exclusiveStartKey(lastEvaluatedKey);
+                }
 
-            for (Page<Job> page : queryResult) {
-                jobs.addAll(page.items()); // Collect jobs
-                lastEvaluatedKey = page.lastEvaluatedKey(); // Store lastEvaluatedKey for next iteration
-            }
-        } while (lastEvaluatedKey != null); // Keep paginating until no more results
-        return Optional.ofNullable(jobs);
-    } catch (Exception e) {
-        System.err.println("Error retrieving jobs: " + e.getMessage());
-        e.printStackTrace();
-        return Optional.empty(); // Return an empty Optional on failure
+                PageIterable<Job> queryResult = jobTable.query(requestBuilder.build());
+
+                for (Page<Job> page : queryResult) {
+                    jobs.addAll(page.items()); // Collect jobs
+                    lastEvaluatedKey = page.lastEvaluatedKey(); // Store lastEvaluatedKey for next iteration
+                }
+            } while (lastEvaluatedKey != null); // Keep paginating until no more results
+            return Optional.ofNullable(jobs);
+        } catch (Exception e) {
+            System.err.println("Error retrieving jobs: " + e.getMessage());
+            e.printStackTrace();
+            return Optional.empty(); // Return an empty Optional on failure
+        }
     }
-}
-    // public List<Job> getJobsByPage(String owner, int page, int limit) {
-        
-    //     return null;
-    // }
+
+    public Optional<List<Job>> getJobsByPage(String owner, int pageNum, int limit) {
+        try{
+            Optional<List<Job>> jobs = getAllJobs(owner);
+            if (jobs.isPresent()) {
+                List<Job> jobList = jobs.get();
+                int start = (pageNum - 1) * limit;
+                int end = Math.min(start + limit, jobList.size());
+                return Optional.of(jobList.subList(start, end));
+            } else {
+                return Optional.empty();
+            }
+        } catch (Exception e) {
+            System.err.println("Error retrieving jobs: " + e.getMessage());
+            e.printStackTrace();
+            return Optional.empty();
+        }
+
+    }
 
     public Optional<Job> getJobsById(String owner, String jobId) {
-        //TODO: test this
-        try{
+        // TODO: test this
+        try {
             Job job = jobTable.getItem(Key.builder().partitionValue(owner).sortValue(jobId).build());
             return Optional.ofNullable(job);
         } catch (Exception e) {
             System.err.println("Error retrieving job: " + e.getMessage());
             e.printStackTrace();
-            return Optional.empty(); // Return an empty Optional on failure   
+            return Optional.empty(); // Return an empty Optional on failure
         }
     }
 
     public Optional<List<Job>> getJobsByKeyword(String owner, String keyword) {
-        //TODO: test this
+        // TODO: test this
         try {
             // Build the filter expression
             Expression filterExpression = Expression.builder()
                     .expression("contains(jobName, :keyword) AND #owner = :owner")
                     .putExpressionValue(":keyword", AttributeValue.builder().s(keyword).build())
-                    .putExpressionName("#owner","owner")
+                    .putExpressionName("#owner", "owner")
                     .putExpressionValue(":owner", AttributeValue.builder().s(owner).build())
                     .build();
             System.out.println("filterExpression: " + filterExpression);
@@ -120,27 +134,27 @@ public class JobDbDao {
         }
     }
 
-    public String getReport (String jobId) {
-        
-        return null; //return s3 presigned url
+    public String getReport(String jobId) {
+
+        return null; // return s3 presigned url
     }
 
     public void saveJob() {
-        
+
     }
 
     public void createJob(Job job) {
-        try{
+        try {
             System.out.println("Creating job: " + job);
             jobTable.putItem(job);
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("Error creating job: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     public void startJob(String owner, String jobId) {
-        //TODO: test this
+        // TODO: test this
         String newStatus = "RUNNING";
 
         try {
@@ -149,32 +163,32 @@ public class JobDbDao {
                     .partitionValue(owner)
                     .sortValue(jobId)
                     .build());
-    
+
             if (job != null && "PENDING".equals(job.getStatus())) {
                 // Update the status
                 job.setStatus(newStatus);
                 jobTable.updateItem(job);
-                //TODO: Call to simple queue service to start the job
+                // TODO: Call to simple queue service to start the job
                 System.out.println("Job started successfully.");
             } else {
-                System.err.println("Job cannot be started because it is not in the PENDING state or Job doesn't exist.");
+                System.err
+                        .println("Job cannot be started because it is not in the PENDING state or Job doesn't exist.");
             }
         } catch (Exception e) {
             System.err.println("Error starting job: " + e.getMessage());
             e.printStackTrace();
         }
     }
-    
 
     public void editJob(Job jobReplacement) {
-        //TODO: test this
+        // TODO: test this
         try {
             // Retrieve the existing job
             Job jobTarget = jobTable.getItem(Key.builder()
                     .partitionValue(jobReplacement.getOwner())
                     .sortValue(jobReplacement.getJobId())
                     .build());
-    
+
             if (jobTarget != null && "COMPLETED".equals(jobTarget.getStatus())) {
                 // Update the status
                 jobTable.updateItem(jobReplacement);
@@ -189,14 +203,14 @@ public class JobDbDao {
     }
 
     public void deleteJob(String owner, String jobId) {
-        //TODO: test this
+        // TODO: test this
         try {
             // Retrieve the existing job
             Job jobTarget = jobTable.getItem(Key.builder()
                     .partitionValue(owner)
                     .sortValue(jobId)
                     .build());
-            
+
             if (jobTarget != null) {
                 jobTable.deleteItem(jobTarget);
                 System.out.println("Job deleted successfully.");
@@ -212,11 +226,11 @@ public class JobDbDao {
     }
 
     public void deleteAllJob(String owner) {
-        //TODO: test this
+        // TODO: test this
         try {
             // Retrieve the existing jobs
             List<Job> jobs = getJobsByOwner(owner);
-            
+
             if (jobs != null) {
                 for (Job job : jobs) {
                     jobTable.deleteItem(job);
@@ -232,11 +246,11 @@ public class JobDbDao {
     }
 
     public void deleteAllScheduledJobs(String owner) {
-        //TODO: test this
+        // TODO: test this
         try {
             // Retrieve jobs of owner and scheduled status
-            List<Job> jobs = getJobsByOwnerAndStatus(owner,"SCHEDULED");
-            
+            List<Job> jobs = getJobsByOwnerAndStatus(owner, "SCHEDULED");
+
             if (jobs != null) {
                 for (Job job : jobs) {
                     jobTable.deleteItem(job);
@@ -252,23 +266,23 @@ public class JobDbDao {
     }
 
     public void deleteAllCompletedJobs(String owner) {
-                //TODO: test this
-                try {
-                    // Retrieve jobs of owner and completed status
-                    List<Job> jobs = getJobsByOwnerAndStatus(owner,"COMPLETED");
-                    
-                    if (jobs != null) {
-                        for (Job job : jobs) {
-                            jobTable.deleteItem(job);
-                        }
-                        System.out.println("All scheduled jobs deleted successfully.");
-                    } else {
-                        System.err.println("No jobs found.");
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error deleting all jobs: " + e.getMessage());
-                    e.printStackTrace();
+        // TODO: test this
+        try {
+            // Retrieve jobs of owner and completed status
+            List<Job> jobs = getJobsByOwnerAndStatus(owner, "COMPLETED");
+
+            if (jobs != null) {
+                for (Job job : jobs) {
+                    jobTable.deleteItem(job);
                 }
+                System.out.println("All scheduled jobs deleted successfully.");
+            } else {
+                System.err.println("No jobs found.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error deleting all jobs: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public List<Job> getJobsByOwner(String owner) {
@@ -306,6 +320,5 @@ public class JobDbDao {
         // Execute the scan and return the results
         return jobTable.scan(scanRequest).items().stream().collect(Collectors.toList());
     }
-
 
 }

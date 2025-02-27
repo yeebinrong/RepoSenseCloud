@@ -717,6 +717,8 @@ const CreateJobComponent = (jobId) => {
         let formData = {};
         try {
             await validateForm();
+            startHour === "--" ? formData.startHour = "" : formData.startHour = startHour;
+            startMinute === "--" ? formData.startMinute = "" : formData.startMinute = startMinute;
             formData = {
                 jobName,
                 repoLink: repoLink.map(link => link.value).join(" "),
