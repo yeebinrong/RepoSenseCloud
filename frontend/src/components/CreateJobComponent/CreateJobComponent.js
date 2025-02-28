@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
-    Button, Select, FormControl, InputLabel, MenuItem, Stack } from "@mui/material";
+    Button, Select, FormControl, InputLabel, MenuItem, Stack, CircularProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
 import "./CreateJobComponent.scss";
@@ -81,6 +81,7 @@ const CreateJobComponent = (jobId) => {
     const [startHour, setStartHour] = useState('--');
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     //Form Validation States
     const [jobNameError, setJobNameError] = useState(true);
@@ -662,8 +663,9 @@ const CreateJobComponent = (jobId) => {
                     } else {
                         submitJobForm();
                     }
-                }}>
-                    {currentPage === 2 ? "Save" : "Next"}
+                }}disabled={isLoading}
+                >
+                {isLoading ? <CircularProgress size={24} /> : (currentPage === 2 ? "Save" : "Next")}
                 </Button>
             </div>
         )
@@ -713,9 +715,9 @@ const CreateJobComponent = (jobId) => {
     const jobServiceUrl = process.env.REACT_APP_JOB_SERVICE_URL;
 
     const submitJobForm = async () => {
-        console.log("submit test");
         let formData = {};
         try {
+            setIsLoading(true);
             await validateForm();
             startHour === "--" ? formData.startHour = "" : formData.startHour = startHour;
             startMinute === "--" ? formData.startMinute = "" : formData.startMinute = startMinute;
@@ -764,6 +766,8 @@ const CreateJobComponent = (jobId) => {
         } catch (error) {
             console.error("Form Submission Error: ", error);
             showErrorBar(error.message);
+        } finally {
+            setIsLoading(false);
         }
     }
 
