@@ -172,6 +172,14 @@ const CreateJobComponent = (jobId) => {
         }
     }, [open]);
 
+    useEffect(() => {
+        validateJobName();
+    }, [jobName]);
+
+    useEffect(() => {
+        validateRepoLink(repoLink[repoLink.length - 1].id);
+    }, [repoLink]);
+
     //Reset period states when period mode changes
     useEffect(() => {
         if (periodMode !== "Specific Date Range" ){
@@ -185,6 +193,19 @@ const CreateJobComponent = (jobId) => {
             setUntilDate("");
         }
     }, [periodMode]);
+
+    //Reset scheduled job states when job type changes
+    useEffect(() => {
+        if (jobType !== "scheduled") {
+            setFrequency("");
+            setStartHour("--");
+            setStartMinute("--"); 
+            setStartDate("");
+            setEndDate("");
+        } else {
+            setFrequency("weekly");
+        }
+    }, [jobType]);
 
     //State Change Functions
     ///Repo Link Input
@@ -311,7 +332,11 @@ const CreateJobComponent = (jobId) => {
                             <div className="job-name-container">
                                 <text className="job-name-label">Job Name</text>
                                 <TextField className="job-name-textbox" placeholder="Enter Job Name" value = {jobName} 
-                                    onChange={(e)=> { validateJobName(); setJobName(e.target.value)}} error={jobNameError}     
+                                    //onChange={(e)=> { validateJobName(); setJobName(e.target.value)}} 
+                                    onInput={(e)=> {setJobName(e.target.value)}}
+                                    onPaste={(e)=> {setJobName(e.target.value)}}
+                                    autoComplete="off"
+                                    error={jobNameError}        
                                     helperText={jobNameError ? "Please Enter Job Name" : ""}/>
                             </div>
                             <div className="target-repo-container">
@@ -319,7 +344,10 @@ const CreateJobComponent = (jobId) => {
                                 {repoLink.map((link, index) => (
                                     <span key={link.id}>
                                         <TextField className="target-repo-textbox" placeholder="Paste Repo URL here" value={link.value}
-                                            onChange={(e) => { validateRepoLink(link.id); handleRepoLinkChange(link.id, e.target.value) }}
+                                            //onChange={(e) => { validateRepoLink(link.id); handleRepoLinkChange(link.id, e.target.value) }}
+                                            onInput={(e) => {handleRepoLinkChange(link.id, e.target.value) }}
+                                            onPaste={(e) => {handleRepoLinkChange(link.id, e.target.value) }}
+                                            autoComplete="off"
                                             error={repoLinkError}
                                             helperText={repoLinkError ? "Please Paste Repository URL" : ""} />
                                         {index > 0 && (<button className="delete-repo-link-button" onClick={() => deleteRepoLink(link.id)}>✕</button>)}
