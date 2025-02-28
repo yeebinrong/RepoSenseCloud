@@ -1,6 +1,6 @@
 package com.hamburger.job.models.dao;
 
-import java.net.URI;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.hamburger.job.models.Job;
+import com.hamburger.job.models.exceptions.StartJobException;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -21,13 +22,9 @@ import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
-import software.amazon.awssdk.enhanced.dynamodb.model.UpdateItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
-import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
-import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
 @Repository
 public class JobDbDao {
@@ -139,26 +136,29 @@ public class JobDbDao {
 
     }
 
-    public void createJob(Job job) {
+    public void createJob(Job job){
         try {
             System.out.println("Creating job: " + job);
             jobTable.putItem(job);
         } catch (Exception e) {
             System.err.println("Error creating job: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     public void startJob(String owner, String jobId) {
-        // TODO: test this
         String newStatus = "Running";
 
         try {
+            Job job;
             // Retrieve the existing job
-            Job job = jobTable.getItem(Key.builder()
+            try{ job = jobTable.getItem(Key.builder()
                     .partitionValue(owner)
                     .sortValue(jobId)
                     .build());
+            } catch (Exception e) {
+                System.err.println("Unable to find job");
+                throw new StartJobException("Job cannot be started because job doesn't exist.");
+            }
 
             if (job != null && "Pending".equals(job.getStatus())) {
                 // Update the status
@@ -168,12 +168,14 @@ public class JobDbDao {
                 System.out.println("Job: " + job);
                 System.out.println("Job started successfully.");
             } else {
-                System.err
-                        .println("Job cannot be started because it is not in the Pending state or Job doesn't exist.");
+                throw new StartJobException("Job cannot be started because it is not in the Pending state or doesn't exist");
             }
+        } catch (StartJobException e) {
+            System.err.println("start job exception" + e.getMessage());
+            throw new StartJobException("StartJobException: "+ e.getMessage(), e);
         } catch (Exception e) {
             System.err.println("Error starting job: " + e.getMessage());
-            e.printStackTrace();
+            throw new RuntimeException("Error starting job", e);
         }
     }
 

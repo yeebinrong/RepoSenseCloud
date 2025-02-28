@@ -1,6 +1,7 @@
 package com.hamburger.job.service;
 import com.hamburger.job.models.Job;
 import com.hamburger.job.models.dao.JobDbDao;
+import com.hamburger.job.models.exceptions.StartJobException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ public class JobService {
         jobDbDao.saveJob();
     }
 
-    public void createJob(Job job) {
+    public void createJob(Job job){
         jobDbDao.createJob(job);
     }
 

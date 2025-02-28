@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hamburger.job.models.Job;
+import com.hamburger.job.models.exceptions.StartJobException;
 import com.hamburger.job.service.JobService;
 import com.hamburger.job.util.JobUserAuth;
 import com.hamburger.job.util.JwtHelper;
@@ -31,10 +31,7 @@ public class JobServiceController {
     private final JobService jobService;
     private final JobUserAuth jobUserAuth;
     private final JwtHelper jwtHelper;
-    private final String env = "prod"; // change to prod to use auth
-
-    String jwtToken;
-    boolean isAuth;
+    private static final String env = "prod"; // change to prod to use auth
 
     @Autowired
     public JobServiceController(JobService jobService, JobUserAuth jobUserAuth, JwtHelper jwtHelper) {
@@ -48,12 +45,13 @@ public class JobServiceController {
     public ResponseEntity<List<Job>> getJobsByPage( @RequestParam int page, @RequestParam int limit, HttpServletRequest request) {
         System.out.println("retrieving " + page + " of jobs with " + limit + " jobs per page");
         try {
+            String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
+            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
-            return ResponseEntity.ok(jobService.getJobsByPage(owner, page, limit));
+            return ResponseEntity.status(200).body(jobService.getJobsByPage(owner, page, limit));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -63,12 +61,13 @@ public class JobServiceController {
     public  ResponseEntity<Optional<Job>> getJobById( @PathVariable String jobId, HttpServletRequest request) {
         System.out.println("retrieving job with id " + jobId);
         try {
+            String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
+            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
-            return ResponseEntity.ok(jobService.getJobsById(owner, jobId));
+            return ResponseEntity.status(200).body(jobService.getJobsById(owner, jobId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -78,12 +77,13 @@ public class JobServiceController {
     public ResponseEntity<Optional<List<Job>>> getAllJobs(HttpServletRequest request) {
         System.out.println("retrieving jobs");
         try {
+            String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
+            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
-            return ResponseEntity.ok(jobService.getAllJobs(owner));
+            return ResponseEntity.status(200).body(jobService.getAllJobs(owner));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -93,8 +93,9 @@ public class JobServiceController {
     public  ResponseEntity<Optional<List<Job>>> getJobsByKeyword( @PathVariable String keyword, HttpServletRequest request) {
         System.out.println("retrieving jobs with keyword " + keyword);
         try {
+            String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
+            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -108,12 +109,13 @@ public class JobServiceController {
     public ResponseEntity<String> getReport(@PathVariable String jobId, HttpServletRequest request) {
         System.out.println("retrieving report");
         try {
+            String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
+            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
-            return ResponseEntity.ok(jobService.getReport(jobId));
+            return ResponseEntity.status(200).body(jobService.getReport(jobId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -134,14 +136,15 @@ public class JobServiceController {
     public ResponseEntity<Void> createJob(@RequestBody Job job, HttpServletRequest request) {
         System.out.println("creating job");
         try {
+            String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
+            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             job.setOwner(owner);
             jobService.createJob(job);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.status(201).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -151,14 +154,19 @@ public class JobServiceController {
     public ResponseEntity<Void> startJob( @PathVariable String jobId, HttpServletRequest request) {
         System.out.println("starting job with id " + jobId);
         try {
+            String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
+            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             jobService.startJob(owner, jobId);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.status(202).build();
+        } catch (StartJobException e) {
+            System.out.println("start job exception at job controller e: "+ e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
+            System.out.println("general exception at job controller e: "+ e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -167,8 +175,9 @@ public class JobServiceController {
     public ResponseEntity<Void> updateJob(@RequestBody Job job, HttpServletRequest request) {
         System.out.println("updating job with id " + job.getJobId());
         try {
+            String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
+            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -184,13 +193,14 @@ public class JobServiceController {
     public ResponseEntity<Void> deleteJob( @PathVariable String jobId, HttpServletRequest request) {
         System.out.println("deleting job with id " + jobId);
         try {
+            String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).block();;
+            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             jobService.deleteJob(owner, jobId);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.status(200).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

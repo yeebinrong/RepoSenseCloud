@@ -1,9 +1,9 @@
 package com.hamburger.job.util;
 
-import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 @Component
 public class JobUserAuth {
@@ -14,7 +14,7 @@ public class JobUserAuth {
         this.webClient = webClientBuilder.baseUrl("http://user-service-app:3001/api/user").build();
     }
 
-    public Mono<String> authorizeAction (String jwtToken){
+    public ResponseEntity<String> authorizeAction (String jwtToken){
         System.out.println("Authenticating:" + jwtToken);
         if(jwtToken == null){
             System.out.println("Missing Token");
@@ -30,12 +30,13 @@ public class JobUserAuth {
                 .map(response -> {
                     if (response.contains("Token is valid")) {
                         System.out.println("Token Authenticated");
-                        return response.split("Username: ")[1];
+                        return ResponseEntity.status(HttpStatus.OK).body(response.split("Username: ")[1]);
                     } else {
                         System.err.println("Token Invalid");
-                        throw new RuntimeException("Unauthenticated: Invalid Token");
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthenticated: Invalid Token");
                     }
-                });
+                })
+                .block();
     }
 
 }
