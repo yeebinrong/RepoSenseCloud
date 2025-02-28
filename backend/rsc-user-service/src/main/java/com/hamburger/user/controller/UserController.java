@@ -9,12 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hamburger.user.dao.entity.User;
+import com.hamburger.user.dto.LoginReqDto;
+import com.hamburger.user.dto.RegisterReqDto;
 import com.hamburger.user.service.UserService;
 import com.hamburger.user.service.util.JwtUtil;
-
-import com.hamburger.user.dao.entity.User;
-import com.hamburger.user.dto.RegisterReqDto;
-import com.hamburger.user.dto.LoginReqDto;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,13 +65,16 @@ public class UserController {
 
     @PostMapping("/auth")
     public ResponseEntity<String> validateToken(HttpServletRequest request) {
+        System.out.println("Received request to validate token");
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("JWT".equals(cookie.getName())) {
                     String token = cookie.getValue();
+                    System.out.println("Found JWT cookie: " + token);
                     if (JwtUtil.validateToken(token)) {
-                        return ResponseEntity.ok("Token is valid");
+                        System.out.println("username: " + JwtUtil.extractUsername(token));
+                        return ResponseEntity.ok("Token is valid. Username: " + JwtUtil.extractUsername(token));
                     }
                     break;
                 }

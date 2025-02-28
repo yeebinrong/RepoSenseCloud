@@ -10,6 +10,18 @@ body {
     
 }
 
+.create-job-button {
+    border-radius: 8px;
+    background-color: #f7a81b;
+    min-height: 52px;
+    font-family: Poppins, sans-serif;
+    color: #fff;
+    width: 124px;
+    padding: 14px 15px;
+    border: none;
+    cursor: pointer;
+}
+
 .navigation-buttons-container {
     display: flex;
     margin-top: auto; // Push the container to the bottom

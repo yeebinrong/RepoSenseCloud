@@ -45,7 +45,7 @@ const App = () => {
       <Route path="/forgot" exact element={<ForgotPage {...mainProps} />} />
       <Route path="/home" exact element={<HomePage {...mainProps} />} />
       {/* Below is a temp route to test create job TODO: remove this */}
-      <Route path="/create-job" element={<CreateJobPage {...mainProps} />} />
+      {/* <Route path="/create-job" element={<CreateJobPage {...mainProps} />} /> */}
       {<Route path="*" element={<ErrorPage {...mainProps} />} />}
     </Routes>
   );
