@@ -101,7 +101,6 @@ public class JobDbDao {
     }
 
     public Optional<List<Job>> getJobsByKeyword(String owner, String keyword) {
-        // TODO: test this
         try {
             // Build the filter expression
             Expression filterExpression = Expression.builder()
@@ -180,7 +179,6 @@ public class JobDbDao {
     }
 
     public void editJob(Job jobReplacement) {
-        // TODO: test this
         try {
             // Retrieve the existing job
             Job jobTarget = jobTable.getItem(Key.builder()

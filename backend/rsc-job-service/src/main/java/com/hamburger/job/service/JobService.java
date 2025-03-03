@@ -24,7 +24,6 @@ public class JobService {
     }
 
     public List<Job> getJobsByPage(String owner, int page, int limit) {
-        //TODO: test this
         List<Job> allJobs = (jobDbDao.getAllJobs(owner) == null) ? Collections.emptyList() : jobDbDao.getAllJobs(owner).get();
         return allJobs.subList((page - 1) * limit, Math.min(page * limit, allJobs.size()));
     }
