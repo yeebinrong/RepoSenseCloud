@@ -11,8 +11,6 @@ if [ "$ENVIRONMENT" != "localhost" ] && [ "$ENVIRONMENT" != "production" ]; then
     exit 1
 fi
 
-export AWS_PROFILE="904233118848_burger"
-
 # Deploy the infrastructure
 # init and plan and apply the opentofu files located relatively at ./infra/opentofu
 cd ./infra/opentofu

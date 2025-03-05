@@ -7,9 +7,7 @@
         <groupId>com.hamburger</groupId>
         <artifactId>reposensecloud</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
-
 
     <groupId>com.hamburger</groupId>
     <artifactId>rsc-job-service</artifactId>
@@ -22,7 +20,10 @@
             <artifactId>rsc-common</artifactId>
             <version>${hamburger.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -31,7 +32,6 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -82,4 +82,5 @@
             </plugin>
         </plugins>
     </build>
+    
 </project>
