@@ -23,6 +23,8 @@ services:
       - ./frontend/public:/app/public
     networks:
       - rsc-network
+    environment:
+      - REACT_APP_JOB_SERVICE_URL=http://job-service-app:3002/api/jobs
 
   user-service-app:
     build:
@@ -41,6 +43,26 @@ services:
       - ${HOME}/.m2:/root/.m2
     networks:
       - rsc-network
+
+
+  job-service-app:
+    build:
+      context: ./
+      dockerfile: ./infra/docker-images/rsc-local-backend-image/Dockerfile
+      args:
+        PORT: ${JOB_SVC_PORT}
+        SERVICE_NAME: rsc-job-service
+    container_name: rsc_job_service
+    ports:
+      - ${JOB_SVC_PORT}:${JOB_SVC_PORT}
+    env_file:
+      - ./.env # docker-compose only works with .env file
+    volumes:
+      - ./backend/rsc-job-service:/app/service
+      - ${HOME}/.m2:/root/.m2
+    networks:
+      - rsc-network
+
 
   localstack:
     container_name: "localstack-persist"

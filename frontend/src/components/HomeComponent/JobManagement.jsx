@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './JobManagement.module.css';
 import JobList from './JobList';
 import {Autocomplete, TextField} from "@mui/material";
+import CreateJobComponent from "../CreateJobComponent/CreateJobComponent";
 
 function JobManagement() {
     return (
@@ -18,7 +19,8 @@ function JobManagement() {
                         <img src="download.svg" alt="" className={styles.buttonIcon} />
                         Download All
                     </button>
-                    <button className={styles.createJobButton}>Create Job</button>
+                    {/* <button className={styles.createJobButton}>Create Job</button> */}
+                    <CreateJobComponent/>
                 </div>
             </section>
             <section className={styles.filterSection}>

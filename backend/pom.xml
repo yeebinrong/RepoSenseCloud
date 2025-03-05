@@ -74,6 +74,11 @@
                 <artifactId>spring-security-core</artifactId>
                 <version>${spring.security.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-webflux</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
             <!-- END - Spring dependencies -->
             <!-- START - AWS dependencies -->
             <dependency>
@@ -120,5 +125,5 @@
             <!-- END - Other dependencies -->
         </dependencies>
     </dependencyManagement>
-
+    
 </project>

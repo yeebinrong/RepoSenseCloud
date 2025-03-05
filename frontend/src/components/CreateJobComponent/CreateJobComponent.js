@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
-    Button, Select, FormControl, InputLabel, MenuItem, Stack } from "@mui/material";
+    Button, Select, FormControl, InputLabel, MenuItem, Stack, CircularProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
 import "./CreateJobComponent.scss";
@@ -81,6 +81,7 @@ const CreateJobComponent = (jobId) => {
     const [startHour, setStartHour] = useState('--');
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     //Form Validation States
     const [jobNameError, setJobNameError] = useState(true);
@@ -94,10 +95,8 @@ const CreateJobComponent = (jobId) => {
 
 
     //Retrieve Job Details for Editing
-    useEffect(() => {
+    const loadJobDetails = (jobId) => {
         if (jobId) {
-            // Retrieve job details from API
-            // Set the states with the retrieved job details
             fetch(`/api/job/${jobId}`)
                 .then((response) => response.json())
                 .then(data => {
@@ -105,7 +104,7 @@ const CreateJobComponent = (jobId) => {
                     setRepoLink(data.repoLink);
                     setPeriodMode(data.periodMode);
                     setSinceDate(data.sinceDate);
-                    setUntilDate(data.untilDate);
+                    setUntilDate(data.untilDate); 
                     setOriginalityThreshold(data.originalityThreshold);
                     setTimeZone(data.timeZone);
                     setAuthorship(data.authorship);
@@ -124,6 +123,13 @@ const CreateJobComponent = (jobId) => {
                 .catch((error) => {
                     console.error("Error fetching job details:", error);
                 });
+        }
+    };
+
+    // Keep the useEffect but also expose the load function
+    useEffect(() => {
+        if (jobId != null) {
+            loadJobDetails(jobId);
         }
     }, [jobId]);
 
@@ -166,6 +172,14 @@ const CreateJobComponent = (jobId) => {
         }
     }, [open]);
 
+    useEffect(() => {
+        validateJobName();
+    }, [jobName]);
+
+    useEffect(() => {
+        validateRepoLink(repoLink[repoLink.length - 1].id);
+    }, [repoLink]);
+
     //Reset period states when period mode changes
     useEffect(() => {
         if (periodMode !== "Specific Date Range" ){
@@ -179,6 +193,19 @@ const CreateJobComponent = (jobId) => {
             setUntilDate("");
         }
     }, [periodMode]);
+
+    //Reset scheduled job states when job type changes
+    useEffect(() => {
+        if (jobType !== "scheduled") {
+            setFrequency("");
+            setStartHour("--");
+            setStartMinute("--"); 
+            setStartDate("");
+            setEndDate("");
+        } else {
+            setFrequency("weekly");
+        }
+    }, [jobType]);
 
     //State Change Functions
     ///Repo Link Input
@@ -305,7 +332,11 @@ const CreateJobComponent = (jobId) => {
                             <div className="job-name-container">
                                 <text className="job-name-label">Job Name</text>
                                 <TextField className="job-name-textbox" placeholder="Enter Job Name" value = {jobName} 
-                                    onChange={(e)=> { validateJobName(); setJobName(e.target.value)}} error={jobNameError}     
+                                    //onChange={(e)=> { validateJobName(); setJobName(e.target.value)}} 
+                                    onInput={(e)=> {setJobName(e.target.value)}}
+                                    onPaste={(e)=> {setJobName(e.target.value)}}
+                                    autoComplete="off"
+                                    error={jobNameError}        
                                     helperText={jobNameError ? "Please Enter Job Name" : ""}/>
                             </div>
                             <div className="target-repo-container">
@@ -313,7 +344,10 @@ const CreateJobComponent = (jobId) => {
                                 {repoLink.map((link, index) => (
                                     <span key={link.id}>
                                         <TextField className="target-repo-textbox" placeholder="Paste Repo URL here" value={link.value}
-                                            onChange={(e) => { validateRepoLink(link.id); handleRepoLinkChange(link.id, e.target.value) }}
+                                            //onChange={(e) => { validateRepoLink(link.id); handleRepoLinkChange(link.id, e.target.value) }}
+                                            onInput={(e) => {handleRepoLinkChange(link.id, e.target.value) }}
+                                            onPaste={(e) => {handleRepoLinkChange(link.id, e.target.value) }}
+                                            autoComplete="off"
                                             error={repoLinkError}
                                             helperText={repoLinkError ? "Please Paste Repository URL" : ""} />
                                         {index > 0 && (<button className="delete-repo-link-button" onClick={() => deleteRepoLink(link.id)}>✕</button>)}
@@ -657,8 +691,9 @@ const CreateJobComponent = (jobId) => {
                     } else {
                         submitJobForm();
                     }
-                }}>
-                    {currentPage === 2 ? "Save" : "Next"}
+                }}disabled={isLoading}
+                >
+                {isLoading ? <CircularProgress size={24} /> : (currentPage === 2 ? "Save" : "Next")}
                 </Button>
             </div>
         )
@@ -666,8 +701,6 @@ const CreateJobComponent = (jobId) => {
 
     const validateForm = () => {
         return new Promise((resolve, reject) => {
-            let isValid = true; //mock test
-
             if (jobName === "") {
                 return reject(new Error("Job name cannot be blank."));
             }
@@ -707,15 +740,18 @@ const CreateJobComponent = (jobId) => {
     }
 
     //Submit Job Form
+    const jobServiceUrl = process.env.REACT_APP_JOB_SERVICE_URL;
+
     const submitJobForm = async () => {
         let formData = {};
-        validateForm().then(() => {
-            handleModalClose();
-            showSuccessBar("Job Created Successfully");
-            console.log("Submitting job form for", localStorage.getItem("JWT"));
+        try {
+            setIsLoading(true);
+            await validateForm();
+            startHour === "--" ? formData.startHour = "" : formData.startHour = startHour;
+            startMinute === "--" ? formData.startMinute = "" : formData.startMinute = startMinute;
             formData = {
                 jobName,
-                repoLink,
+                repoLink: repoLink.map(link => link.value).join(" "),
                 sinceDate,
                 untilDate,
                 period,
@@ -731,34 +767,43 @@ const CreateJobComponent = (jobId) => {
                 frequency,
                 startHour,
                 startMinute,
+                lastUpdated: {
+                    time: moment().format("HH:mm:ss"),
+                    date: moment().format("YYYY-MM-DD")
+                }
             };
-        }).catch((error) => {
-            console.error("Form Input Failed Validation", error);
-            showErrorBar(error);
-        });
-
-        try {
-            const response = await fetch('https://this-is-a-fake-url.com', {
+            console.log(JSON.stringify(formData));
+    
+            const response = await fetch(`http://localhost:3002/api/jobs/create`, { // Use environment variable for API URL
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem("JWT")}`,
                 },
+                credentials: 'include',
                 body: JSON.stringify(formData),
             });
+    
+            if (response.ok) {
+                console.log("Job created successfully");
+                showSuccessBar("Job Created Successfully");
+                handleModalClose();
+            } else {
+                console.error("Error creating job: ", response.error);
+                showErrorBar("Error Creating Job");
+            }
         } catch (error) {
-            console.error("Error submitting job form:", error);
+            console.error("Form Submission Error: ", error);
+            showErrorBar(error.message);
+        } finally {
+            setIsLoading(false);
         }
-
     }
 
 
     //Main Render
     return (
         <div>
-            <Button variant="contained" color="primary" onClick={handleModalOpen} style={{ justifySelf: "center" }}>
-                Create Job
-            </Button>
+            <button className="create-job-button" onClick={handleModalOpen} >Create Job</button>
             <Modal open={open} onClose={handleModalClose} aria-labelledby="modal-title" aria-describedby="modal-description">
                 <Box className={classes.modal}>
                     {renderJobFormHeader()}

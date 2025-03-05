@@ -8,9 +8,7 @@
           <artifactId>reposensecloud</artifactId>
           <version>1.0-SNAPSHOT</version>
     </parent>
-
     <groupId>com.hamburger</groupId>
     <artifactId>rsc-history-service</artifactId>
     <version>1.0-SNAPSHOT</version>
-
 </project>
