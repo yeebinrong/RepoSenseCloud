@@ -1,0 +1,119 @@
+service: batch-service
+
+provider:
+  name: aws
+  region: ap-southeast-1 # Singapore region
+  stage: ${opt:stage, 'dev'}
+
+resources:
+  Resources:
+    # Security group for Batch compute environment
+    BatchSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Security group for Batch compute environment
+        SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: 0
+            ToPort: 65535
+            CidrIp: 0.0.0.0/0
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
+
+    BatchServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: batch.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: BatchServicePolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - ec2:Describe*
+                    - ecs:ListClusters
+                    - ecs:DescribeClusters
+                    - ecs:DescribeContainerInstances
+                    - ecs:DescribeTaskDefinition
+                    - ecs:DescribeTasks
+                    - ecs:DeleteCluster
+                    - iam:PassRole
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource: "*"
+
+    BatchInstanceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: ec2.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: BatchInstancePolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - ec2:Describe*
+                    - ecs:ListClusters
+                    - ecs:DescribeClusters
+                    - ecs:DescribeContainerInstances
+                    - ecs:DescribeTaskDefinition
+                    - ecs:DescribeTasks
+                    - iam:PassRole
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - s3:GetObject
+                    - s3:PutObject
+                    - s3:ListBucket
+                  Resource: "*"
+
+    BatchComputeEnvironment:
+      Type: AWS::Batch::ComputeEnvironment
+      Properties:
+        ComputeEnvironmentName: batch-compute-environment-V2
+        Type: MANAGED
+        ServiceRole: !GetAtt BatchServiceRole.Arn
+        ComputeResources:
+          Type: FARGATE_SPOT
+          MaxvCpus: 16
+          SecurityGroupIds:
+            - !Ref BatchSecurityGroup
+
+    BatchJobQueue:
+      Type: AWS::Batch::JobQueue
+      Properties:
+        JobQueueName: batch-job-queue
+        State: ENABLED
+        Priority: 1
+        ComputeEnvironmentOrder:
+          - Order: 1
+            ComputeEnvironment: !Ref BatchComputeEnvironment
+
+    BatchJobDefinition:
+      Type: AWS::Batch::JobDefinition
+      Properties:
+        JobDefinitionName: batch-job-definition
+        Type: container
+        ContainerProperties:
+          Image: amazonlinux
+          Vcpus: 1
+          Memory: 1024
+          Command: ["echo", "Hello, World!"]
+          JobRoleArn: !GetAtt BatchInstanceRole.Arn
+
+functions: {}

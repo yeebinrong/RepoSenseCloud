@@ -37,7 +37,8 @@ services:
     env_file:
       - ./.env # docker-compose only works with .env file
     volumes:
-      - ./backend/rsc-user-service:/app/service
+      - ./backend:/app/backend
+      # - ./backend/pom.xml:/app/pom.xml
       - ${HOME}/.m2:/root/.m2
     networks:
       - rsc-network

@@ -1,13 +1,23 @@
 #!/bin/sh
 set -e
 
+# Set SERVICE_NAME from the first argument
+SERVICE_NAME=$1
+
 # Change to the service directory
-cd /app/service
+cd /app/backend/
+
+mvn install -DskipTests
+
+cd ${SERVICE_NAME}
 
 # Watch for changes and recompile
-while inotifywait -r -e modify ./src/main/; 
+while inotifywait -r -e modify ./src/main/;
 do 
-  mvn compile -o -DskipTests; 
+  cd ..;
+  mvn install -DskipTests;
+  cd ${SERVICE_NAME};
+  mvn compile -o -DskipTests;
 done >/dev/null 2>&1 &
 
 # Run the Spring Boot application
