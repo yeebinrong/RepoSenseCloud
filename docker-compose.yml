@@ -39,7 +39,7 @@ services:
       - ./.env # docker-compose only works with .env file
     volumes:
       - ./backend/:/app/backend
-      - ${HOME}/.m2:/root/.m2
+      - ~/.m2:/root/.m2
     networks:
       - rsc-network
 
@@ -58,7 +58,7 @@ services:
       - ./.env # docker-compose only works with .env file
     volumes:
       - ./backend/:/app/backend
-      - ${HOME}/.m2:/root/.m2
+      - ~/.m2:/root/.m2
     networks:
       - rsc-network
 

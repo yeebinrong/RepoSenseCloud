@@ -12,8 +12,8 @@ while true; do
   mvn spring-boot:run &
   APP_PID=$!
 
-  # Wait for changes
-  inotifywait -r -e modify /app/backend/$SERVICE_NAME/src/main/
+  # Wait for changes using fswatch
+  fswatch --monitor=poll_monitor -1 -r /app/backend/$SERVICE_NAME/src/main/
 
   echo "Changes detected. Recompiling and restarting..."
 
@@ -22,9 +22,7 @@ while true; do
   wait $APP_PID 2>/dev/null || true
 
   # Recompile
-  cd ..
   mvn compile -o -DskipTests
-  cd $SERVICE_NAME
 
   # Give a moment for things to settle
   sleep 1
