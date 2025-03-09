@@ -19,8 +19,7 @@ services:
     env_file:
       - ./.env # docker-compose only works with .env file
     volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/public:/app/public
+      - ./frontend/:/app
     networks:
       - rsc-network
     environment:
@@ -39,7 +38,7 @@ services:
     env_file:
       - ./.env # docker-compose only works with .env file
     volumes:
-      - ./backend/rsc-user-service:/app/service
+      - ./backend/:/app/backend
       - ${HOME}/.m2:/root/.m2
     networks:
       - rsc-network
@@ -58,7 +57,7 @@ services:
     env_file:
       - ./.env # docker-compose only works with .env file
     volumes:
-      - ./backend/rsc-job-service:/app/service
+      - ./backend/:/app/backend
       - ${HOME}/.m2:/root/.m2
     networks:
       - rsc-network
