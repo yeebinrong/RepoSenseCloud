@@ -56,7 +56,7 @@ public class JobServiceController {
     }
 
     @GetMapping("/{jobId}")
-    public  ResponseEntity<Optional<Job>> getJobById( @PathVariable String jobId, HttpServletRequest request) {
+    public  ResponseEntity<Optional<Job>> getJobById( @PathVariable("jobId") String jobId, HttpServletRequest request) {
         System.out.println("retrieving job with id " + jobId);
         try {
             String jwtToken;
@@ -88,7 +88,7 @@ public class JobServiceController {
     }
 
     @GetMapping("/search/{keyword}")
-    public  ResponseEntity<Optional<List<Job>>> getJobsByKeyword( @PathVariable String keyword, HttpServletRequest request) {
+    public  ResponseEntity<Optional<List<Job>>> getJobsByKeyword( @PathVariable("keyword") String keyword, HttpServletRequest request) {
         System.out.println("retrieving jobs with keyword " + keyword);
         try {
             String jwtToken;
@@ -104,7 +104,7 @@ public class JobServiceController {
     }
 
     @GetMapping("/report/{jobId}") //TODO: returns s3 link
-    public ResponseEntity<String> getReport(@PathVariable String jobId, HttpServletRequest request) {
+    public ResponseEntity<String> getReport(@PathVariable("jobId") String jobId, HttpServletRequest request) {
         System.out.println("retrieving report");
         try {
             String jwtToken;
@@ -149,7 +149,7 @@ public class JobServiceController {
     }
 
     @PatchMapping("/start/{jobId}")
-    public ResponseEntity<Void> startJob( @PathVariable String jobId, HttpServletRequest request) {
+    public ResponseEntity<Void> startJob( @PathVariable("jobId") String jobId, HttpServletRequest request) {
         System.out.println("starting job with id " + jobId);
         try {
             String jwtToken;
@@ -188,7 +188,7 @@ public class JobServiceController {
     }
 
     @DeleteMapping("/delete/{jobId}")
-    public ResponseEntity<Void> deleteJob( @PathVariable String jobId, HttpServletRequest request) {
+    public ResponseEntity<Void> deleteJob( @PathVariable("jobId") String jobId, HttpServletRequest request) {
         System.out.println("deleting job with id " + jobId);
         try {
             String jwtToken;
