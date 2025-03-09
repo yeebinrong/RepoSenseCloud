@@ -6,12 +6,26 @@ SERVICE_NAME=$1
 # Change to the service directory
 cd /app/backend/$SERVICE_NAME
 
-# Watch for changes and recompile
-while inotifywait -r -e modify /app/backend/$SERVICE_NAME/src/main/;
-do 
-  cd ..;
-  mvn compile -o -DskipTests; 
-done >/dev/null 2>&1 &
+# Watch for changes and recompile, then restart the application
+while true; do
+  # Start the application in the background
+  mvn spring-boot:run &
+  APP_PID=$!
 
-# Run the Spring Boot application
-mvn spring-boot:run
+  # Wait for changes
+  inotifywait -r -e modify /app/backend/$SERVICE_NAME/src/main/
+
+  echo "Changes detected. Recompiling and restarting..."
+
+  # Kill the application
+  kill $APP_PID 2>/dev/null || true
+  wait $APP_PID 2>/dev/null || true
+
+  # Recompile
+  cd ..
+  mvn compile -o -DskipTests
+  cd $SERVICE_NAME
+
+  # Give a moment for things to settle
+  sleep 1
+done
