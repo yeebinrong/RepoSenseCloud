@@ -1,4 +1,4 @@
-FROM maven:3-amazoncorretto-21-alpine
+FROM maven:3-amazoncorretto-21-debian
 
 WORKDIR /app
 ARG PORT
@@ -9,8 +9,8 @@ ENV SERVICE_NAME=${SERVICE_NAME}
 # Copy the docker-entrypoint.sh file into the Docker image
 COPY ./infra/docker-images/rsc-local-backend-image/docker-entrypoint.sh /app/docker-entrypoint.sh
 
-# Install inotify-tools and dos2unix
-RUN apk add --no-cache inotify-tools dos2unix
+# Install build tools
+RUN apt-get update && apt-get install -y fswatch dos2unix
 
 # Convert docker-entrypoint.sh to Unix format
 RUN dos2unix /app/docker-entrypoint.sh
