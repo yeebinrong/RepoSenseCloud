@@ -19,8 +19,7 @@ services:
     env_file:
       - ./.env # docker-compose only works with .env file
     volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/public:/app/public
+      - ./frontend/:/app
     networks:
       - rsc-network
     environment:
