@@ -1,35 +1,44 @@
 name: premerge
+
 on:
   push:
     branches:
       - master
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   build:
     name: Build and analyze
     runs-on: ubuntu-22.04
+
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for better analysis relevance
+          fetch-depth: 0  # Required for proper PR analysis
 
-      # Set up Java Corretto 21.0.4.7.1 for Backend
+      # Set up Java for backend
       - name: Set up Java Corretto 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'corretto'
 
-      # Cache SonarQube packages
-      - name: Cache SonarQube packages
+      # Set up Node.js for frontend
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.18.2'
+
+      # Cache SonarCloud packages
+      - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      # Cache Maven packages
+      # Cache Maven dependencies
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
@@ -37,33 +46,39 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      # Set up Node.js 18.18.2 for Frontend
-      - name: Set up Node.js 18.18.2
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.18.2'
-
-      # Cache node_modules to improve build performance
+      # Cache node_modules
       - name: Cache node_modules
         uses: actions/cache@v4
         with:
-          path: node_modules
+          path: frontend/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('frontend/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-modules
 
-      # Backend SonarQube Analysis (Java)
-      - name: Backend SonarQube Analysis
+      # Backend SonarCloud analysis
+      - name: Backend SonarCloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           cd backend
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=yeebinrong_RepoSenseCloud
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar \
+            -Dsonar.projectKey=yeebinrong_RepoSenseCloud \
+            -Dsonar.sources=src/main \
+            -Dsonar.projectBaseDir=$(pwd) \
+            -Dsonar.projectName=RepoSenseCloud \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
 
-      # Frontend SonarQube Analysis (React)
-      - name: Frontend SonarQube Analysis
+      # Frontend SonarCloud analysis
+      - name: Frontend SonarCloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           cd frontend
           npm install
-          npx sonar-scanner -Dsonar.projectKey=yeebinrong_RepoSenseCloud -Dsonar.sources=src -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+          npx sonar-scanner \
+            -Dsonar.projectKey=yeebinrong_RepoSenseCloud \
+            -Dsonar.sources=src \
+            -Dsonar.projectBaseDir=$(pwd) \
+            -Dsonar.projectName=RepoSenseCloud \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
