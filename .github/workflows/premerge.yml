@@ -66,6 +66,7 @@ jobs:
             -Dsonar.projectBaseDir=$(pwd) \
             -Dsonar.projectName=RepoSenseCloud \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
 
       # Frontend SonarCloud analysis
       - name: Frontend SonarCloud Analysis
