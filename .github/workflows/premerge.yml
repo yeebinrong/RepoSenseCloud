@@ -64,7 +64,7 @@ jobs:
             -Dsonar.projectKey=RepoSenseCloud_backend \
             -Dsonar.sources=src/main \
             -Dsonar.projectBaseDir=$(pwd) \
-            -Dsonar.projectName=RepoSenseCloud \
+            -Dsonar.projectName=RepoSenseCloud_backend \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
 
@@ -79,6 +79,6 @@ jobs:
             -Dsonar.projectKey=RepoSenseCloud_frontend \
             -Dsonar.sources=src \
             -Dsonar.projectBaseDir=$(pwd) \
-            -Dsonar.projectName=RepoSenseCloud \
+            -Dsonar.projectName=RepoSenseCloud_frontend \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
