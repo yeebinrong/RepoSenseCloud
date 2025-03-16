@@ -2,7 +2,7 @@ service: sqs-lambda-service
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: java17
   region: ap-southeast-1
   iamRoleStatements:
     - Effect: Allow
@@ -12,6 +12,11 @@ provider:
         - sqs:GetQueueAttributes
       Resource:
         - !GetAtt MyQueue.Arn
+    - Effect: Allow
+      Action:
+        - batch:SubmitJob
+        - batch:DescribeJobs
+      Resource: "*"
   stage: ${opt:stage, 'dev'}
 
 resources:
@@ -21,9 +26,12 @@ resources:
       Properties:
         QueueName: sqs-lambda-queue
 
+package:
+  artifact: target/batch-queue-1.0-SNAPSHOT.jar
+
 functions:
   sqsProcessor:
-    handler: handler.processMessage
+    handler: com.hamburger.Handler::handleRequest
     events:
       - sqs:
           arn:
