@@ -60,10 +60,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           cd backend
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar \
             -Dsonar.projectKey=yeebinrong_RepoSenseCloud \
-            -Dsonar.sources=src/main/java \
-            -Dsonar.tests=src/test/java \
+            -Dsonar.sources=src/main \
             -Dsonar.projectBaseDir=$(pwd) \
             -Dsonar.projectName=RepoSenseCloud \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
