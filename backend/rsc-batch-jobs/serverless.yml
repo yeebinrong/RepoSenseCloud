@@ -20,7 +20,7 @@ resources:
           Type: FARGATE_SPOT
           MaxvCpus: 8
           Subnets:
-            - subnet-0f987932a31f95f4c
+            - subnet-087cfc237c112654d
           SecurityGroupIds:
             - sg-0912ca4fe0ca0fea6
 
@@ -61,6 +61,19 @@ resources:
                     - ecr:BatchGetImage
                     - ecr:GetAuthorizationToken
                     - s3:GetObject
+                    - ecs:RunTask
+                    - ecs:DescribeTasks
+                    - ecs:StopTask
+                    - iam:PassRole
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - ecr:GetAuthorizationToken
+                    - ecr:BatchCheckLayerAvailability
+                    - ecr:GetDownloadUrlForLayer
+                    - ecr:BatchGetImage
+                    - kms:Decrypt
+                    - secretsmanager:GetSecretValue
                   Resource: '*'
                 - Effect: Allow
                   Action:
@@ -73,20 +86,7 @@ resources:
                   Action:
                       - s3:GetObject
                   Resource: "*"
-                - Effect: "Allow"
-                  Action:
-                    - "kms:Decrypt"
-                    - "secretsmanager:GetSecretValue"
-                    - "secretsmanager:ListSecrets"
-                    - "secretsmanager:CreateSecret"
-                    - "secretsmanager:PutSecretValue"
-                    - "secretsmanager:DeleteSecret"
-                    - "ssm:GetParameters"
-                    - "ssm:GetParameter"
-                    - "ssm:PutParameter"
-                    - "ssm:DescribeParameters"
-                    - "ssm:GetParametersByPath"
-                  Resource: "*"
+
     # Job Definition
     BatchJobDefinition:
       Type: AWS::Batch::JobDefinition
@@ -98,7 +98,6 @@ resources:
         ContainerProperties:
           Image: 904233118848.dkr.ecr.ap-southeast-1.amazonaws.com/rsc-batch-jobs:latest  # Replace with your container image
           ExecutionRoleArn: !GetAtt BatchExecutionRole.Arn
-          JobRoleArn: !GetAtt BatchExecutionRole.Arn
           ResourceRequirements:
             - Type: MEMORY
               Value: "2048"
@@ -108,5 +107,10 @@ resources:
             - "java"
             - "-jar"
             - "/app/batch-job.jar"
+            - "Ref::message"
           FargatePlatformConfiguration:
             PlatformVersion: "LATEST"
+          NetworkConfiguration:
+            AssignPublicIp: ENABLED
+        Parameters:
+          message: "defaultMessage"
