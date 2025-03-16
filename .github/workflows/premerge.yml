@@ -61,7 +61,7 @@ jobs:
         run: |
           cd backend
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar \
-            -Dsonar.projectKey=yeebinrong_RepoSenseCloud \
+            -Dsonar.projectKey=RepoSenseCloud_backend \
             -Dsonar.sources=src/main \
             -Dsonar.projectBaseDir=$(pwd) \
             -Dsonar.projectName=RepoSenseCloud \
@@ -76,7 +76,7 @@ jobs:
           cd frontend
           npm install
           npx sonar-scanner \
-            -Dsonar.projectKey=yeebinrong_RepoSenseCloud \
+            -Dsonar.projectKey=RepoSenseCloud_frontend \
             -Dsonar.sources=src \
             -Dsonar.projectBaseDir=$(pwd) \
             -Dsonar.projectName=RepoSenseCloud \
