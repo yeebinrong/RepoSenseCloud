@@ -62,7 +62,8 @@ jobs:
           cd backend
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=yeebinrong_RepoSenseCloud \
-            -Dsonar.sources=. \
+            -Dsonar.sources=src/main/java \
+            -Dsonar.tests=src/test/java \
             -Dsonar.projectBaseDir=$(pwd) \
             -Dsonar.projectName=RepoSenseCloud \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
