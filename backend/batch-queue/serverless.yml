@@ -2,7 +2,7 @@ service: sqs-lambda-service
 
 provider:
   name: aws
-  runtime: java17
+  runtime: java21
   region: ap-southeast-1
   iamRoleStatements:
     - Effect: Allow
