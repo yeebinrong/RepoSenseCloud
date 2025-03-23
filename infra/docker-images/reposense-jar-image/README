@@ -1,0 +1,68 @@
+# RepoSense.Jar Docker Image Info
+
+
+Reposense v3.0 dicates the following dependencies:
+
+1. Java 11
+2. Node 18
+3. Git 2.23 or later
+
+## Build Command
+`docker build -t reposense-jar -f infra/docker-images/reposense-jar-image/Dockerfile .`
+
+
+## Run Command
+
+#### Arguments
+1.  -v "{your output folder path}/output:/app/output"
+2.  REPOS="repo urls separated by space" 
+3.  SINCE="Start of date range DD/MM/YYYY"
+4.  UNTIL="End of date range DD/MM/YYYY" 
+5.  FORMATS="file extensions separated by space" 
+6.  VIEW="true" (always true)
+7.  IGNORE_STANDALONE_CONFIG="true/false" (to use config files) 
+8.  LAST_MODIFIED_DATE="true/false" (last modified date included in report)
+9.  TIMEZONE="ZONE_ID[±hh[mm]]"
+10. FIND_PREVIOUS_AUTHORS="true" (credit previous author even if line are in ignore commit list)
+11. ANALYZE_AUTHORSHIP="true" (further analysis to distinguish full or partial credit for a given line)
+12. ORIGINALITY_THRESHOLD="0.00 - 1.00" (turns on ANALYZE_AUTHORSHIP and specifies author credit weightage)
+
+#### Example
+`docker run -v "your/own/path/output:/app/output" reposense-jar --repos https://github.com/xxx/yyy.git --view --output /app/output`
+
+#### Example with all options
+```powershell
+docker run -v "C:/Users/Gwee/Documents/Capstone 4902/output:/app/output" `
+    -e REPOS="https://github.com/reposense/RepoSense.git" `
+    -e SINCE="31/1/2017" `
+    -e UNTIL="31/12/2018" `
+    -e FORMATS="java adoc xml" `
+    -e VIEW="true" `
+    -e IGNORE_STANDALONE_CONFIG="true" `
+    -e LAST_MODIFIED_DATE="true" `
+    -e TIMEZONE="UTC+08" `
+    -e FIND_PREVIOUS_AUTHORS="true" `
+    -e ANALYZE_AUTHORSHIP="true" `
+    -e ORIGINALITY_THRESHOLD="0.66" `
+    reposense-jar
+```
+
+```bash (macOS/Linux)
+docker run -v "$(pwd)/output:/app/output" \
+    -e REPOS="https://github.com/reposense/RepoSense.git" \
+    -e SINCE="31/1/2017" \
+    -e UNTIL="31/12/2018" \
+    -e FORMATS="java adoc xml" \
+    -e VIEW="true" \
+    -e IGNORE_STANDALONE_CONFIG="true" \
+    -e LAST_MODIFIED_DATE="true" \
+    -e TIMEZONE="UTC+08" \
+    -e FIND_PREVIOUS_AUTHORS="true" \
+    -e ANALYZE_AUTHORSHIP="true" \
+    -e ORIGINALITY_THRESHOLD="0.66" \
+    reposense-jar
+```
+
+## Manual Access Report
+The report will be generated in the folder you've designated. You can access the report by launching the `output/reposense-report/index.html` and supplying the `output/reposense-report/archive.zip` file into the interface.
+
