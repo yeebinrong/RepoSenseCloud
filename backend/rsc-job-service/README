@@ -1,0 +1,153 @@
+# RSC Job Service API Documentation
+
+## API Endpoints
+
+### Job Management
+
+#### Get Jobs by Page
+- **GET** `/api/jobs/?page={page}&limit={limit}`
+    - Retrieves paginated list of jobs
+    - Query parameters: page, limit
+    - Requires authentication
+    - Results:
+        - **Status 200: Success**
+            - Returns: JSON array of jobs (Can be null if no jobs found)
+        - **Status 401: Unauthorized**
+            - Failed JWT authentication
+
+#### Get Job by ID
+- **GET** `/api/jobs/{jobId}`
+    - Retrieves specific job details
+    - Path parameter: jobId
+    - Requires authentication
+    - Results:
+        - **Status 200: Success**
+            - Returns: JSON of the exact job (Can be null if no job found)
+        - **Status 401: Unauthorized**
+            - Failed JWT authentication
+
+#### Get All Jobs
+- **GET** `/api/jobs/`
+    - Retrieves all jobs
+    - Requires authentication
+    - Results:
+        - **Status 200: Success**
+            - Returns: JSON array of all jobs (Can be null if no jobs found)
+        - **Status 401: Unauthorized**
+            - Failed JWT authentication
+
+#### Search Jobs
+- **GET** `/api/jobs/search/{keyword}`
+    - Searches jobs by keyword
+    - Path parameter: keyword
+    - Requires authentication
+    - Results:
+        - **Status 200: Success**
+            - Returns: JSON array of jobs matching the keyword (Can be null if no jobs found)
+        - **Status 401: Unauthorized**
+            - Failed JWT authentication
+
+#### Get Report //TODO
+- **GET** `/api/jobs/report/{jobId}`
+    - Retrieves job report
+    - Path parameter: jobId
+    - Requires authentication
+
+#### Save Job //TODO
+- **POST** `/api/jobs/save`
+    - Saves job state
+    - No request body required
+
+#### Create Job
+- **POST** `/api/jobs/create`
+    - Creates a new job
+    - Request body: Job details
+    - Requires authentication
+    - Results:
+        - **Status 201: Created**
+            - Returns: Job created successfully
+        - **Status 400: Bad Request**
+            - Invalid job details
+        - **Status 401: Unauthorized**
+            - Failed JWT authentication
+
+#### Start Job
+- **PATCH** `/api/jobs/start/{jobId}`
+    - Starts a specific job
+    - Path parameter: jobId
+    - Requires authentication
+    - Jobs must be in "Pending" status to start
+    - Results:
+        - **Status 200: Success**
+            - Returns: Job started successfully
+        - **Status 400: Bad Request**
+            - Job doesn't exist or is not in "Pending" status
+        - **Status 401: Unauthorized**
+            - Failed JWT authentication
+
+#### Edit Job
+- **PATCH** `/api/jobs/edit/{jobId}`
+    - Updates job details
+    - Path parameter: jobId
+    - Request body: Updated job details
+    - Requires authentication
+    - Results:
+        - **Status 200: Success**
+            - Returns: Job edited successfully
+        - **Status 400: Bad Request**
+            - Invalid job details
+        - **Status 401: Unauthorized**
+            - Failed JWT authentication
+
+#### Delete Job
+- **DELETE** `/api/jobs/delete/{jobId}`
+    - Deletes a specific job
+    - Path parameter: jobId
+    - Requires authentication
+    - Results:
+        - **Status 200: Success**
+            - Returns: Job deleted successfully
+        - **Status 400: Bad Request**
+            - Invalid job ID or job cannot be deleted
+        - **Status 401: Unauthorized**
+            - Failed JWT authentication
+
+## Authentication
+Endpoints require JWT authentication token stored in cookie.
+All endpoint extracts "owner" name from JWT within service function call.
+
+## Error Responses
+- **Status 400: Bad Request**
+- **Status 401: Unauthorized**
+- **Status 500: Internal Server Error**
+
+## Database
+The service uses DynamoDB with the following schema:
+
+### Job Table
+- **Partition Key**: owner (String)
+- **Sort Key**: jobId (String)
+
+#### Attributes
+- jobName (String)
+- repoLink (String)
+- sinceDate (String)
+- untilDate (String)
+- period (String)
+- originalityThreshold (String)
+- timeZone (String)
+- authorship (Boolean)
+- prevAuthors (Boolean)
+- shallowClone (Boolean)
+- ignoreSizeLimit (Boolean)
+- addLastMod (Boolean)
+- formatChipValues (List<String>)
+- jobType (String)
+- frequency (String)
+- startMinute (String)
+- startHour (String)
+- startDate (String)
+- endDate (String)
+- status (String)
+- lastUpdated (Map<String,String>)
+- nextScheduled (Map<String,String>)

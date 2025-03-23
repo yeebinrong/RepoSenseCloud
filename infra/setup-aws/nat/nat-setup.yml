@@ -1,0 +1,220 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Cloudformation Template
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - production
+  NATInstanceType:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+
+Mappings:
+  RegionMap:
+    ap-southeast-1:
+      NATInstanceAMI: ami-0012a981fe3b8891f
+
+Resources:
+  BatchEnvVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 30.255.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-vpc"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+
+  BatchEnvVPCPrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: BatchEnvVPC
+      CidrBlock: 30.255.0.0/19
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-private-1"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+
+  BatchEnvVPCPublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: BatchEnvVPC
+      CidrBlock: 30.255.128.0/20
+      MapPublicIpOnLaunch: true
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-public-1"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+
+  BatchEnvPublicRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref BatchEnvPublicRouteTable
+      SubnetId: !Ref BatchEnvVPCPublicSubnet1
+
+  BatchEnvSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "rsc-${Stage}-BatchEnvSecurityGroup"
+      GroupDescription: "Allow all Inbound, all Outbound"
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: "-1"
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-sg"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+      VpcId:
+        Ref: BatchEnvVPC
+
+  BatchEnvInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-igw"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+
+  BatchEnvNATSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "rsc-${Stage}-NAT-SG"
+      GroupDescription: "NAT instance security group"
+      SecurityGroupIngress:
+          - IpProtocol: "-1"
+            Description: "Access from private subnet"
+            CidrIp: 30.255.0.0/17
+      SecurityGroupEgress:
+          - IpProtocol: "-1"
+            Description: "Allow all outbound access"
+            CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-nat-sg"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+      VpcId:
+        Ref: BatchEnvVPC
+
+  BatchEnvNATInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap
+        - RegionMap
+        - !Ref 'AWS::Region'
+        - NATInstanceAMI
+      InstanceType: !Sub "${NATInstanceType}"
+      KeyName: !Sub "rsc-${Stage}"
+      SourceDestCheck: false
+      SubnetId: !Ref BatchEnvVPCPublicSubnet1
+      SecurityGroupIds:
+        - !GetAtt "BatchEnvNATSecurityGroup.GroupId"
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-nat-instance"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+
+  BatchEnvNATGatewayAttachment:
+    Type: AWS::EC2::EIP
+    DependsOn: BatchEnvInternetGatewayAttachment
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-eip"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+
+  BatchEnvNATInstanceEIPAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      InstanceId: !Ref BatchEnvNATInstance
+      EIP: !Ref BatchEnvNATGatewayAttachment
+
+  BatchEnvPrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref BatchEnvVPC
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-private-rtb"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+
+  BatchEnvPrivateRouteNATInstance:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref BatchEnvPrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      InstanceId: !Ref BatchEnvNATInstance
+
+  BatchEnvPrivateRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref BatchEnvPrivateRouteTable
+      SubnetId: !Ref BatchEnvVPCPrivateSubnet1
+
+  BatchEnvPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref BatchEnvVPC
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-public-rtb"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+
+  BatchEnvInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref BatchEnvInternetGateway
+      VpcId: !Ref BatchEnvVPC
+
+  BatchEnvOutboundRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: BatchEnvPublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: BatchEnvInternetGateway
+
+Outputs:
+  BatchEnvSecurityGroup:
+    Value: !Ref BatchEnvSecurityGroup
+    Export:
+      Name: !Sub rsc-${Stage}-BatchEnvSecurityGroup
+  BatchEnvVPC:
+    Value: !Ref BatchEnvVPC
+    Export:
+      Name: !Sub rsc-${Stage}-BatchEnvVPC
+  BatchEnvVPCPublicSubnet1:
+    Value: !Ref BatchEnvVPCPublicSubnet1
+    Export:
+      Name: !Sub rsc-${Stage}-BatchEnvVPCPublicSubnet1
+  BatchEnvVPCPrivateSubnet1:
+    Value: !Ref BatchEnvVPCPrivateSubnet1
+    Export:
+      Name: !Sub rsc-${Stage}-BatchEnvVPCPrivateSubnet1

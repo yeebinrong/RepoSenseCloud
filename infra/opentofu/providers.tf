@@ -15,8 +15,9 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region
-  s3_use_path_style = true
+  region              = var.region
+  s3_use_path_style   = true
+  profile             = "default"  # Ensure this matches the profile name in the script
   endpoints {
     dynamodb = local.dynamodb_endpoint
     s3       = local.s3_endpoint

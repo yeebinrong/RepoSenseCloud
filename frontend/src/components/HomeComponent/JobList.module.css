@@ -1,0 +1,208 @@
+.jobListContainer {
+    border-radius: 8px;
+    background-color: #fff;
+    min-height: 733px;
+    width: 100%;
+    max-width: 1349px;
+    padding: 20px 23px 11px;
+    border: 1px solid #eaeaea;
+}
+
+@media (max-width: 991px) {
+    .jobListContainer {
+        max-width: 100%;
+        padding: 0 20px;
+    }
+}
+
+.jobList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.jobListHeader {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    color: #000;
+    flex-wrap: nowrap;
+    font: 500 16px DM Sans, sans-serif;
+    width: 100%;
+    padding-right: 50px;
+    padding-left: 50px;
+    gap: 40px 80px;
+}
+
+th {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: space-between;
+    white-space: nowrap;
+}
+
+tr {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    justify-content: space-between;
+    white-space: nowrap;
+}
+
+.checkBox {
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    border: 1px solid #292D32;
+}
+
+.headerItem {
+    display: flex;
+    align-items: center;
+}
+
+.headerIcon, .sortIcon {
+    width: 24px;
+    height: 24px;
+}
+
+.headerText {
+    flex-grow: 1;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 38px;
+
+}
+
+.jobTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+hr {
+    width: 100%;
+    border: 0.5px solid #eaeaea;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.actionText {
+    white-space: nowrap;
+    padding: 0 15px;
+}
+
+.jobItem {
+    display: flex;
+    align-items: center;
+    gap: 40px 100px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-left: 50px;
+    font: 400 16px DM Sans, sans-serif;
+
+}
+
+.moreOptionsButton {
+    background-color: #fff;
+    border: none;
+    cursor: pointer;
+    color: #ada7a7;
+    font: 400 20px DM Sans, sans-serif;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.jobInfo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #000;
+}
+
+.jobIcon {
+    width: 24px;
+    height: 24px;
+}
+
+.jobName {
+    width: 100px;
+}
+
+.jobStatus {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    width: 99px;
+}
+
+.statusIndicator {
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+}
+
+.completed {
+    color: #0fab60;
+}
+
+.completed .statusIndicator {
+    background-color: #0fab60;
+}
+
+.running {
+    color: #f7a81b;
+}
+
+.running .statusIndicator {
+    background-color: #f7a81b;
+}
+
+.failed {
+    color: #ab0f22;
+}
+
+.failed .statusIndicator {
+    background-color: #ab0f22;
+}
+
+.jobTiming {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #000;
+    width: 127px;
+}
+
+.timeInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.time {
+    font-size: 16px;
+}
+
+.date {
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.jobActions {
+    display: flex;
+    align-items: center;
+    gap: 40px 46px;
+    justify-content: center;
+    width: 172px;
+}
+
+.actionIcon {
+    width: 24px;
+    height: 24px;
+}
