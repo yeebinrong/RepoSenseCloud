@@ -27,9 +27,6 @@ Reposense v3.0 dicates the following dependencies:
 11. ANALYZE_AUTHORSHIP="true" (further analysis to distinguish full or partial credit for a given line)
 12. ORIGINALITY_THRESHOLD="0.00 - 1.00" (turns on ANALYZE_AUTHORSHIP and specifies author credit weightage)
 
-#### Example
-`docker run -v "your/own/path/output:/app/output" reposense-jar --repos https://github.com/xxx/yyy.git --view --output /app/output`
-
 #### Example with all options
 ```powershell
 docker run -v "C:/Users/Gwee/Documents/Capstone 4902/output:/app/output" `
