@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # Initialize command with jar execution
-CMD="java -jar /app/RepoSense.jar"
+# -Xmx3g required else will face memory heap issue
+CMD="java -Xms512m -Xmx3000m -jar /app/RepoSense.jar"
 
 # Set default output directory if not specified
 OUTPUT=${OUTPUT:-"/app/output"}
@@ -23,7 +24,6 @@ CMD="$CMD --repos $REPOS"
 [ -n "$ORIGINALITY_THRESHOLD" ] && CMD="$CMD --originality-threshold $ORIGINALITY_THRESHOLD"
 
 # Boolean flags with default values
-CMD="$CMD --view"
 IGNORE_CONFIG=${IGNORE_CONFIG:-"true"}
 LAST_MOD_DATE=${LAST_MOD_DATE:-"false"}
 FIND_PREV_AUTHORS=${FIND_PREV_AUTHORS:-"false"}
@@ -51,8 +51,18 @@ echo "Output Directory: $OUTPUT"
 echo "----------------------"
 
 # Execute command
-echo "Executing: $CMD"
-exec $CMD
+echo "CMD: $CMD"
+$CMD
 
-# Note: The browser launch error is expected in Docker
+# Upload generated report to S3
+echo "Uploading report to S3..."
+if aws s3 cp --recursive "$OUTPUT" "s3://$REPORT_BUCKET/$ID/"; then # TODO: may have bug if dest folder is not cleaned first?
+  echo "Report successfully uploaded to S3."
+else
+  echo "Failed to upload report to S3." >&2
+  exit 1  # Optional: exit if the upload fails
+fi
+
+exit 0
+
 # The report can be accessed at {output_path}/reposense-report/index.html
