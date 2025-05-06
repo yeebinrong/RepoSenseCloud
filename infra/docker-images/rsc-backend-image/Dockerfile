@@ -21,6 +21,11 @@ RUN java -version && mvn -v
 
 EXPOSE $PORT
 
+# Copy entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Set the default command to run when the container starts
 # CMD java -jar target/$JAR_FILE_NAME

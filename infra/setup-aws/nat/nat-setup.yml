@@ -4,10 +4,9 @@ Description: Cloudformation Template
 Parameters:
   Stage:
     Type: String
-    Default: dev
+    Default: common
     AllowedValues:
-      - dev
-      - production
+      - common
   NATInstanceType:
     Type: String
     Default: t2.micro
@@ -136,7 +135,7 @@ Resources:
         - Key: Environment
           Value: !Sub "rsc:${Stage}"
 
-  BatchEnvNATGatewayAttachment:
+  BatchEnvNATInstanceEIP:
     Type: AWS::EC2::EIP
     DependsOn: BatchEnvInternetGatewayAttachment
     Properties:
@@ -151,7 +150,7 @@ Resources:
     Type: AWS::EC2::EIPAssociation
     Properties:
       InstanceId: !Ref BatchEnvNATInstance
-      EIP: !Ref BatchEnvNATGatewayAttachment
+      EIP: !Ref BatchEnvNATInstanceEIP
 
   BatchEnvPrivateRouteTable:
     Type: AWS::EC2::RouteTable

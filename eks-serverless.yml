@@ -1,0 +1,46 @@
+service: rsc-eks-infra
+
+provider:
+  name: aws
+  region: ap-southeast-1
+
+resources:
+  Resources:
+    MyECRRepoServiceA:
+      Type: AWS::ECR::Repository
+      Properties:
+        RepositoryName: service-a
+
+    MyECRRepoServiceB:
+      Type: AWS::ECR::Repository
+      Properties:
+        RepositoryName: service-b
+
+    EKSNodeInstanceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - ec2.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+          - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+
+    EKSS3AccessPolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+        PolicyName: AllowS3ForJar
+        Roles: [ !Ref EKSNodeInstanceRole ]
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource: arn:aws:s3:::rsc-shipment-bucket/*

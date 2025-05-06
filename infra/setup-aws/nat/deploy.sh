@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # default value of stage to dev
-STAGE=${1:-dev}
+STAGE=${1:-common}
 STACK_NAME="rsc-${STAGE}-nat-stack"
 
 echo "Deploying stack ${STACK_NAME} for stage ${STAGE}..."
