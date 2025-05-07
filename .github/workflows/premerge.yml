@@ -60,7 +60,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           cd backend
-          mvn -B clean verify org.jacoco:jacoco-maven-plugin:prepare-agent \
+          mvn -B clean org.jacoco:jacoco-maven-plugin:prepare-agent verify \
             org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar \
             -Dsonar.projectKey=RepoSenseCloud_backend \
             -Dsonar.sources=src/main \
