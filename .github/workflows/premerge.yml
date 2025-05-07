@@ -64,7 +64,6 @@ jobs:
             org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar \
             -Dsonar.projectKey=RepoSenseCloud_backend \
             -Dsonar.sources=src/main \
-            -Dsonar.tests=src/test \
             -Dsonar.projectBaseDir=$(pwd) \
             -Dsonar.projectName=RepoSenseCloud_backend \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
