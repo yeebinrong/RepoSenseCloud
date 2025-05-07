@@ -1,109 +1,167 @@
-// // filepath: /c:/Users/Gwee/Documents/ReposenseCloudGit/backend/rsc-job-service/src/test/java/com/hamburger/job/service/JobServiceTest.java
-// package com.hamburger.job.service;
+package com.hamburger.job.service;
 
-// import com.hamburger.job.models.Job;
-// import com.hamburger.job.models.dao.JobDbDao;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.mockito.MockitoAnnotations;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-// import java.util.Collections;
-// import java.util.List;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
-// import static org.junit.jupiter.api.Assertions.assertEquals;
-// import static org.mockito.ArgumentMatchers.anyString;
-// import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-// public class JobServiceTest {
+import com.hamburger.job.models.Job;
+import com.hamburger.job.models.dao.JobDbDao;
 
-//     @Mock
-//     private JobDbDao jobDbDao;
+class JobServiceTest {
 
-//     @InjectMocks
-//     private JobService jobService;
+    @Mock
+    private JobDbDao jobDbDao;
 
-//     @BeforeEach
-//     public void setUp() {
-//         MockitoAnnotations.openMocks(this);
-//     }
+    @InjectMocks
+    private JobService jobService;
 
-//     @Test
-//     public void testGetAllJobs() {
-//         Job job = new Job();
-//         job.setOwner("owner1");
-//         job.setJobId("job1");
+    private static final String OWNER = "test-owner";
+    private static final String JOB_ID = "test-job-123";
 
-//         when(jobDbDao.getAllJobs(anyString())).thenReturn(Collections.singletonList(job));
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
-//         List<Job> jobs = jobService.getAllJobs("owner1");
+    @Test
+    void getAllJobs_ReturnsJobs() {
+        // Arrange
+        List<Job> expectedJobs = Arrays.asList(new Job(), new Job());
+        when(jobDbDao.getAllJobs(OWNER)).thenReturn(Optional.of(expectedJobs));
 
-//         assertEquals(1, jobs.size());
-//         assertEquals("owner1", jobs.get(0).getOwner());
-//         assertEquals("job1", jobs.get(0).getJobId());
+        // Act
+        Optional<List<Job>> result = jobService.getAllJobs(OWNER);
 
-//         verify(jobDbDao, times(1)).getAllJobs(anyString());
-//     }
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(expectedJobs, result.get());
+        verify(jobDbDao).getAllJobs(OWNER);
+    }
 
-//     // @Test
-//     // public void testGetJobsByPage() {
-//     //     Job job = new Job();
-//     //     job.setOwner("owner1");
-//     //     job.setId("job1");
+    @Test
+    void getJobsByPage_WithValidInput_ReturnsPagedJobs() {
+        // Arrange
+        List<Job> allJobs = Arrays.asList(new Job(), new Job(), new Job(), new Job());
+        when(jobDbDao.getAllJobs(OWNER)).thenReturn(Optional.of(allJobs));
 
-//     //     when(jobDbDao.getJobsByPage(anyInt(), anyInt())).thenReturn(Collections.singletonList(job));
+        // Act
+        List<Job> result = jobService.getJobsByPage(OWNER, 1, 2);
 
-//     //     List<Job> jobs = jobService.getJobsByPage(1, 10);
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals(allJobs.subList(0, 2), result);
+    }
 
-//     //     assertEquals(1, jobs.size());
-//     //     assertEquals("owner1", jobs.get(0).getOwner());
-//     //     assertEquals("job1", jobs.get(0).getId());
+    @Test
+    void getJobsByPage_WithEmptyJobs_ReturnsEmptyList() {
+        // Arrange
+        when(jobDbDao.getAllJobs(OWNER)).thenReturn(null);
 
-//     //     verify(jobDbDao, times(1)).getJobsByPage(anyInt(), anyInt());
-//     // }
+        // Act
+        List<Job> result = jobService.getJobsByPage(OWNER, 1, 10);
 
-//     // @Test
-//     // public void testGetJobsById() {
-//     //     Job job = new Job();
-//     //     job.setOwner("owner1");
-//     //     job.setId("job1");
+        // Assert
+        assertTrue(result.isEmpty());
+    }
 
-//     //     when(jobDbDao.getJobsById(anyInt())).thenReturn(job);
+    @Test
+    void getJobsById_ExistingJob_ReturnsJob() {
+        // Arrange
+        Job expectedJob = new Job();
+        when(jobDbDao.getJobsById(OWNER, JOB_ID)).thenReturn(Optional.of(expectedJob));
 
-//     //     Job result = jobService.getJobsById(1);
+        // Act
+        Optional<Job> result = jobService.getJobsById(OWNER, JOB_ID);
 
-//     //     assertEquals("owner1", result.getOwner());
-//     //     assertEquals("job1", result.getId());
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(expectedJob, result.get());
+    }
 
-//     //     verify(jobDbDao, times(1)).getJobsById(anyInt());
-//     // }
+    @Test
+    void getJobsByKeyword_WithMatches_ReturnsMatchingJobs() {
+        // Arrange
+        List<Job> expectedJobs = Arrays.asList(new Job(), new Job());
+        when(jobDbDao.getJobsByKeyword(OWNER, "test")).thenReturn(Optional.of(expectedJobs));
 
-//     // @Test
-//     // public void testGetJobsByKeyword() {
-//     //     Job job = new Job();
-//     //     job.setOwner("owner1");
-//     //     job.setId("job1");
+        // Act
+        Optional<List<Job>> result = jobService.getJobsByKeyword(OWNER, "test");
 
-//     //     when(jobDbDao.getJobsByKeyword(anyString())).thenReturn(Collections.singletonList(job));
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(expectedJobs, result.get());
+    }
 
-//     //     List<Job> jobs = jobService.getJobsByKeyword("keyword");
+    @Test
+    void getReport_ValidJobId_ReturnsReportUrl() {
+        // Arrange
+        String expectedUrl = "https://example.com/report.pdf";
+        when(jobDbDao.getReport(JOB_ID)).thenReturn(expectedUrl);
 
-//     //     assertEquals(1, jobs.size());
-//     //     assertEquals("owner1", jobs.get(0).getOwner());
-//     //     assertEquals("job1", jobs.get(0).getId());
+        // Act
+        String result = jobService.getReport(JOB_ID);
 
-//     //     verify(jobDbDao, times(1)).getJobsByKeyword(anyString());
-//     // }
+        // Assert
+        assertEquals(expectedUrl, result);
+    }
 
-//     // @Test
-//     // public void testGetReport() {
-//     //     when(jobDbDao.getReport(anyInt())).thenReturn("reportUrl");
+    @Test
+    void saveJob_CallsDaoMethod() {
+        // Act
+        jobService.saveJob();
 
-//     //     String report = jobService.getReport(1);
+        // Assert
+        verify(jobDbDao).saveJob();
+    }
 
-//     //     assertEquals("reportUrl", report);
+    @Test
+    void createJob_ValidJob_CallsDaoMethod() {
+        // Arrange
+        Job job = new Job();
 
-//     //     verify(jobDbDao, times(1)).getReport(anyInt());
-//     // }
-// }
+        // Act
+        jobService.createJob(job);
+
+        // Assert
+        verify(jobDbDao).createJob(job);
+    }
+
+    @Test
+    void startJob_ValidJob_CallsDaoMethod() {
+        // Act
+        jobService.startJob(OWNER, JOB_ID);
+
+        // Assert
+        verify(jobDbDao).startJob(OWNER, JOB_ID);
+    }
+
+    @Test
+    void editJob_ValidJob_CallsDaoMethod() {
+        // Arrange
+        Job job = new Job();
+
+        // Act
+        jobService.editJob(job);
+
+        // Assert
+        verify(jobDbDao).editJob(job);
+    }
+
+    @Test
+    void deleteJob_ValidJob_CallsDaoMethod() {
+        // Act
+        jobService.deleteJob(OWNER, JOB_ID);
+
+        // Assert
+        verify(jobDbDao).deleteJob(OWNER, JOB_ID);
+    }
+}
