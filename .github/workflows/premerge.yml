@@ -54,31 +54,42 @@ jobs:
           key: ${{ runner.os }}-node-modules-${{ hashFiles('frontend/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-modules
 
-      # Backend SonarCloud analysis
-      - name: Backend SonarCloud Analysis
+      # Run Backend Tests with Coverage + Sonar Analysis
+      - name: Backend SonarCloud Analysis with Coverage
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           cd backend
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar \
+          mvn -B clean verify org.jacoco:jacoco-maven-plugin:prepare-agent \
+            org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar \
             -Dsonar.projectKey=RepoSenseCloud_backend \
             -Dsonar.sources=src/main \
+            -Dsonar.tests=src/test \
             -Dsonar.projectBaseDir=$(pwd) \
             -Dsonar.projectName=RepoSenseCloud_backend \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
-      # Frontend SonarCloud analysis
-      - name: Frontend SonarCloud Analysis
+
+      # Run Frontend Tests with Coverage
+      - name: Run Frontend Tests with Coverage
+        run: |
+          cd frontend
+          npm ci
+          npm run test -- --coverage
+
+      # Frontend SonarCloud Analysis with Coverage
+      - name: Frontend SonarCloud Analysis with Coverage
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           cd frontend
-          npm install
           npx sonar-scanner \
             -Dsonar.projectKey=RepoSenseCloud_frontend \
             -Dsonar.sources=src \
             -Dsonar.projectBaseDir=$(pwd) \
             -Dsonar.projectName=RepoSenseCloud_frontend \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
