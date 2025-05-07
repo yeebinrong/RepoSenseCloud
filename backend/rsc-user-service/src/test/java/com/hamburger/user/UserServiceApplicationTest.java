@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.hamburger.user.middleware.JwtAuthorization;
 
-class UserServiceApplicationTest {
+public class UserServiceApplicationTest {
 
     private final UserServiceApplication application = new UserServiceApplication();
 

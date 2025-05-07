@@ -27,7 +27,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @ExtendWith(MockitoExtension.class)
-class UserControllerTest {
+public class UserControllerTest {
     
     @Mock
     private UserService userService;

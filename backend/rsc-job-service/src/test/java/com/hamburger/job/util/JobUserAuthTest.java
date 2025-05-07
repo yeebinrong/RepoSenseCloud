@@ -16,7 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import reactor.core.publisher.Mono;
 
-class JobUserAuthTest {
+public class JobUserAuthTest {
 
     @Mock
     private WebClient.Builder webClientBuilder;

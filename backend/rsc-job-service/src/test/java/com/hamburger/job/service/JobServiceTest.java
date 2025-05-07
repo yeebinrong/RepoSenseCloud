@@ -16,7 +16,7 @@ import org.mockito.MockitoAnnotations;
 import com.hamburger.job.models.Job;
 import com.hamburger.job.models.dao.JobDbDao;
 
-class JobServiceTest {
+public class JobServiceTest {
 
     @Mock
     private JobDbDao jobDbDao;

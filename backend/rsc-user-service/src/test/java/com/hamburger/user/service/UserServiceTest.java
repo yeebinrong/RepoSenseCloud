@@ -13,7 +13,7 @@ import com.hamburger.user.dao.UserDao;
 import com.hamburger.user.dao.entity.User;
 import com.hamburger.user.dto.RegisterReqDto;
 
-class UserServiceTest {
+public class UserServiceTest {
 
     @Mock
     private UserDao userDao;

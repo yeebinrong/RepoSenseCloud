@@ -20,7 +20,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-class JwtAuthorizationTest {
+public class JwtAuthorizationTest {
 
     private JwtAuthorization jwtAuthorization;
 

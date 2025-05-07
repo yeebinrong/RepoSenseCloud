@@ -10,7 +10,7 @@ import org.mockito.MockedStatic;
 import com.hamburger.user.service.util.JwtUtil;
 import com.hamburger.user.service.util.PasswordUtil;
 
-class LoginReqDtoTest {
+public class LoginReqDtoTest {
 
     private LoginReqDto loginReqDto;
     private static final String USERNAME = "testUser";

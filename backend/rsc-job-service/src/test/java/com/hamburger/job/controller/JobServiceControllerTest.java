@@ -25,7 +25,7 @@ import com.hamburger.job.util.JwtHelper;
 import jakarta.servlet.http.HttpServletRequest;
 
 @ExtendWith(MockitoExtension.class)
-class JobServiceControllerTest {
+public class JobServiceControllerTest {
     @Mock
     private JobService jobService;
 

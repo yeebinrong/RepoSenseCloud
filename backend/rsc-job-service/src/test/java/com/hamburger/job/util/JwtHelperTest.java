@@ -12,7 +12,7 @@ import org.mockito.MockitoAnnotations;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
-class JwtHelperTest {
+public class JwtHelperTest {
 
     @Mock
     private HttpServletRequest request;
