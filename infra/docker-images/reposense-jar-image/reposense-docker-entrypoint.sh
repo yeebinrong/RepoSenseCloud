@@ -58,11 +58,27 @@ $CMD
 
 # Upload generated report to S3
 echo "Uploading report to S3..."
-if aws s3 cp --recursive "$OUTPUT" "s3://$REPORT_BUCKET/$ID/"; then # TODO: may have bug if dest folder is not cleaned first?
-  echo "Report successfully uploaded to S3."
+if aws s3 cp --recursive "$OUTPUT" "s3://$REPORT_BUCKET/$OWNER/$JOBID/"; then
+    echo "Report successfully uploaded to S3."
+    # Update DDB job to Completed
+    aws dynamodb update-item \
+        --table-name rsc-localhost-job-data \
+        --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
+        --update-expression "SET #s = :completed" \
+        --expression-attribute-names '{"#s": "status"}' \
+        --expression-attribute-values '{":completed": {"S": "Completed"}}' \
+        --region ap-southeast-1
 else
-  echo "Failed to upload report to S3." >&2
-  exit 1  # Optional: exit if the upload fails
+    # Update DDB job to Failed
+    aws dynamodb update-item \
+        --table-name rsc-localhost-job-data \
+        --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
+        --update-expression "SET #s = :failed" \
+        --expression-attribute-names '{"#s": "status"}' \
+        --expression-attribute-values '{":failed": {"S": "Failed"}}' \
+        --region ap-southeast-1
+    echo "Failed to upload report to S3." >&2
+    exit 1
 fi
 
 exit 0

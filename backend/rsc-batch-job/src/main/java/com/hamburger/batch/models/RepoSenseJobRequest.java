@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class RepoSenseJobRequest {
 
     // Required
+    private String owner;
     private String id;
     private String repos;
 
@@ -37,6 +38,7 @@ public class RepoSenseJobRequest {
 // sample argument to send to SQS directly
 
 // {
+//     "owner": "binrong",
 //     "id": "1234567890123",
 //     "repos": "https://github.com/reposense/RepoSense.git",
 //     "since": "31/1/2017",

@@ -11,7 +11,7 @@ function JobManagement() {
                 <div className={styles.titleSection}>
                     <h2 className={styles.title}>RepoSense Cloud</h2>
                     <p className={styles.description}>
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.
+                        {/* Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text. */}
                     </p>
                 </div>
                 <div className={styles.actionButtons}>

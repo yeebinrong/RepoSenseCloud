@@ -206,3 +206,10 @@ hr {
     width: 24px;
     height: 24px;
 }
+
+.iconButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}

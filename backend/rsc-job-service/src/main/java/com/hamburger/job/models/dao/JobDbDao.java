@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.hamburger.job.models.Job;
 import com.hamburger.job.models.exceptions.StartJobException;
+import com.hamburger.job.service.SqsService;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -31,11 +32,13 @@ public class JobDbDao {
 
     private final DynamoDbTable<Job> jobTable;
     private final DynamoDbClient dynamoDbClient;
+    private final SqsService sqsService;
 
     @Autowired
-    public JobDbDao(DynamoDbClient dynamoDbClient, DynamoDbEnhancedClient enhancedDynamoDbClient) {
+    public JobDbDao(DynamoDbClient dynamoDbClient, DynamoDbEnhancedClient enhancedDynamoDbClient, SqsService sqsService) {
         this.jobTable = enhancedDynamoDbClient.table("rsc-localhost-job-data", TableSchema.fromBean(Job.class));
         this.dynamoDbClient = dynamoDbClient;
+        this.sqsService = sqsService;
     }
 
     public Optional<List<Job>> getAllJobs(String owner) {
@@ -159,12 +162,35 @@ public class JobDbDao {
                 throw new StartJobException("Job cannot be started because job doesn't exist.");
             }
 
-            if (job != null && "Pending".equals(job.getStatus())) {
+            // Job should allow to run if pending / completed / failed
+            if (job != null && (
+                    "Pending".equals(job.getStatus()) ||
+                    "Completed".equals(job.getStatus()) ||
+                    "Failed".equals(job.getStatus())
+                )
+            ) {
                 // Update the status
                 job.setStatus(newStatus);
                 jobTable.updateItem(job);
-                // TODO: Call to simple queue service to start the job
-                System.out.println("Job: " + job);
+
+                String messageBody = "{"
+                    + "\"owner\": \"" + job.getOwner() + "\","
+                    + "\"id\": \"" + job.getJobId() + "\","
+                    + "\"repos\": \"" + job.getRepoLink() + "\","
+                    + "\"since\": \"" + job.getSinceDate() + "\","
+                    + "\"until\": \"" + job.getUntilDate() + "\","
+                    + "\"formats\": \"" + String.join(" ", job.getFormatChipValues()) + "\","
+                    + "\"ignoreConfig\": true,"
+                    + "\"lastModDate\": " + job.isAddLastMod() + ","
+                    + "\"timezone\": \"" + job.getTimeZone() + "\","
+                    + "\"findPrevAuthors\": " + job.isPrevAuthors() + ","
+                    + "\"analyzeAuthorship\": true,"
+                    + "\"originalityThreshold\": " + job.getOriginalityThreshold()
+                    + "}";
+
+                sqsService.sendMessage(jobId, messageBody);
+
+                System.out.println("Job: " + job.toString());
                 System.out.println("Job started successfully.");
             } else {
                 throw new StartJobException("Job cannot be started because it is not in the Pending state or doesn't exist");

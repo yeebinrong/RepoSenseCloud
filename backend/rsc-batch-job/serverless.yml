@@ -49,6 +49,17 @@ resources:
                   Action:
                     - s3:PutObject
                   Resource: arn:aws:s3:::rsc-reports-${self:provider.stage}/*
+          - PolicyName: AllowToUpdateDDB
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:PutItem
+                    - dynamodb:UpdateItem
+                    - dynamodb:GetItem
+                    - dynamodb:Scan
+                  Resource: arn:aws:dynamodb:${self:provider.region}:*:table/* # Replace with your DynamoDB table ARN
 
     BatchInstanceProfile:
       Type: AWS::IAM::InstanceProfile

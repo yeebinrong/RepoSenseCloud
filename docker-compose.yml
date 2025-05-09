@@ -40,6 +40,7 @@ services:
     volumes:
       - ./backend/:/app/backend
       - ~/.m2:/root/.m2
+      - ~/.aws:/root/.aws # KIV not working
     networks:
       - rsc-network
 
@@ -59,25 +60,7 @@ services:
     volumes:
       - ./backend/:/app/backend
       - ~/.m2:/root/.m2
-    networks:
-      - rsc-network
-
-
-  localstack:
-    container_name: "localstack-persist"
-    image: gresau/localstack-persist:latest
-    ports:
-      - "127.0.0.1:4566:4566"            # LocalStack Gateway
-      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
-    environment:
-      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
-      - DEBUG=0
-      - services=s3,dynamodb
-      - PERSIST_DEFAULT=0
-      - PERSIST_DYNAMODB=1
-      - PERSIST_S3=1
-    volumes:
-      - "./localstack:/persisted-data"
+      - ~/.aws:/root/.aws # KIV not working
     networks:
       - rsc-network
 

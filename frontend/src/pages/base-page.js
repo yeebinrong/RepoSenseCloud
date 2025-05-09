@@ -110,7 +110,7 @@ class BasePage extends React.Component {
                         {/*</div>*/}
                         <div className={styles.barRight}>
                             <div className={styles.userDetails}>
-                                <h1 className={styles.welcomeMessage}>Welcome, Amanda</h1>
+                                <h1 className={styles.welcomeMessage}>Welcome, binrong</h1>
                                 <text className={styles.currentDate}>{new Date().toDateString()}</text>
                             </div>
                             <div>

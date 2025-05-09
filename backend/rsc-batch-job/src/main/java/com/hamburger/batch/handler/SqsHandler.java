@@ -58,7 +58,8 @@ public class SqsHandler implements RequestHandler<SQSEvent, String> {
             ContainerOverrides overrides = ContainerOverrides.builder()
             .environment(
                 // Set common environment variables for the job
-                KeyValuePair.builder().name("ID").value(request.getId()).build(),
+                KeyValuePair.builder().name("OWNER").value(request.getOwner()).build(),
+                KeyValuePair.builder().name("JOBID").value(request.getId()).build(),
                 KeyValuePair.builder().name("STAGE").value(System.getenv("STAGE")).build(),
                 KeyValuePair.builder().name("REPORT_BUCKET").value(System.getenv("REPORT_BUCKET")).build(),
                 // Set environment variables for the job

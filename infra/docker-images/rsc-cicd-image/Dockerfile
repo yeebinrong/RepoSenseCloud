@@ -87,6 +87,3 @@ RUN set -eux \
 # Install extra utilities
 RUN set -eux \
     && pip3 install networkx==2.6.3
-
-# Open the port for local development use with localstack
-EXPOSE 4566

@@ -25,7 +25,6 @@ public class DynamoDBConfig {
     public DynamoDbClient dynamoDbClient() {
         return DynamoDbClient.builder()
                 .region(Region.AP_SOUTHEAST_1)
-                .endpointOverride(URI.create("http://localstack:4566"))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create("dummy-access-key", "dummy-secret-key")))
                 .build();
