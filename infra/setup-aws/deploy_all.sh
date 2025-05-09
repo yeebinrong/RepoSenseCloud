@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # Get the directory of the current script
 SCRIPT_DIR=$(dirname "$0")
 

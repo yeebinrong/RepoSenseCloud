@@ -61,7 +61,7 @@ resources:
     BatchComputeEnvironment:
       Type: AWS::Batch::ComputeEnvironment
       Properties:
-        ComputeEnvironmentName: rsc-batch-job-compute-env-V4-${self:provider.stage}
+        ComputeEnvironmentName: rsc-batch-job-compute-env-V5-${self:provider.stage}
         Type: MANAGED
         State: ENABLED
         ComputeResources:
@@ -72,12 +72,27 @@ resources:
           MinvCpus: 0  # Minimum vCPUs to allocate
           DesiredvCpus: 4  # Desired vCPUs, this controls the scaling of EC2 instances
           Subnets:
-            - subnet-087cfc237c112654d  # Your subnet where EC2 instances will be launched
+            - subnet-010584d62d7b83c1a # rsc-common-public-1
+            - subnet-0ef3d3fc40e7669c7 # rsc-common-public-2
+            - subnet-07c205214bf48d76b # rsc-common-public-3
           SecurityGroupIds:
-            - sg-0912ca4fe0ca0fea6  # Security group for the EC2 instances
+            - !Ref BatchJobSecurityGroup
           InstanceRole: !Ref BatchInstanceProfile
-          InstanceTags:
-            Name: rsc-batch-instance-${self:provider.stage}
+
+    BatchJobSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: "Allow outbound internet access for AWS Batch job"
+        VpcId: !ImportValue rsc-common-NATVpc
+        SecurityGroupEgress:
+          - IpProtocol: "-1"
+            CidrIp: 0.0.0.0/0  # Allow all outbound traffic
+        SecurityGroupIngress:
+          - IpProtocol: "-1"
+            CidrIp: 10.0.0.0/8  # Allow access from internal VPC
+        Tags:
+          - Key: Name
+            Value: "rsc-batch-sg-${self:provider.stage}"
  
     # Batch Job Queue
     BatchJobQueue:

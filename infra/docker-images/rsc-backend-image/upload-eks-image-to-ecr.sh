@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit on any error
-set -e
+set -x
 
 # Get the directory of the script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -23,7 +23,7 @@ aws ecr get-login-password --region $AWS_REGION | \
     docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
 echo "Building Docker image with tag ${ECR_URI}..."
-docker build --platform=linux/arm64 -t ${ECR_URI}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} .
+docker build --platform=linux/amd64 -t ${ECR_URI}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} . --no-cache
 
 echo "Pushing image to ECR..."
 docker push ${ECR_URI}:${IMAGE_TAG}

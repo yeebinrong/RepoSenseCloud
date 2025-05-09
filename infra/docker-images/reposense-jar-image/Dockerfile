@@ -13,7 +13,10 @@ RUN apt-get update && \
     unzip awscliv2.zip && \
     ./aws/install && \
     rm -rf awscliv2.zip aws && \
-    apt-get clean
+    apt-get clean && \
+    # Install dos2unix to convert line endings
+    apt-get install -y dos2unix
+
 
 # Set the working directory in the container 
 WORKDIR /app
@@ -26,6 +29,8 @@ WORKDIR /app
 COPY ./infra/docker-images/reposense-jar-image/reposense-docker-entrypoint.sh /app/reposense-docker-entrypoint.sh
 # Make the entrypoint script executable
 RUN chmod +x /app/reposense-docker-entrypoint.sh
+RUN dos2unix /app/reposense-docker-entrypoint.sh
+
 # Download the RepoSense v3.0 jar
 RUN curl -L -o /app/RepoSense.jar https://github.com/reposense/RepoSense/releases/download/v3.0/RepoSense.jar
 

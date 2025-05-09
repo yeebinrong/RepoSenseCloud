@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -x
+
 # Initialize command with jar execution
 # -Xmx3g required else will face memory heap issue
 CMD="java -Xms512m -Xmx3000m -jar /app/RepoSense.jar"

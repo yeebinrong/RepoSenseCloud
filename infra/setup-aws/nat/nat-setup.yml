@@ -19,7 +19,7 @@ Mappings:
       NATInstanceAMI: ami-0012a981fe3b8891f
 
 Resources:
-  BatchEnvVPC:
+  NATVpc:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: 30.255.0.0/16
@@ -31,51 +31,110 @@ Resources:
         - Key: Environment
           Value: !Sub "rsc:${Stage}"
 
-  BatchEnvVPCPrivateSubnet1:
+  # Private Subnets across Multiple Availability Zones
+  NATVpcPrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId:
-        Ref: BatchEnvVPC
+      VpcId: !Ref NATVpc
       CidrBlock: 30.255.0.0/19
-      AvailabilityZone:
-        Fn::Select:
-          - 0
-          - Fn::GetAZs: ""
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
       Tags:
         - Key: Name
           Value: !Sub "rsc-${Stage}-private-1"
         - Key: Environment
           Value: !Sub "rsc:${Stage}"
 
-  BatchEnvVPCPublicSubnet1:
+  NATVpcPrivateSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId:
-        Ref: BatchEnvVPC
+      VpcId: !Ref NATVpc
+      CidrBlock: 30.255.32.0/19
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-private-2"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+
+  NATVpcPrivateSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref NATVpc
+      CidrBlock: 30.255.64.0/19
+      AvailabilityZone: !Select [ 2, !GetAZs '' ]
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-private-3"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+
+  # Public Subnets across Multiple Availability Zones
+  NATVpcPublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref NATVpc
       CidrBlock: 30.255.128.0/20
       MapPublicIpOnLaunch: true
-      AvailabilityZone:
-        Fn::Select:
-          - 0
-          - Fn::GetAZs: ""
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
       Tags:
         - Key: Name
           Value: !Sub "rsc-${Stage}-public-1"
         - Key: Environment
           Value: !Sub "rsc:${Stage}"
 
-  BatchEnvPublicRouteTableAssociation:
+  NATVpcPublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref NATVpc
+      CidrBlock: 30.255.144.0/20
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-public-2"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+
+  NATVpcPublicSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref NATVpc
+      CidrBlock: 30.255.160.0/20
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [ 2, !GetAZs '' ]
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-public-3"
+        - Key: Environment
+          Value: !Sub "rsc:${Stage}"
+
+  NATEnvPublicRouteTableAssociation1:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref BatchEnvPublicRouteTable
-      SubnetId: !Ref BatchEnvVPCPublicSubnet1
+      RouteTableId: !Ref NATEnvPublicRouteTable
+      SubnetId: !Ref NATVpcPublicSubnet1
 
-  BatchEnvSecurityGroup:
+  NATEnvPublicRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref NATEnvPublicRouteTable
+      SubnetId: !Ref NATVpcPublicSubnet2
+
+  NATEnvPublicRouteTableAssociation3:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref NATEnvPublicRouteTable
+      SubnetId: !Ref NATVpcPublicSubnet3
+
+  NATEnvSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: !Sub "rsc-${Stage}-BatchEnvSecurityGroup"
+      GroupName: !Sub "rsc-${Stage}-NATEnvSecurityGroup"
       GroupDescription: "Allow all Inbound, all Outbound"
       SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: "-1"
+      SecurityGroupIngress:
         - CidrIp: 0.0.0.0/0
           IpProtocol: "-1"
       Tags:
@@ -84,9 +143,9 @@ Resources:
         - Key: Environment
           Value: !Sub "rsc:${Stage}"
       VpcId:
-        Ref: BatchEnvVPC
+        Ref: NATVpc
 
-  BatchEnvInternetGateway:
+  NATEnvInternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
@@ -95,7 +154,7 @@ Resources:
         - Key: Environment
           Value: !Sub "rsc:${Stage}"
 
-  BatchEnvNATSecurityGroup:
+  NATEnvNATSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: !Sub "rsc-${Stage}-NAT-SG"
@@ -104,6 +163,7 @@ Resources:
           - IpProtocol: "-1"
             Description: "Access from private subnet"
             CidrIp: 30.255.0.0/17
+      SecurityGroupEgress:
       SecurityGroupEgress:
           - IpProtocol: "-1"
             Description: "Allow all outbound access"
@@ -114,9 +174,9 @@ Resources:
         - Key: Environment
           Value: !Sub "rsc:${Stage}"
       VpcId:
-        Ref: BatchEnvVPC
+        Ref: NATVpc
 
-  BatchEnvNATInstance:
+  NATInstance:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: !FindInMap
@@ -126,18 +186,18 @@ Resources:
       InstanceType: !Sub "${NATInstanceType}"
       KeyName: !Sub "rsc-${Stage}"
       SourceDestCheck: false
-      SubnetId: !Ref BatchEnvVPCPublicSubnet1
+      SubnetId: !Ref NATVpcPublicSubnet1
       SecurityGroupIds:
-        - !GetAtt "BatchEnvNATSecurityGroup.GroupId"
+        - !GetAtt "NATEnvNATSecurityGroup.GroupId"
       Tags:
         - Key: Name
           Value: !Sub "rsc-${Stage}-nat-instance"
         - Key: Environment
           Value: !Sub "rsc:${Stage}"
 
-  BatchEnvNATInstanceEIP:
+  NATInstanceEIP:
     Type: AWS::EC2::EIP
-    DependsOn: BatchEnvInternetGatewayAttachment
+    DependsOn: NATEnvInternetGatewayAttachment
     Properties:
       Domain: vpc
       Tags:
@@ -146,74 +206,134 @@ Resources:
         - Key: Environment
           Value: !Sub "rsc:${Stage}"
 
-  BatchEnvNATInstanceEIPAssociation:
+  NATInstanceEIPAssociation:
     Type: AWS::EC2::EIPAssociation
     Properties:
-      InstanceId: !Ref BatchEnvNATInstance
-      EIP: !Ref BatchEnvNATInstanceEIP
+      InstanceId: !Ref NATInstance
+      EIP: !Ref NATInstanceEIP
 
-  BatchEnvPrivateRouteTable:
+  NATEnvPrivateRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref BatchEnvVPC
+      VpcId: !Ref NATVpc
       Tags:
         - Key: Name
           Value: !Sub "rsc-${Stage}-private-rtb"
         - Key: Environment
           Value: !Sub "rsc:${Stage}"
 
-  BatchEnvPrivateRouteNATInstance:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref BatchEnvPrivateRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      InstanceId: !Ref BatchEnvNATInstance
-
-  BatchEnvPrivateRouteTableAssociation1:
+  NATEnvPrivateRouteTableAssociation1:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref BatchEnvPrivateRouteTable
-      SubnetId: !Ref BatchEnvVPCPrivateSubnet1
+      RouteTableId: !Ref NATEnvPrivateRouteTable
+      SubnetId: !Ref NATVpcPrivateSubnet1
 
-  BatchEnvPublicRouteTable:
+  NATEnvPrivateRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref NATEnvPrivateRouteTable
+      SubnetId: !Ref NATVpcPrivateSubnet2
+
+  NATEnvPrivateRouteTableAssociation3:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref NATEnvPrivateRouteTable
+      SubnetId: !Ref NATVpcPrivateSubnet3
+
+  NATEnvPublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref BatchEnvVPC
+      VpcId: !Ref NATVpc
       Tags:
         - Key: Name
           Value: !Sub "rsc-${Stage}-public-rtb"
         - Key: Environment
           Value: !Sub "rsc:${Stage}"
 
-  BatchEnvInternetGatewayAttachment:
+  NATEnvInternetGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      InternetGatewayId: !Ref BatchEnvInternetGateway
-      VpcId: !Ref BatchEnvVPC
+      InternetGatewayId: !Ref NATEnvInternetGateway
+      VpcId: !Ref NATVpc
 
-  BatchEnvOutboundRoute:
+  NATEnvOutboundRoute:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId:
-        Ref: BatchEnvPublicRouteTable
+        Ref: NATEnvPublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId:
-        Ref: BatchEnvInternetGateway
+        Ref: NATEnvInternetGateway
+
+  NATInstanceStopRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Stop NAT instance every day at 12 AM SGT"
+      ScheduleExpression: "cron(0 16 * * ? *)"  # 12AM SGT = 4PM UTC
+      State: ENABLED
+      Targets:
+        - Id: "StopNATInstanceTarget"
+          Arn: arn:aws:ssm:ap-southeast-1::automation-definition/AWS-StopEC2Instance:$DEFAULT
+          RoleArn: !GetAtt NATSSMExecutionRole.Arn
+          Input: !Sub |
+            {
+              "InstanceId": ["${NATInstance}"]
+            }
+
+  NATSSMExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: "AllowSSMAutomationExecution"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:StartAutomationExecution
+                Resource: "*"
 
 Outputs:
-  BatchEnvSecurityGroup:
-    Value: !Ref BatchEnvSecurityGroup
+  NATEnvSecurityGroup:
+    Value: !Ref NATEnvSecurityGroup
     Export:
-      Name: !Sub rsc-${Stage}-BatchEnvSecurityGroup
-  BatchEnvVPC:
-    Value: !Ref BatchEnvVPC
+      Name: !Sub rsc-${Stage}-NATEnvSecurityGroup
+  NATEnvInternalSecurityGroup:
+    Value: !Ref NATEnvNATSecurityGroup
     Export:
-      Name: !Sub rsc-${Stage}-BatchEnvVPC
-  BatchEnvVPCPublicSubnet1:
-    Value: !Ref BatchEnvVPCPublicSubnet1
+      Name: !Sub rsc-${Stage}-NATEnvInternalSecurityGroup
+  NATVpc:
+    Value: !Ref NATVpc
     Export:
-      Name: !Sub rsc-${Stage}-BatchEnvVPCPublicSubnet1
-  BatchEnvVPCPrivateSubnet1:
-    Value: !Ref BatchEnvVPCPrivateSubnet1
+      Name: !Sub rsc-${Stage}-NATVpc
+  NATVpcPublicSubnet1:
+    Value: !Ref NATVpcPublicSubnet1
     Export:
-      Name: !Sub rsc-${Stage}-BatchEnvVPCPrivateSubnet1
+      Name: !Sub rsc-${Stage}-NATVpcPublicSubnet1
+  NATVpcPrivateSubnet1:
+    Value: !Ref NATVpcPrivateSubnet1
+    Export:
+      Name: !Sub rsc-${Stage}-NATVpcPrivateSubnet1
+  NATVpcPublicSubnet2:
+    Value: !Ref NATVpcPublicSubnet2
+    Export:
+      Name: !Sub rsc-${Stage}-NATVpcPublicSubnet2
+  NATVpcPrivateSubnet2:
+    Value: !Ref NATVpcPrivateSubnet2
+    Export:
+      Name: !Sub rsc-${Stage}-NATVpcPrivateSubnet2
+  NATVpcPublicSubnet3:
+    Value: !Ref NATVpcPublicSubnet3
+    Export:
+      Name: !Sub rsc-${Stage}-NATVpcPublicSubnet3
+  NATVpcPrivateSubnet3:
+    Value: !Ref NATVpcPrivateSubnet3
+    Export:
+      Name: !Sub rsc-${Stage}-NATVpcPrivateSubnet3

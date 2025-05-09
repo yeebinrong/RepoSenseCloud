@@ -37,6 +37,7 @@ public class RepoSenseJobRequest {
 // sample argument to send to SQS directly
 
 // {
+//     "id": "1234567890123",
 //     "repos": "https://github.com/reposense/RepoSense.git",
 //     "since": "31/1/2017",
 //     "until": "31/12/2018",
