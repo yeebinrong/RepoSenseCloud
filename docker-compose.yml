@@ -22,8 +22,6 @@ services:
       - ./frontend/:/app
     networks:
       - rsc-network
-    environment:
-      - REACT_APP_JOB_SERVICE_URL=http://job-service-app:3002/api/jobs
 
   user-service-app:
     build:
@@ -43,7 +41,6 @@ services:
     networks:
       - rsc-network
 
-
   job-service-app:
     build:
       context: ./
@@ -59,25 +56,6 @@ services:
     volumes:
       - ./backend/:/app/backend
       - ~/.m2:/root/.m2
-    networks:
-      - rsc-network
-
-
-  localstack:
-    container_name: "localstack-persist"
-    image: gresau/localstack-persist:latest
-    ports:
-      - "127.0.0.1:4566:4566"            # LocalStack Gateway
-      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
-    environment:
-      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
-      - DEBUG=0
-      - services=s3,dynamodb
-      - PERSIST_DEFAULT=0
-      - PERSIST_DYNAMODB=1
-      - PERSIST_S3=1
-    volumes:
-      - "./localstack:/persisted-data"
     networks:
       - rsc-network
 

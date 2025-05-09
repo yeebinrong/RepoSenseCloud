@@ -1,79 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './JobList.module.css';
 import JobItem from './JobItem';
 
-const jobData = [
-    {
-        name: 'Peerprep Job',
-        status: 'Completed',
-        lastUpdated: {time: '10.45PM', date: '13th Sep 2024'},
-        nextScheduled: {time: '12.00PM', date: '4th Sep 2024'},
-    },
-    {
-        name: 'SPA Job',
-        status: 'Running',
-        lastUpdated: {time: '10.45PM', date: '13th Sep 2024'},
-        nextScheduled: {time: '12.00PM', date: '4th Sep 2024'},
-    },
-    {
-        name: 'Bitcoin Job',
-        status: 'Failed',
-        lastUpdated: {time: '10.45PM', date: '13th Sep 2024'},
-        nextScheduled: {time: '12.00PM', date: '4th Sep 2024'},
-    },
-    {
-        name: 'A Job',
-        status: 'Completed',
-        lastUpdated: {time: '10.45PM', date: '13th Sep 2024'},
-        nextScheduled: {time: '12.00PM', date: '4th Sep 2024'},
-    },
-    {
-        name: 'B Job',
-        status: 'Running',
-        lastUpdated: {time: '10.45PM', date: '13th Sep 2024'},
-        nextScheduled: {time: '12.00PM', date: '4th Sep 2024'},
-    },
-    {
-        name: 'C Job',
-        status: 'Failed',
-        lastUpdated: {time: '10.45PM', date: '13th Sep 2024'},
-        nextScheduled: {time: '12.00PM', date: '4th Sep 2024'},
-    },
-    {
-        name: 'D Job',
-        status: 'Completed',
-        lastUpdated: {time: '10.45PM', date: '13th Sep 2024'},
-        nextScheduled: {time: '12.00PM', date: '4th Sep 2024'},
-    },
-    {
-        name: 'E Job',
-        status: 'Completed',
-        lastUpdated: {time: '10.45PM', date: '13th Sep 2024'},
-        nextScheduled: {time: '12.00PM', date: '4th Sep 2024'},
-    }
-];
-
 function JobList() {
+    const [jobData, setJobData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        fetch(`${process.env.REACT_APP_JOB_SERVICE_URL}/`)
+            .then(res => {
+                if (!res.ok) throw new Error('Network response was not ok');
+                return res.json();
+            })
+            .then(data => {
+                setJobData(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('Error fetching jobs:', err);
+                setError(err);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) return <p>Loading jobs...</p>;
+    if (error) return <p>Error loading jobs: {error.message}</p>;
+
     return (
         <table className={styles.jobListContainer}>
             <thead>
                 <tr className={styles.jobListHeader}>
                     <th>
-                        <input type="checkbox" className={styles.checkBox}/>
+                        <input type="checkbox" className={styles.checkBox} />
                         <span className={styles.headerText}>Job Name</span>
-                        <img src="vector.svg" alt="" className={styles.sortIcon}/>
+                        <img src="vector.svg" alt="" className={styles.sortIcon} />
                     </th>
                     <th>
                         <span className={styles.headerText}>Status</span>
-                        <img src="vector.svg" alt="" className={styles.sortIcon}/>
+                        <img src="vector.svg" alt="" className={styles.sortIcon} />
                     </th>
                     <th>
                         <span className={styles.headerText}>Last Updated</span>
-                        <img src="vector.svg" alt="" className={styles.sortIcon}/>
+                        <img src="vector.svg" alt="" className={styles.sortIcon} />
                     </th>
                     <th>
                         <span className={styles.headerText}>Next Scheduled Job</span>
-                        <img src="vector.svg" alt="" className={styles.sortIcon}/>
+                        <img src="vector.svg" alt="" className={styles.sortIcon} />
                     </th>
                     <th>
                         <span className={styles.actionText}>View</span>
@@ -83,8 +56,8 @@ function JobList() {
                 </tr>
             </thead>
             <tbody>
-                {jobData.map((job, index) => (
-                    <JobItem key={index} {...job}/>
+                {jobData?.map((job, index) => (
+                    <JobItem key={index} {...job} />
                 ))}
             </tbody>
         </table>

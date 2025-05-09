@@ -1,0 +1,13 @@
+service: rsc-infra-s3
+
+provider:
+  name: aws
+  region: ap-southeast-1
+  stage: ${opt:stage, 'common'}
+
+resources:
+  Resources:
+    ShipmentBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: rsc-shipment-bucket

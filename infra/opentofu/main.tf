@@ -1,8 +1,6 @@
 #### START - Resources for opentofu to manage its state using s3 and dynamodb ####
 locals {
   state_dynamodb_table_name = "${var.state_bucket_name}-lock"
-  dynamodb_endpoint = var.environment == "localhost" ? "http://localhost:4566" : null
-  s3_endpoint       = var.environment == "localhost" ? "http://localhost:4566" : null
 }
 
 resource "aws_s3_bucket" "state" {

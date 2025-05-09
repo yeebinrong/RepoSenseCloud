@@ -51,3 +51,5 @@ override.tf.json
 .vscode
 dev-config.yml
 localstack
+
+*-service-deployment.yaml

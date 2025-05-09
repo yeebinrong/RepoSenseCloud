@@ -72,8 +72,6 @@ On cloud application based on [RepoSense](https://reposense.org/)
    cd workspace
    bash deploy-infra.sh localhost
    ```
-   - This script deploys the opentofu state management locally.
-   - After the command completes without error, you should be able to view the S3 bucket `rsc-opentofu-state` and DynamoDB table `rsc-opentofu-state-lock` from the LocalStack app (endpoint should be http://localhost:4566)
 
 7. **Deploy OpenTofu for the microservices**
     - Navigate to the opentofu folder (must be running interactive bash mode in the rsc-cicd-image).

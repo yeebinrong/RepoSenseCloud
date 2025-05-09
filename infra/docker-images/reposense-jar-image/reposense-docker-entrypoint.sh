@@ -1,7 +1,10 @@
 #!/bin/sh
 
+set -x
+
 # Initialize command with jar execution
-CMD="java -jar /app/RepoSense.jar"
+# -Xmx3g required else will face memory heap issue
+CMD="java -Xms512m -Xmx3000m -jar /app/RepoSense.jar"
 
 # Set default output directory if not specified
 OUTPUT=${OUTPUT:-"/app/output"}
@@ -23,7 +26,6 @@ CMD="$CMD --repos $REPOS"
 [ -n "$ORIGINALITY_THRESHOLD" ] && CMD="$CMD --originality-threshold $ORIGINALITY_THRESHOLD"
 
 # Boolean flags with default values
-CMD="$CMD --view"
 IGNORE_CONFIG=${IGNORE_CONFIG:-"true"}
 LAST_MOD_DATE=${LAST_MOD_DATE:-"false"}
 FIND_PREV_AUTHORS=${FIND_PREV_AUTHORS:-"false"}
@@ -51,8 +53,34 @@ echo "Output Directory: $OUTPUT"
 echo "----------------------"
 
 # Execute command
-echo "Executing: $CMD"
-exec $CMD
+echo "CMD: $CMD"
+$CMD
 
-# Note: The browser launch error is expected in Docker
+# Upload generated report to S3
+echo "Uploading report to S3..."
+if aws s3 cp --recursive "$OUTPUT" "s3://$REPORT_BUCKET/$OWNER/$JOBID/"; then
+    echo "Report successfully uploaded to S3."
+    # Update DDB job to Completed
+    aws dynamodb update-item \
+        --table-name rsc-localhost-job-data \
+        --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
+        --update-expression "SET #s = :completed" \
+        --expression-attribute-names '{"#s": "status"}' \
+        --expression-attribute-values '{":completed": {"S": "Completed"}}' \
+        --region ap-southeast-1
+else
+    # Update DDB job to Failed
+    aws dynamodb update-item \
+        --table-name rsc-localhost-job-data \
+        --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
+        --update-expression "SET #s = :failed" \
+        --expression-attribute-names '{"#s": "status"}' \
+        --expression-attribute-values '{":failed": {"S": "Failed"}}' \
+        --region ap-southeast-1
+    echo "Failed to upload report to S3." >&2
+    exit 1
+fi
+
+exit 0
+
 # The report can be accessed at {output_path}/reposense-report/index.html

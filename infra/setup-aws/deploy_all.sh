@@ -1,6 +1,6 @@
 #!/bin/bash
 
-STAGE=${1:-dev}
+set -x
 
 # Get the directory of the current script
 SCRIPT_DIR=$(dirname "$0")
@@ -11,4 +11,8 @@ bash deploy.sh
 
 # Deploy the nat stack using cloudformation template
 cd "../nat"
-bash deploy.sh $STAGE
+bash deploy.sh
+
+# Deploy the s3 stack using serverless framework
+cd "../s3"
+bash deploy.sh

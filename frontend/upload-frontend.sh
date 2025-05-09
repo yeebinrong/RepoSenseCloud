@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # CD to current directory
 cd "$(dirname "$0")"
 

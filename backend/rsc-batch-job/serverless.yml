@@ -1,0 +1,229 @@
+service: rsc-batch-job
+
+provider:
+  name: aws
+  runtime: java21
+  region: ap-southeast-1
+  memorySize: 512
+  iamRoleStatements: # Required for lambda to submit AWS Batch Jobs
+    - Effect: Allow
+      Action:
+        - batch:SubmitJob
+        - batch:DescribeJobs
+      Resource: "*"
+  stage: ${opt:stage, 'dev'}
+  environment:
+    STAGE: ${self:provider.stage}
+    BATCH_JOB_QUEUE: !Ref BatchJobQueue
+    BATCH_JOB_DEFINITION: !Ref BatchJobDefinition
+    REPORT_BUCKET: !Ref PublicS3Bucket
+
+resources:
+  Resources:
+    SqsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: rsc-sqs-queue-${self:provider.stage}.fifo  # Must end with .fifo
+        FifoQueue: true
+        ContentBasedDeduplication: true  # Optional: enables automatic deduplication
+
+    BatchInstanceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: batch-ec2-instance-role-${self:provider.stage}
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: ec2.amazonaws.com
+              Action: sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+        Policies:
+          - PolicyName: AllowPutToRscReportDev
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - s3:PutObject
+                  Resource: arn:aws:s3:::rsc-reports-${self:provider.stage}/*
+          - PolicyName: AllowToUpdateDDB
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:PutItem
+                    - dynamodb:UpdateItem
+                    - dynamodb:GetItem
+                    - dynamodb:Scan
+                  Resource: arn:aws:dynamodb:${self:provider.region}:*:table/* # Replace with your DynamoDB table ARN
+
+    BatchInstanceProfile:
+      Type: AWS::IAM::InstanceProfile
+      Properties:
+        InstanceProfileName: batch-ec2-instance-profile-${self:provider.stage}
+        Roles:
+          - Ref: BatchInstanceRole
+
+    # Compute Environment
+    BatchComputeEnvironment:
+      Type: AWS::Batch::ComputeEnvironment
+      Properties:
+        ComputeEnvironmentName: rsc-batch-job-compute-env-V5-${self:provider.stage}
+        Type: MANAGED
+        State: ENABLED
+        ComputeResources:
+          Type: EC2
+          InstanceTypes:
+            - a1.large # graviton only works with arm64 architecture
+          MaxvCpus: 8  # Maximum vCPUs you want to allocate for the environment
+          MinvCpus: 0  # Minimum vCPUs to allocate
+          DesiredvCpus: 4  # Desired vCPUs, this controls the scaling of EC2 instances
+          Subnets:
+            - subnet-010584d62d7b83c1a # rsc-common-public-1
+            - subnet-0ef3d3fc40e7669c7 # rsc-common-public-2
+            - subnet-07c205214bf48d76b # rsc-common-public-3
+          SecurityGroupIds:
+            - !Ref BatchJobSecurityGroup
+          InstanceRole: !Ref BatchInstanceProfile
+
+    BatchJobSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: "Allow outbound internet access for AWS Batch job"
+        VpcId: !ImportValue rsc-common-NATVpc
+        SecurityGroupEgress:
+          - IpProtocol: "-1"
+            CidrIp: 0.0.0.0/0  # Allow all outbound traffic
+        SecurityGroupIngress:
+          - IpProtocol: "-1"
+            CidrIp: 10.0.0.0/8  # Allow access from internal VPC
+        Tags:
+          - Key: Name
+            Value: "rsc-batch-sg-${self:provider.stage}"
+ 
+    # Batch Job Queue
+    BatchJobQueue:
+      Type: AWS::Batch::JobQueue
+      Properties:
+        JobQueueName: rsc-batch-job-queue-${self:provider.stage}
+        State: ENABLED
+        Priority: 1
+        ComputeEnvironmentOrder:
+          - Order: 1
+            ComputeEnvironment: !Ref BatchComputeEnvironment
+
+    BatchExecutionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: BatchExecutionRole-${self:provider.stage}
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - ecs-tasks.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: BatchExecutionPolicy-${self:provider.stage}
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - ecr:GetDownloadUrlForLayer
+                    - ecr:BatchGetImage
+                    - ecr:GetAuthorizationToken
+                    - s3:GetObject
+                    - ecs:RunTask
+                    - ecs:DescribeTasks
+                    - ecs:StopTask
+                    - iam:PassRole
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - ecr:GetAuthorizationToken
+                    - ecr:BatchCheckLayerAvailability
+                    - ecr:GetDownloadUrlForLayer
+                    - ecr:BatchGetImage
+                    - kms:Decrypt
+                    - secretsmanager:GetSecretValue
+                  Resource: '*'
+                - Effect: Allow
+                  Action:
+                    - ecr:GetAuthorizationToken
+                    - ecr:BatchCheckLayerAvailability
+                    - ecr:GetDownloadUrlForLayer
+                    - ecr:BatchGetImage
+                  Resource: "*"  # Optional: Restrict to your ECR repository ARN
+                - Effect: Allow
+                  Action:
+                      - s3:GetObject
+                  Resource: "*"
+
+    # Job Definition
+    BatchJobDefinition:
+      Type: AWS::Batch::JobDefinition
+      Properties:
+        JobDefinitionName: rsc-batch-job-def-${self:provider.stage}
+        Type: container
+        ContainerProperties:
+          Image: 904233118848.dkr.ecr.ap-southeast-1.amazonaws.com/rsc-batch-jobs:latest
+          ExecutionRoleArn: !GetAtt BatchExecutionRole.Arn
+          ResourceRequirements:
+            - Type: MEMORY
+              Value: "3500"
+            - Type: VCPU
+              Value: "2"
+
+
+    # S3 Bucket to store the reports
+    PublicS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: rsc-reports-${self:provider.stage}
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: BucketOwnerEnforced  # Required for modern S3 buckets
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          IgnorePublicAcls: true
+          BlockPublicPolicy: false  # <- disable this
+          RestrictPublicBuckets: false  # <- disable this
+
+
+    PublicS3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref PublicS3Bucket
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: "*"
+              Action: s3:GetObject
+              Resource: !Sub arn:aws:s3:::${PublicS3Bucket}/*
+
+package:
+  artifact: target/rsc-batch-job-1.0-SNAPSHOT.jar
+
+functions:
+  sqsProcessor:
+    name: rsc-sqs-processor-${self:provider.stage}
+    handler: com.hamburger.batch.handler.SqsHandler::handleRequest
+    timeout: 30  # 30s, max value allowed for using SQS as event source
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - SqsQueue
+              - Arn
+          batchSize: 5

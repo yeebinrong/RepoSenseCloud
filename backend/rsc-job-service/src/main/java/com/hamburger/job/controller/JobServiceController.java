@@ -103,21 +103,22 @@ public class JobServiceController {
         }
     }
 
-    @GetMapping("/report/{jobId}") //TODO: returns s3 link
-    public ResponseEntity<String> getReport(@PathVariable("jobId") String jobId, HttpServletRequest request) {
-        System.out.println("retrieving report");
-        try {
-            String jwtToken;
-            jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
-            if(owner == null){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-            return ResponseEntity.status(200).body(jobService.getReport(jobId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+    // BR: we can remove this endpoint coz the the s3 link i just open to public and generate based on owner + job id
+    // @GetMapping("/report/{jobId}") //TODO: returns s3 link
+    // public ResponseEntity<String> getReport(@PathVariable("jobId") String jobId, HttpServletRequest request) {
+    //     System.out.println("retrieving report");
+    //     try {
+    //         String jwtToken;
+    //         jwtToken = jwtHelper.extractJwtFromRequest(request);
+    //         String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
+    //         if(owner == null){
+    //             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    //         }
+    //         return ResponseEntity.status(200).body(jobService.getReport(jobId));
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    //     }
+    // }
 
     @PostMapping("/save") //double check use case
     public ResponseEntity<Void> saveJob() {

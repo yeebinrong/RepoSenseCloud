@@ -773,8 +773,8 @@ const CreateJobComponent = (jobId) => {
                 }
             };
             console.log(JSON.stringify(formData));
-    
-            const response = await fetch(`http://localhost:3002/api/jobs/create`, { // Use environment variable for API URL
+
+            const response = await fetch(`${jobServiceUrl}/create`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -782,7 +782,7 @@ const CreateJobComponent = (jobId) => {
                 credentials: 'include',
                 body: JSON.stringify(formData),
             });
-    
+
             if (response.ok) {
                 console.log("Job created successfully");
                 showSuccessBar("Job Created Successfully");
