@@ -19,7 +19,7 @@ public class JobServiceApplication {
         SpringApplication app = new SpringApplication(JobServiceApplication.class);
 
         Map<String, Object> defaultProperties = new HashMap<>();
-        defaultProperties.put("server.port", "3002");
+        defaultProperties.put("server.port", System.getenv("JOB_SVC_PORT"));
         defaultProperties.put("spring.application.name", "JobService");
         defaultProperties.put("logging.level.root", "INFO");
         app.setDefaultProperties(defaultProperties);
@@ -37,7 +37,7 @@ public class JobServiceApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000") //TODO: update proper origins
+                        .allowedOrigins(System.getenv("FRONTEND_ORIGIN"))
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true);

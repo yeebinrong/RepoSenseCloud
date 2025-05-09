@@ -13,7 +13,6 @@
         <module>rsc-batch-job</module>
         <module>rsc-user-service</module>
         <module>rsc-job-service</module>
-        <module>rsc-history-service</module>
     </modules>
 
     <properties>

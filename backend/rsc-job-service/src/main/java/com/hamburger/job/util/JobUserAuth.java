@@ -9,9 +9,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class JobUserAuth {
 
     private final WebClient webClient;
-    
+
     public JobUserAuth(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://user-service-app:3001/api/user").build();
+
+        this.webClient = webClientBuilder.baseUrl(System.getenv("REACT_APP_USER_SERVICE_URL")).build();
     }
 
     public ResponseEntity<String> authorizeAction (String jwtToken){

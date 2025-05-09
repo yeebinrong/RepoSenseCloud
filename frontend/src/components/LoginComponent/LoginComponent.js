@@ -102,8 +102,8 @@ class LoginComponent extends React.Component {
     }
 
     const url = isRegisterPage
-      ? "http://localhost:3001/api/user/register"
-      : "http://localhost:3001/api/user/login";
+      ? `${process.env.REACT_APP_USER_SERVICE_URL}/register`
+      : `${process.env.REACT_APP_USER_SERVICE_URL}/login`;
     const body = isRegisterPage
       ? JSON.stringify({ userName: username, email: email, password: password })
       : JSON.stringify({ userName: username, password: password });

@@ -5,12 +5,12 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, ico
     const statusClass = status.toLowerCase();
 
     const handleViewReport = () => {
-        window.open(`https://rsc-reports-dev.s3.ap-southeast-1.amazonaws.com/${owner}/${jobId}/reposense-report/index.html`, '_blank');
+        window.open(`${process.env.REACT_APP_REPORT_BUCKET_URL}/${owner}/${jobId}/reposense-report/index.html`, '_blank');
     }
 
     const handleRun = async () => {
         try {
-            const response = await fetch(`http://localhost:3002/api/jobs/start/${jobId}`, {
+            const response = await fetch(`${process.env.REACT_APP_JOB_SERVICE_URL}/start/${jobId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

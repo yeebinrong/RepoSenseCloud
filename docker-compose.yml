@@ -22,8 +22,6 @@ services:
       - ./frontend/:/app
     networks:
       - rsc-network
-    environment:
-      - REACT_APP_JOB_SERVICE_URL=http://job-service-app:3002/api/jobs
 
   user-service-app:
     build:
@@ -40,10 +38,8 @@ services:
     volumes:
       - ./backend/:/app/backend
       - ~/.m2:/root/.m2
-      - ~/.aws:/root/.aws # KIV not working
     networks:
       - rsc-network
-
 
   job-service-app:
     build:
@@ -60,7 +56,6 @@ services:
     volumes:
       - ./backend/:/app/backend
       - ~/.m2:/root/.m2
-      - ~/.aws:/root/.aws # KIV not working
     networks:
       - rsc-network
 

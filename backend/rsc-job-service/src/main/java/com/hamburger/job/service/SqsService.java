@@ -3,8 +3,7 @@ package com.hamburger.job.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
@@ -19,8 +18,7 @@ public class SqsService {
     public SqsService() {
         this.sqsClient = SqsClient.builder()
             .region(Region.AP_SOUTHEAST_1)
-            .credentialsProvider(StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create("dummy", "dummy")))
+            .credentialsProvider(DefaultCredentialsProvider.create())
             .build();
     }
 

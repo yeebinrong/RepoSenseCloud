@@ -108,6 +108,7 @@ class BasePage extends React.Component {
                         {/*    }}*/}
                         {/*  />*/}
                         {/*</div>*/}
+                        {!this.props.isLoginPage &&
                         <div className={styles.barRight}>
                             <div className={styles.userDetails}>
                                 <h1 className={styles.welcomeMessage}>Welcome, binrong</h1>
@@ -186,7 +187,7 @@ class BasePage extends React.Component {
                                     <MenuItem>...</MenuItem>
                                 </Menu>
                             </div>
-                        </div>
+                        </div>}
                     </Toolbar>
                 </AppBar>
                 <div>

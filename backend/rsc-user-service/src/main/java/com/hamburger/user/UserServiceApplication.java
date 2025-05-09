@@ -21,7 +21,7 @@ public class UserServiceApplication {
         SpringApplication app = new SpringApplication(UserServiceApplication.class);
 
         Map<String, Object> defaultProperties = new HashMap<>();
-        defaultProperties.put("server.port", "3001");
+        defaultProperties.put("server.port", System.getenv("USER_SVC_PORT"));
         defaultProperties.put("spring.application.name", "UserService");
         defaultProperties.put("logging.level.root", "INFO");
         app.setDefaultProperties(defaultProperties);

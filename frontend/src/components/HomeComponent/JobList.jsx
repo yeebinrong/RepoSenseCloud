@@ -8,7 +8,7 @@ function JobList() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:3002/api/jobs/')
+        fetch(`${process.env.REACT_APP_JOB_SERVICE_URL}/`)
             .then(res => {
                 if (!res.ok) throw new Error('Network response was not ok');
                 return res.json();
