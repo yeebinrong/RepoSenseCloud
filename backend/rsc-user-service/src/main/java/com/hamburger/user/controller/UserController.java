@@ -12,12 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hamburger.user.dao.entity.User;
 import com.hamburger.user.dto.LoginReqDto;
 import com.hamburger.user.dto.RegisterReqDto;
+import com.hamburger.user.dto.AuthReqDto;
 import com.hamburger.user.service.UserService;
 import com.hamburger.user.service.util.JwtUtil;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -50,17 +53,21 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody LoginReqDto req, HttpServletResponse response) {
+    public ResponseEntity<Map<String, Object>> loginUser(@RequestBody LoginReqDto req, HttpServletResponse response) {
         User user = userService.getUser(req.getUserName());
         if (user == null || !req.isPasswordValid(req.getPassword(), user.getHashedPassword())) {
-            return ResponseEntity.status(400).body("Invalid username or password");
+            return ResponseEntity.status(400).body(Map.of("error", "Invalid username or password"));
         }
         String token = req.getToken(req.getUserName());
-        Cookie cookie = new Cookie("JWT", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-        return ResponseEntity.ok("Login successful");
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", "Login successful");
+        responseBody.put("token", token);
+        responseBody.put("userInfo", Map.of(
+            "userName", user.getUserName()
+        ));
+
+        return ResponseEntity.ok(responseBody);
     }
 
     @PostMapping("/auth")
