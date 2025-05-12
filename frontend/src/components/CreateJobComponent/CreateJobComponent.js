@@ -394,7 +394,7 @@ const CreateJobComponent = (jobId) => {
                                         </Grid2>
                                         <Grid2 size={6}>
                                             <select
-                                                className={`timezone-dropdown ${timeZoneError ? 'error' : ''}`}
+                                                className={`timezone-dropdown ${timeZoneError && page1Error ? 'error' : ''}`}
                                                 value={timeZone}
                                                 onChange={(e) => {
                                                     setTimeZone(e.target.value);
@@ -406,7 +406,7 @@ const CreateJobComponent = (jobId) => {
                                                     <option key={timezone} value={timezone}>{timezone}</option>
                                                 ))}
                                             </select>
-                                            {timeZoneError && <span className="error-message">Please select a time zone</span>}
+                                            {timeZoneError && page1Error && <span className="error-message">Please select a time zone</span>}
                                         </Grid2>
                                         <Grid2 size={6} marginTop={2} className="left-checklist-container">
                                             <Grid2 container spacing={3} justifyContent="space-between">
