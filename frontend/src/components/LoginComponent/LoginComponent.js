@@ -136,10 +136,12 @@ class LoginComponent extends React.Component {
       : { userName: username, password: password };
 
     try {
-      await axios.post(url, body, {
+      const response = await axios.post(url, body, {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
+
+      localStorage.setItem("token", response.data.token);
 
       const successMessage = isRegisterPage
         ? "User Registered Successfully!"
