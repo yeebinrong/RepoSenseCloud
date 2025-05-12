@@ -17,6 +17,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import { initialLoginPageState } from "../../constants/constants";
 import { showSuccessBar } from "../../constants/snack-bar";
+import axios from "axios";
 
 class LoginComponent extends React.Component {
   constructor(props) {
@@ -131,41 +132,29 @@ class LoginComponent extends React.Component {
       ? `${process.env.REACT_APP_USER_SERVICE_URL}/register`
       : `${process.env.REACT_APP_USER_SERVICE_URL}/login`;
     const body = isRegisterPage
-      ? JSON.stringify({ userName: username, email: email, password: password })
-      : JSON.stringify({ userName: username, password: password });
+      ? { userName: username, email: email, password: password }
+      : { userName: username, password: password };
 
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: body,
-        credentials: "include",
+      await axios.post(url, body, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       });
 
-      if (!response.ok) {
-        const errorMessage =
-          response.status === 409
-            ? "User already exists"
-            : "Invalid username or password";
-        this.setState({
-          errorMessage: errorMessage,
-          isButtonClicked: false,
-        });
-        return;
-      }
+      const successMessage = isRegisterPage
+        ? "User Registered Successfully!"
+        : `Welcome ${username}!`;
+      showSuccessBar(successMessage);
 
-      if (!isRegisterPage) {
-        showSuccessBar("Welcome " + username + "!");
-        this.props.navigate("/home");
-      } else {
-        showSuccessBar("User Registered Successfully!");
-        this.props.navigate("/login");
-      }
+      const redirectPath = isRegisterPage ? "/login" : "/home";
+      this.props.navigate(redirectPath);
     } catch (error) {
+      const errorMessage =
+        error.response?.status === 409
+          ? "User already exists"
+          : "Invalid username or password";
       this.setState({
-        errorMessage: "An error occurred. Please try again.",
+        errorMessage: errorMessage || "An error occurred. Please try again.",
         isButtonClicked: false,
       });
     }
