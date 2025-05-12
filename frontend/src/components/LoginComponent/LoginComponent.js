@@ -33,6 +33,10 @@ class LoginComponent extends React.Component {
       return {
         ...initialLoginPageState,
         isRegisterPage: nextProps.isRegisterPage,
+        errorMessage: "",
+        emailErrorMessage: "",
+        passwordErrorMessage: "",
+        confirmPasswordErrorMessage: "",
       };
     }
     // Return null to indicate no change to state.
@@ -42,7 +46,7 @@ class LoginComponent extends React.Component {
   validateEmail = (email) => {
     const regex = /[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!regex.test(email) && email.length > 0) {
-      return "Please enter a valid email address";
+      return ["Please enter a valid email address"];
     }
     return null;
   };
@@ -82,7 +86,7 @@ class LoginComponent extends React.Component {
 
   validateConfirmPassword = (password, confirmPassword) => {
     if (password !== confirmPassword && confirmPassword.length > 0) {
-      return "Passwords did not match";
+      return ["Passwords did not match"];
     }
     return null;
   };
@@ -100,25 +104,27 @@ class LoginComponent extends React.Component {
     const { username, email, password, confirmPassword, isRegisterPage } =
       this.state;
 
-    const emailErrorMessage = this.validateEmail(email);
-    const passwordErrorMessage = this.validatePassword(password);
-    const confirmPasswordErrorMessage = this.validateConfirmPassword(
-      password,
-      confirmPassword
-    );
+    if (isRegisterPage) {
+      const emailErrorMessage = this.validateEmail(email);
+      const passwordErrorMessage = this.validatePassword(password);
+      const confirmPasswordErrorMessage = this.validateConfirmPassword(
+        password,
+        confirmPassword
+      );
 
-    if (
-      emailErrorMessage ||
-      passwordErrorMessage ||
-      confirmPasswordErrorMessage
-    ) {
-      this.setState({
-        emailErrorMessage: emailErrorMessage,
-        passwordErrorMessage: passwordErrorMessage,
-        confirmPasswordErrorMessage: confirmPasswordErrorMessage,
-        isButtonClicked: false,
-      });
-      return;
+      if (
+        emailErrorMessage ||
+        passwordErrorMessage ||
+        confirmPasswordErrorMessage
+      ) {
+        this.setState({
+          emailErrorMessage: emailErrorMessage,
+          passwordErrorMessage: passwordErrorMessage,
+          confirmPasswordErrorMessage: confirmPasswordErrorMessage,
+          isButtonClicked: false,
+        });
+        return;
+      }
     }
 
     const url = isRegisterPage
@@ -206,33 +212,47 @@ class LoginComponent extends React.Component {
     showPassTarget
   ) => {
     return (
-      <TextField
-        size="medium"
-        className={
-          isStandard ? "standard-panel-text-field" : "helper-text-field"
-        }
-        onChange={(e) => this.updateState(target, e.target.value)}
-        value={value}
-        label={label}
-        type={showPassTarget && !showPassword ? "password" : "text"}
-        error={!!errorMessage}
-        helperText={errorMessage}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              {target === "username" && <PersonIcon />}
-              {target === "email" && <EmailIcon />}
-              {(target === "password" || target === "confirmPassword") && (
-                <LockIcon />
-              )}
-            </InputAdornment>
-          ),
-          endAdornment: showPassTarget
-            ? this.renderShowPasswordIcon(showPassTarget)
-            : "",
-        }}
-        required
-      />
+      <>
+        <TextField
+          size="medium"
+          className={
+            isStandard ? "standard-panel-text-field" : "helper-text-field"
+          }
+          onChange={(e) => this.updateState(target, e.target.value)}
+          value={value}
+          label={label}
+          type={showPassTarget && !showPassword ? "password" : "text"}
+          error={this.props.isRegisterPage && !!errorMessage}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                {target === "username" && <PersonIcon />}
+                {target === "email" && <EmailIcon />}
+                {(target === "password" || target === "confirmPassword") && (
+                  <LockIcon />
+                )}
+              </InputAdornment>
+            ),
+            endAdornment: showPassTarget
+              ? this.renderShowPasswordIcon(showPassTarget)
+              : "",
+          }}
+          required
+        />
+        {this.props.isRegisterPage &&
+          errorMessage &&
+          errorMessage.map((message, index) => {
+            return (
+              <Alert
+                key={index}
+                className="input-error-message"
+                severity="error"
+              >
+                {message}
+              </Alert>
+            );
+          })}
+      </>
     );
   };
 
