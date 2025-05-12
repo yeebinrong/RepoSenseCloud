@@ -142,6 +142,9 @@ class LoginComponent extends React.Component {
       });
 
       localStorage.setItem("token", response.data.token);
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${response.data.token}`;
 
       const successMessage = isRegisterPage
         ? "User Registered Successfully!"
