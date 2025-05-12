@@ -26,20 +26,18 @@ CMD="$CMD --repos $REPOS"
 [ -n "$ORIGINALITY_THRESHOLD" ] && CMD="$CMD --originality-threshold $ORIGINALITY_THRESHOLD"
 
 # Boolean flags with default values
-IGNORE_CONFIG=${IGNORE_CONFIG:-"true"}
 LAST_MOD_DATE=${LAST_MOD_DATE:-"false"}
 FIND_PREV_AUTHORS=${FIND_PREV_AUTHORS:-"false"}
 ANALYZE_AUTHORSHIP=${ANALYZE_AUTHORSHIP:-"true"}
 SHALLOW_CLONING=${SHALLOW_CLONING:-"false"}
-IGNORE_FILESIZE=${IGNORE_FILESIZE:-"false"}
+IGNORE_FILESIZE_LIMIT=${IGNORE_FILESIZE_LIMIT:-"false"}
 
 # Add boolean flags
-[ "$IGNORE_CONFIG" = "true" ] && CMD="$CMD --ignore-standalone-config"
+[ "$IGNORE_FILESIZE_LIMIT" = "true" ] && CMD="$CMD --ignore-filesize-limit"
 [ "$LAST_MOD_DATE" = "true" ] && CMD="$CMD --last-modified-date"
 [ "$FIND_PREV_AUTHORS" = "true" ] && CMD="$CMD --find-previous-authors"
 [ "$ANALYZE_AUTHORSHIP" = "true" ] && CMD="$CMD --analyze-authorship"
 [ "$SHALLOW_CLONING" = "true" ] && CMD="$CMD --shallow-cloning"
-[ "$IGNORE_FILESIZE" = "true" ] && CMD="$CMD --ignore-filesize-limit"
 
 # Print configuration
 echo "RepoSense Configuration:"

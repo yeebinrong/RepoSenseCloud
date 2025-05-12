@@ -70,7 +70,7 @@ const CreateJobComponent = (jobId) => {
     const [authorship, setAuthorship] = useState(false);
     const [prevAuthors, setPrevAuthors] = useState(false);
     const [shallowClone, setShallowClone] = useState(false);
-    const [ignoreSizeLimit, setIgnoreSizeLimit] = useState(false);
+    const [ignoreFileSizeLimit, setIgnoreFileSizeLimit] = useState(false);
     const [addLastMod, setAddLastMod] = useState(false);
     const [formatChipValues, setFormatChipValues] = useState([]);
 
@@ -110,7 +110,7 @@ const CreateJobComponent = (jobId) => {
                     setAuthorship(data.authorship);
                     setPrevAuthors(data.prevAuthors);
                     setShallowClone(data.shallowClone);
-                    setIgnoreSizeLimit(data.ignoreSizeLimit);
+                    setIgnoreFileSizeLimit(data.ignoreFileSizeLimit);
                     setAddLastMod(data.addLastMod);
                     setFormatChipValues(data.formatChipValues);
                     setJobType(data.jobType);
@@ -126,12 +126,12 @@ const CreateJobComponent = (jobId) => {
         }
     };
 
-    // Keep the useEffect but also expose the load function
-    useEffect(() => {
-        if (jobId != null) {
-            loadJobDetails(jobId);
-        }
-    }, [jobId]);
+    // // Keep the useEffect but also expose the load function
+    // useEffect(() => {
+    //     if (jobId != null) {
+    //         loadJobDetails(jobId);
+    //     }
+    // }, [jobId]);
 
     
     // Reset state when modal closes
@@ -145,12 +145,12 @@ const CreateJobComponent = (jobId) => {
             setSinceDate("");
             setUntilDate("");
             setPeriod("");
-            setOriginalityThreshold("");
+            setOriginalityThreshold(0.5);
             setTimeZone("");
             setAuthorship(false);
             setPrevAuthors(false);
             setShallowClone(false);
-            setIgnoreSizeLimit(false);
+            setIgnoreFileSizeLimit(false);
             setAddLastMod(false);
             setFormatChipValues([]);
             // page 2 states
@@ -429,7 +429,7 @@ const CreateJobComponent = (jobId) => {
                                                     <text className="ignore-size-limit-label">Ignore file size limit:</text>
                                                 </Grid2>
                                                 <Grid2 size={6} >
-                                                    <input type="checkbox" className="ignore-size-limit-checkbox" onChange={(e) => setIgnoreSizeLimit(e.target.value)} />
+                                                    <input type="checkbox" className="ignore-size-limit-checkbox" onChange={(e) => setIgnoreFileSizeLimit(e.target.value)} />
                                                 </Grid2>
                                                 <Grid2 size={6}>
                                                     <text className="Add-last-mod-label">Add last modified date:</text>
@@ -760,7 +760,7 @@ const CreateJobComponent = (jobId) => {
                 authorship,
                 prevAuthors,
                 shallowClone,
-                ignoreSizeLimit,
+                ignoreFileSizeLimit,
                 addLastMod,
                 formatChipValues,
                 jobType,
@@ -768,9 +768,17 @@ const CreateJobComponent = (jobId) => {
                 startHour,
                 startMinute,
                 lastUpdated: {
+                    time: "",
+                    date: ""
+                },
+                nextScheduled: {
+                    time: "",
+                    date: ""
+                },
+                settingsUpdatedAt: {
                     time: moment().format("HH:mm:ss"),
                     date: moment().format("YYYY-MM-DD")
-                }
+                },
             };
             console.log(JSON.stringify(formData));
 

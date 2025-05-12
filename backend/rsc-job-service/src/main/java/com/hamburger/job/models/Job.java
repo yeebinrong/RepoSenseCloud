@@ -23,12 +23,12 @@ public class Job {
     private String sinceDate;
     private String untilDate;
     private String period;
-    private String originalityThreshold;
+    private Float originalityThreshold;
     private String timeZone;
     private boolean authorship;
     private boolean prevAuthors;
     private boolean shallowClone;
-    private boolean ignoreSizeLimit; 
+    private boolean ignoreFileSizeLimit; 
     private boolean addLastMod;
     private List<String> formatChipValues; //this is exclude file type list
     private String jobType;
@@ -41,6 +41,7 @@ public class Job {
     private String status;
     private Map<String,String> lastUpdated;
     private Map<String,String> nextScheduled;
+    private Map<String,String> settingsUpdatedAt;
 
     public Job () {
         if(this.jobId == null){
@@ -49,10 +50,6 @@ public class Job {
         if(this.status == null){
             this.status = "Pending";
         }
-        //TODO: schedule date time logic
-        this.nextScheduled = new HashMap<>();
-        this.nextScheduled.put("time", "Not Scheduled");
-        this.nextScheduled.put("date", "");
     }
 
     @DynamoDbSortKey
