@@ -234,6 +234,7 @@ body {
                         border-radius: 12px;
                         text-align: center;
                         border: 1px solid #cecece;
+                        appearance: none;
                     }
 
                     .error {
@@ -296,6 +297,7 @@ body {
         border-radius: 12px;
         border: 2px solid var(--input-border-color);
         text-align: center; 
+        appearance: none;
     }
 
     .time-colon{

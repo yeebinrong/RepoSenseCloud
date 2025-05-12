@@ -84,6 +84,8 @@ const CreateJobComponent = (jobId) => {
     const [isLoading, setIsLoading] = useState(false);
 
     //Form Validation States
+    const [page1Error, setPage1Error] = useState(false);
+    const [page2Error, setPage2Error] = useState(false);
     const [jobNameError, setJobNameError] = useState(true);
     const [repoLinkError, setRepoLinkError] = useState(true);
     const [sinceUntilDateError, setSinceUntilDateError] = useState(false);
@@ -160,7 +162,9 @@ const CreateJobComponent = (jobId) => {
             setStartHour("--");
             setStartDate("")
             setEndDate("");
-            // form validation states  
+            // form validation states
+            setPage1Error(false);
+            setPage2Error(false);
             setJobNameError(true);
             setRepoLinkError(true);
             setSinceUntilDateError(false);
@@ -253,7 +257,7 @@ const CreateJobComponent = (jobId) => {
 
     const validateRepoLink = (id) => {
         const link = repoLink.find(link => link.id === id);
-        if (link.value === "") {
+        if (link.value === "" ) {
             setRepoLinkError(true);
         } else {
             setRepoLinkError(false);
@@ -290,7 +294,7 @@ const CreateJobComponent = (jobId) => {
         if (jobNameError || repoLinkError || sinceUntilDateError || originalityThresholdError || timeZoneError) {
             hasError = true;
         }
-    
+        setPage1Error(hasError);
         if (callback) {
             callback(hasError);
         }
@@ -331,13 +335,16 @@ const CreateJobComponent = (jobId) => {
                         <div className="create-job-input-left">
                             <div className="job-name-container">
                                 <text className="job-name-label">Job Name</text>
+                                {console.log("page1Error:"+page1Error)}
+                                {console.log("jobNameError:"+jobNameError)}
                                 <TextField className="job-name-textbox" placeholder="Enter Job Name" value = {jobName} 
                                     //onChange={(e)=> { validateJobName(); setJobName(e.target.value)}} 
                                     onInput={(e)=> {setJobName(e.target.value)}}
                                     onPaste={(e)=> {setJobName(e.target.value)}}
                                     autoComplete="off"
-                                    error={jobNameError}        
-                                    helperText={jobNameError ? "Please Enter Job Name" : ""}/>
+
+                                    error={(jobNameError && page1Error)}        
+                                    helperText={(jobNameError && page1Error) ? "Please Enter Job Name" : ""}/>
                             </div>
                             <div className="target-repo-container">
                                 <text className="target-repo-label">Target Repository</text>
@@ -348,8 +355,8 @@ const CreateJobComponent = (jobId) => {
                                             onInput={(e) => {handleRepoLinkChange(link.id, e.target.value) }}
                                             onPaste={(e) => {handleRepoLinkChange(link.id, e.target.value) }}
                                             autoComplete="off"
-                                            error={repoLinkError}
-                                            helperText={repoLinkError ? "Please Paste Repository URL" : ""} />
+                                            error={repoLinkError && page1Error}
+                                            helperText={repoLinkError && page1Error ? "Please Paste Repository URL" : ""} />
                                         {index > 0 && (<button className="delete-repo-link-button" onClick={() => deleteRepoLink(link.id)}>✕</button>)}
                                     </span>
                                 ))}
@@ -610,9 +617,9 @@ const CreateJobComponent = (jobId) => {
                 <Grid2 item size={8}>
                     <select className="frequency-dropdown"
                         onChange={(e) => setFrequency(e.target.value)}>
-                        <option value={"weekly"}>Weekly</option>
-                        <option value={"monthly"}>Monthly</option>
-                        <option value={"quarterly"}>Quarterly</option>
+                        <option value={"daily"}>Daily</option>
+                        <option value={"hourly"}>Hourly</option>
+                        <option value={"minutely"}>Every 5 Mins</option>
                     </select>
                 </Grid2>
                 <Grid2 item size={4}>
@@ -620,7 +627,7 @@ const CreateJobComponent = (jobId) => {
                 </Grid2>
                 <Grid2 item size={2}>
                     <select
-                        className={`time-dropdown  ${startHourError ? 'error' : ''}`}
+                        className={`time-dropdown  ${startHourError && page2Error ? 'error' : ''}`}
                         value={startHour}
                         onChange={(e) => { setStartHour(e.target.value); validateStartHour(e.target.value);}}
                     >
@@ -636,7 +643,7 @@ const CreateJobComponent = (jobId) => {
                 </Grid2>
                 <Grid2 item size={2}>
                     <select
-                            className={`time-dropdown ${startMinuteError ? 'error' : ''}`}
+                            className={`time-dropdown ${startMinuteError && page2Error ? 'error' : ''}`}
                             value={startMinute}
                             onChange={(e) => { setStartMinute(e.target.value); validateStartMinute(e.target.value)}}
                         >
@@ -654,7 +661,7 @@ const CreateJobComponent = (jobId) => {
                     <TextField type="date" className="start-date-input" value = {startDate}
                         onChange={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}} 
                         onInput={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}} 
-                        error = {dateError} placeholder="DD/MM/YYYY" />
+                        error = {dateError && page2Error } placeholder="DD/MM/YYYY" />
                 </Grid2>
                 <Grid2 item size={4} container alignItems="center">
                     <text className="end-date-label">End Date:</text>
@@ -663,8 +670,8 @@ const CreateJobComponent = (jobId) => {
                     <TextField type="date" className="end-date-input" value = {endDate} 
                         onChange={(e) => { setEndDate(e.target.value); validateDate(startDate, e.target.value)}} placeholder="DD/MM/YYYY" 
                         onInput={(e) => {setEndDate(e.target.value); validateDate(startDate, e.target.value) }} 
-                        error = {dateError}
-                        helperText={(endDate!==""&& dateError)? "Improper Date Range":""}/>
+                        error = {dateError && page2Error}
+                        helperText={(endDate!==""&& dateError )? "Improper Date Range":""}/>
                 </Grid2>
                 
             </Grid2>
@@ -701,6 +708,7 @@ const CreateJobComponent = (jobId) => {
 
     const validateForm = () => {
         return new Promise((resolve, reject) => {
+            setPage2Error(true);
             if (jobName === "") {
                 return reject(new Error("Job name cannot be blank."));
             }
@@ -734,7 +742,7 @@ const CreateJobComponent = (jobId) => {
                     return reject(new Error('"Start Date" should be earlier than "End Date".'))
                 }    
             }
-
+            setPage2Error(false);
             return resolve();
         });
     }
