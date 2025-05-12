@@ -18,6 +18,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import { initialLoginPageState } from "../../constants/constants";
 import { showSuccessBar } from "../../constants/snack-bar";
 import axios from "axios";
+import PropTypes from "prop-types";
 
 class LoginComponent extends React.Component {
   constructor(props) {
@@ -234,11 +235,10 @@ class LoginComponent extends React.Component {
           required
         />
         {this.props.isRegisterPage &&
-          errorMessage &&
-          errorMessage.map((message, index) => {
+          errorMessage?.map((message) => {
             return (
               <Alert
-                key={index}
+                key={message}
                 className="input-error-message"
                 severity="error"
               >
@@ -465,5 +465,10 @@ class LoginComponent extends React.Component {
     );
   }
 }
+
+LoginComponent.propTypes = {
+  isRegisterPage: PropTypes.bool.isRequired,
+  navigate: PropTypes.func.isRequired,
+};
 
 export default LoginComponent;
