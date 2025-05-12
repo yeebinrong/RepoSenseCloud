@@ -17,6 +17,14 @@ public class JwtAuthorization extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
+
+        // Exclude specific URL patterns
+        if (requestURI.equals("/api/user/register")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = null;
 
         // Check Authorization header for JWT token
