@@ -77,8 +77,8 @@ body {
             display: flex;
             flex-direction: column;
             width: auto;
-            margin-right: 80px;
-            margin-left: 20px;
+            margin-right: 0px;
+            margin-left: 0px;
 
             .job-name-container {
                 display: flex;
@@ -105,6 +105,8 @@ body {
                 width: 400px;
                 background-color: var(--input-background-color);
                 border-radius: 12px;
+                max-height: 300px;
+                overflow-y: auto;
 
 
                 .target-repo-label {
@@ -129,7 +131,7 @@ body {
                 }
 
                 .add-repo-link-button {
-                    color: var(--placeholder-color);
+                    color: var(--general-text-color);
                     background-color: #ffffff;
                     width: 125px;
                     margin-left: 60%;

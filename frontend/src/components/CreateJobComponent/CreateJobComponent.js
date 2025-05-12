@@ -10,7 +10,6 @@ import { showSuccessBar, showErrorBar } from "../../constants/snack-bar";
 const useStyles = makeStyles(() => ({
     autocomplete: {
         width: '100%',
-        marginTop: '16px',
     },
     chip: {
         margin: '4px',
@@ -26,8 +25,8 @@ const useStyles = makeStyles(() => ({
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: '1115px',
-        height: '90vh',
-        overflowY: 'auto', 
+        height: '95vh',
+        //overflowY: 'auto', 
         backgroundColor: 'white',
         padding: '16px',
         borderRadius: '16px',
@@ -409,39 +408,39 @@ const CreateJobComponent = (jobId) => {
                                             {timeZoneError && page1Error && <span className="error-message">Please select a time zone</span>}
                                         </Grid2>
                                         <Grid2 size={6} marginTop={2} className="left-checklist-container">
-                                            <Grid2 container spacing={3} justifyContent="space-between">
-                                                <Grid2 size={6}>
+                                            <Grid2 container spacing={1} justifyContent="space-between">
+                                                <Grid2 size={10}>
                                                     <text className="authorship-label">Analyse authorship:</text>
                                                 </Grid2>
-                                                <Grid2 size={6}>
+                                                <Grid2 size={2}>
                                                     <input type="checkbox" className="authorship-checkbox" onChange={(e) => setAuthorship(e.target.value)} />
                                                 </Grid2>
-                                                <Grid2 size={6}>
+                                                <Grid2 size={10}>
                                                     <text className="prev-author-label">Find previous authors:</text>
                                                 </Grid2>
-                                                <Grid2 size={6}>
+                                                <Grid2 size={2}>
                                                     <input type="checkbox" className="prev-author-checkbox" onChange={(e) => setPrevAuthors(e.target.value)} />
                                                 </Grid2>
-                                                <Grid2 size={6}>
+                                                <Grid2 size={10}>
                                                     <text className="shallow-clone-label">Shallow cloning:</text>
                                                 </Grid2>
-                                                <Grid2 size={6} >
+                                                <Grid2 size={2} >
                                                     <input type="checkbox" className="shallow-clone-checkbox" onChange={(e) => setShallowClone(e.target.value)}/>
                                                 </Grid2>
                                             </Grid2>
                                         </Grid2>
                                         <Grid2 size={6} marginTop={2} paddingLeft={6} className="right-checklist-container">
-                                            <Grid2 container spacing={3} justifyContent="space-between">
-                                                <Grid2 size={6} >
+                                            <Grid2 container spacing={1} justifyContent="space-between">
+                                                <Grid2 size={10} >
                                                     <text className="ignore-size-limit-label">Ignore file size limit:</text>
                                                 </Grid2>
-                                                <Grid2 size={6} >
+                                                <Grid2 size={2} >
                                                     <input type="checkbox" className="ignore-size-limit-checkbox" onChange={(e) => setIgnoreSizeLimit(e.target.value)} />
                                                 </Grid2>
-                                                <Grid2 size={6}>
+                                                <Grid2 size={10}>
                                                     <text className="Add-last-mod-label">Add last modified date:</text>
                                                 </Grid2>
-                                                <Grid2 size={6} >
+                                                <Grid2 size={2} >
                                                     <input type="checkbox" className="add-last-mod-checkbox" onChange={(e) => setAddLastMod(e.target.value)} />
                                                 </Grid2>
 
@@ -450,7 +449,7 @@ const CreateJobComponent = (jobId) => {
                                         <Grid2 size={2} marginTop={2}>
                                             <text className="format-label">Format:</text>
                                         </Grid2>
-                                        <Grid2 size={8}>
+                                        <Grid2 size={10}>
                                             <Autocomplete
                                                 multiple
                                                 freeSolo
