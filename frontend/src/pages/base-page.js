@@ -111,7 +111,7 @@ class BasePage extends React.Component {
                         {!this.props.isLoginPage &&
                         <div className={styles.barRight}>
                             <div className={styles.userDetails}>
-                                <h1 className={styles.welcomeMessage}>Welcome, binrong</h1>
+                                <h1 className={styles.welcomeMessage}>Welcome, {this.props.username}</h1>
                                 <text className={styles.currentDate}>{new Date().toDateString()}</text>
                             </div>
                             <div>
