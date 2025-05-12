@@ -48,13 +48,33 @@ class LoginComponent extends React.Component {
   };
 
   validatePassword = (password) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]*$/;
+    const regexUppercase = /[A-Z]/;
+    const regexLowercase = /[a-z]/;
+    const regexDigit = /\d/;
+    const regexSpecialChar = /[~!@#$%^&*()]/;
+    const validationErrors = [];
+
     if (password.length > 0) {
       if (password.length < 8) {
-        return "Must contain at least 8 or more characters";
+        validationErrors.push("Must be a minimum of 8 characters in length");
       }
-      if (!regex.test(password)) {
-        return "Must contain a mix of letters and numbers";
+      if (!regexUppercase.test(password)) {
+        validationErrors.push("Must contain at least 1 uppercase letter");
+      }
+      if (!regexLowercase.test(password)) {
+        validationErrors.push("Must contain at least 1 lowercase letter");
+      }
+      if (!regexDigit.test(password)) {
+        validationErrors.push("Must contain at least 1 digit");
+      }
+      if (!regexSpecialChar.test(password)) {
+        validationErrors.push(
+          "Must contain at least 1 special character ~!@#$%^&*()"
+        );
+      }
+
+      if (validationErrors.length > 0) {
+        return validationErrors;
       }
     }
     return null;
