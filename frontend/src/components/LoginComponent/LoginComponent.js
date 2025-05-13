@@ -235,7 +235,8 @@ class LoginComponent extends React.Component {
           required
         />
         {this.props.isRegisterPage &&
-          errorMessage?.map((message) => {
+          Array.isArray(errorMessage) &&
+          errorMessage.map((message) => {
             return (
               <Alert
                 key={message}

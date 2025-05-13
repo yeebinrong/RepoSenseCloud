@@ -20,14 +20,6 @@ import PropTypes from "prop-types";
 import styles from "../components/HomeComponent/JobManagement.module.css";
 
 class BasePage extends React.Component {
-    static propTypes = {
-        navigate: PropTypes.func.isRequired,
-        username: PropTypes.string.isRequired,
-        isLoginPage: PropTypes.bool,
-        isLoading: PropTypes.bool,
-        component: PropTypes.func.isRequired,
-    };
-
     constructor(props) {
         super(props);
 
@@ -218,5 +210,13 @@ class BasePage extends React.Component {
             ;
     }
 }
+
+BasePage.propTypes = {
+    navigate: PropTypes.func.isRequired,
+    username: PropTypes.string,
+    isLoginPage: PropTypes.bool,
+    isLoading: PropTypes.bool,
+    component: PropTypes.func.isRequired,
+};
 
 export default BasePage;

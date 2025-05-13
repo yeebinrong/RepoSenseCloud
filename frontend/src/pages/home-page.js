@@ -4,11 +4,6 @@ import BasePage from "./base-page";
 import JobManagement from "../components/HomeComponent/JobManagement";
 
 class HomePage extends React.Component {
-  static propTypes = {
-    navigate: PropTypes.func.isRequired,
-    username: PropTypes.string.isRequired,
-  };
-
   render() {
     return (
       <BasePage
@@ -23,5 +18,10 @@ class HomePage extends React.Component {
     );
   }
 }
+
+HomePage.propTypes = {
+  navigate: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
+};
 
 export default HomePage;
