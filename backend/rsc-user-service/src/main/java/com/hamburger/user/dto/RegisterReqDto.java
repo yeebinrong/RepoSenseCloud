@@ -31,7 +31,7 @@ public class RegisterReqDto {
         if (password == null) {
             return false;
         }
-        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$";
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[~!@#$%^&*()])[a-zA-Z\\d~!@#$%^&*()]{8,}$";
         return password.matches(regex);
     }
 

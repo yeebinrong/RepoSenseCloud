@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import "./App.scss";
 import LoginPage from "./pages/login-page";
 import ForgotPage from "./pages/forgot-page";
@@ -6,7 +6,7 @@ import HomePage from "./pages/home-page";
 import ErrorPage from "./pages/error-page";
 import CreateJobPage from "./pages/create-job-page";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
-import { showSuccessBar } from "./constants/snack-bar";
+import axios from "axios";
 
 if (typeof setImmediate === "undefined") {
   window.setImmediate = function (fn) {
@@ -16,21 +16,44 @@ if (typeof setImmediate === "undefined") {
 
 const App = () => {
   let navigate = useNavigate();
+  const usernameRef = useRef();
 
   useEffect(() => {
-    const isLoginPage = window.location.pathname === "/login";
-    const isCreateJobPage = window.location.pathname === "/create-job";
+    const token = localStorage.getItem("token");
+    const publicRoutes = ["/login", "/register", "/forgot"];
 
-    if (isLoginPage || isCreateJobPage) {
-      showSuccessBar("Welcome to ReposenseCloud.");
-    } else {
-      navigate("/error");
+    if (!token && !publicRoutes.includes(window.location.pathname)) {
+      navigate("/login");
+    } else if (token) {
+      const validateUser = async () => {
+        try {
+          const { data } = await axios.post(
+            `${process.env.REACT_APP_USER_SERVICE_URL}/auth`,
+            { token }
+          );
+          if (data.username) {
+            usernameRef.current = data.username;
+            navigate("/home");
+          }
+        } catch (error) {
+          console.error(
+            "Token validation error:",
+            error.response?.status === 401
+              ? "Invalid or expired token"
+              : "An error has occurred"
+          );
+          localStorage.removeItem("token");
+          navigate("/login");
+        }
+      };
+
+      validateUser();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [navigate]);
 
   const mainProps = {
     navigate: navigate,
+    username: usernameRef.current,
   };
 
   return (
