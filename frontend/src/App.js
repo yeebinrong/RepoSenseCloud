@@ -6,7 +6,6 @@ import HomePage from "./pages/home-page";
 import ErrorPage from "./pages/error-page";
 import CreateJobPage from "./pages/create-job-page";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
-import { showSuccessBar } from "./constants/snack-bar";
 import axios from "axios";
 
 if (typeof setImmediate === "undefined") {
@@ -21,10 +20,11 @@ const App = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const publicRoutes = ["/login", "/register", "/forgot"];
 
-    if (!token) {
+    if (!token && !publicRoutes.includes(window.location.pathname)) {
       navigate("/login");
-    } else {
+    } else if (token) {
       const validateUser = async () => {
         try {
           const { data } = await axios.post(
@@ -34,7 +34,6 @@ const App = () => {
           if (data.username) {
             usernameRef.current = data.username;
             navigate("/home");
-            showSuccessBar(`Welcome back, ${data.username}!`);
           }
         } catch (error) {
           console.error(
