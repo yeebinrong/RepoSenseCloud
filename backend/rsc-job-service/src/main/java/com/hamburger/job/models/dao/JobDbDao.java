@@ -1,7 +1,10 @@
 package com.hamburger.job.models.dao;
 
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -143,7 +146,7 @@ public class JobDbDao {
             System.out.println("Creating job: " + job);
             jobTable.putItem(job);
         } catch (Exception e) {
-            System.err.println("Error creating job: " + e.getMessage());
+            System.err.println("Error creating job (DAO): " + e.getMessage());
         }
     }
 
@@ -172,6 +175,13 @@ public class JobDbDao {
                 // Update the status
                 job.setStatus(newStatus);
                 jobTable.updateItem(job);
+
+                // Update last updated
+                LocalDateTime now = LocalDateTime.now();
+                Map<String, String> latestDateTime = new HashMap<>();
+                latestDateTime.put("date", now.format(DateTimeFormatter.ISO_LOCAL_DATE));
+                latestDateTime.put("time", now.format(DateTimeFormatter.ofPattern("HH:mm:ssX")));
+                job.setLastUpdated(latestDateTime);
 
                 String messageBody = "{"
                     + "\"owner\": \"" + job.getOwner() + "\","
