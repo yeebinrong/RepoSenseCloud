@@ -410,19 +410,19 @@ const CreateJobComponent = (jobId) => {
                                                     <text className="authorship-label">Analyse authorship:</text>
                                                 </Grid2>
                                                 <Grid2 size={6}>
-                                                    <input type="checkbox" className="authorship-checkbox" onChange={(e) => setAuthorship(e.target.value)} />
+                                                    <input type="checkbox" className="authorship-checkbox" checked={authorship} onChange={(e) => setAuthorship(e.target.checked)} />
                                                 </Grid2>
                                                 <Grid2 size={6}>
                                                     <text className="prev-author-label">Find previous authors:</text>
                                                 </Grid2>
                                                 <Grid2 size={6}>
-                                                    <input type="checkbox" className="prev-author-checkbox" onChange={(e) => setPrevAuthors(e.target.value)} />
+                                                    <input type="checkbox" className="prev-author-checkbox" checked={prevAuthors} onChange={(e) => setPrevAuthors(e.target.checked)} />
                                                 </Grid2>
                                                 <Grid2 size={6}>
                                                     <text className="shallow-clone-label">Shallow cloning:</text>
                                                 </Grid2>
                                                 <Grid2 size={6} >
-                                                    <input type="checkbox" className="shallow-clone-checkbox" onChange={(e) => setShallowClone(e.target.value)}/>
+                                                    <input type="checkbox" className="shallow-clone-checkbox" checked={shallowClone} onChange={(e) => setShallowClone(e.target.checked)}/>
                                                 </Grid2>
                                             </Grid2>
                                         </Grid2>
@@ -432,13 +432,13 @@ const CreateJobComponent = (jobId) => {
                                                     <text className="ignore-size-limit-label">Ignore file size limit:</text>
                                                 </Grid2>
                                                 <Grid2 size={6} >
-                                                    <input type="checkbox" className="ignore-size-limit-checkbox" onChange={(e) => setIgnoreFileSizeLimit(e.target.value)} />
+                                                    <input type="checkbox" className="ignore-size-limit-checkbox" checked={ignoreFileSizeLimit} onChange={(e) => setIgnoreFileSizeLimit(e.target.checked)} />
                                                 </Grid2>
                                                 <Grid2 size={6}>
                                                     <text className="Add-last-mod-label">Add last modified date:</text>
                                                 </Grid2>
                                                 <Grid2 size={6} >
-                                                    <input type="checkbox" className="add-last-mod-checkbox" onChange={(e) => setAddLastMod(e.target.value)} />
+                                                    <input type="checkbox" className="add-last-mod-checkbox" checked={addLastMod} onChange={(e) => setAddLastMod(e.target.checked)} />
                                                 </Grid2>
 
                                             </Grid2>
@@ -796,7 +796,7 @@ const CreateJobComponent = (jobId) => {
                 }
             );
 
-            if (response.ok) {
+            if (response.status === 201) {
                 console.log("Job created successfully");
                 showSuccessBar("Job Created Successfully");
                 handleModalClose();
