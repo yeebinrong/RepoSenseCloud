@@ -66,6 +66,7 @@ if aws s3 cp --recursive "$OUTPUT" "s3://$REPORT_BUCKET/$OWNER/$JOBID/"; then
         --expression-attribute-names '{"#s": "status"}' \
         --expression-attribute-values '{":completed": {"S": "Completed"}}' \
         --region ap-southeast-1
+    STATUS=0
 else
     # Update DDB job to Failed
     aws dynamodb update-item \
@@ -76,9 +77,18 @@ else
         --expression-attribute-values '{":failed": {"S": "Failed"}}' \
         --region ap-southeast-1
     echo "Failed to upload report to S3." >&2
-    exit 1
+    STATUS=1
 fi
+# Always update lastUpdated at the end
+DATE=$(date +%F)
+TIME=$(date +%T)
+aws dynamodb update-item \
+    --table-name rsc-localhost-job-data \
+    --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
+    --update-expression "SET #s = :lastUpdated" \
+    --expression-attribute-names '{"#s": "lastUpdated"}' \
+    --expression-attribute-values "{\":lastUpdated\": {\"M\": {\"date\": {\"S\": \"$DATE\"}, \"time\": {\"S\": \"$TIME\"}}}}" \
+    --region ap-southeast-1
 
-exit 0
-
+exit $STATUS
 # The report can be accessed at {output_path}/reposense-report/index.html
