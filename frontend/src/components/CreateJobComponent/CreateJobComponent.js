@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
+import axios from "axios";
 import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
     Button, Select, FormControl, InputLabel, MenuItem, Stack, CircularProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
@@ -39,6 +40,8 @@ const useStyles = makeStyles(() => ({
 
 
 const CreateJobComponent = (jobId) => {
+
+    const token = localStorage.getItem("token");
 
     const classes = useStyles();
     const timezoneList = [
@@ -782,14 +785,16 @@ const CreateJobComponent = (jobId) => {
             };
             console.log(JSON.stringify(formData));
 
-            const response = await fetch(`${jobServiceUrl}/create`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(formData),
-            });
+            const response = await axios.post(`${jobServiceUrl}/create`, 
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    withCredentials: true
+                }
+            );
 
             if (response.ok) {
                 console.log("Job created successfully");

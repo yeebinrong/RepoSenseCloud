@@ -29,7 +29,7 @@ public class JobServiceController {
     private final JobService jobService;
     private final JobUserAuth jobUserAuth;
     private final JwtHelper jwtHelper;
-    private static final String env = "prod"; // change to prod to use auth
+    private static final String env = "dev"; // change to prod to use auth
 
     @Autowired
     public JobServiceController(JobService jobService, JobUserAuth jobUserAuth, JwtHelper jwtHelper) {
