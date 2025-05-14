@@ -47,7 +47,7 @@ public class UserServiceApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOriginPatterns("*")
+                        .allowedOrigins(System.getenv("FRONTEND_ORIGIN"))
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true);
