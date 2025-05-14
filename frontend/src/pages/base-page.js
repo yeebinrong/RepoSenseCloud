@@ -16,6 +16,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React from "react";
+import PropTypes from "prop-types";
 import styles from "../components/HomeComponent/JobManagement.module.css";
 
 class BasePage extends React.Component {
@@ -111,7 +112,7 @@ class BasePage extends React.Component {
                         {!this.props.isLoginPage &&
                         <div className={styles.barRight}>
                             <div className={styles.userDetails}>
-                                <h1 className={styles.welcomeMessage}>Welcome, binrong</h1>
+                                <h1 className={styles.welcomeMessage}>Welcome, {this.props.username}</h1>
                                 <text className={styles.currentDate}>{new Date().toDateString()}</text>
                             </div>
                             <div>
@@ -209,5 +210,13 @@ class BasePage extends React.Component {
             ;
     }
 }
+
+BasePage.propTypes = {
+    navigate: PropTypes.func.isRequired,
+    username: PropTypes.string,
+    isLoginPage: PropTypes.bool,
+    isLoading: PropTypes.bool,
+    component: PropTypes.func.isRequired,
+};
 
 export default BasePage;

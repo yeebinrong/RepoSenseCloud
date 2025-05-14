@@ -17,6 +17,8 @@ import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import { initialLoginPageState } from "../../constants/constants";
 import { showSuccessBar } from "../../constants/snack-bar";
+import axios from "axios";
+import PropTypes from "prop-types";
 
 class LoginComponent extends React.Component {
   constructor(props) {
@@ -33,6 +35,10 @@ class LoginComponent extends React.Component {
       return {
         ...initialLoginPageState,
         isRegisterPage: nextProps.isRegisterPage,
+        errorMessage: "",
+        emailErrorMessage: "",
+        passwordErrorMessage: "",
+        confirmPasswordErrorMessage: "",
       };
     }
     // Return null to indicate no change to state.
@@ -42,19 +48,39 @@ class LoginComponent extends React.Component {
   validateEmail = (email) => {
     const regex = /[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!regex.test(email) && email.length > 0) {
-      return "Please enter a valid email address";
+      return ["Please enter a valid email address"];
     }
     return null;
   };
 
   validatePassword = (password) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]*$/;
+    const regexUppercase = /[A-Z]/;
+    const regexLowercase = /[a-z]/;
+    const regexDigit = /\d/;
+    const regexSpecialChar = /[~!@#$%^&*()]/;
+    const validationErrors = [];
+
     if (password.length > 0) {
       if (password.length < 8) {
-        return "Must contain at least 8 or more characters";
+        validationErrors.push("Must be a minimum of 8 characters in length");
       }
-      if (!regex.test(password)) {
-        return "Must contain a mix of letters and numbers";
+      if (!regexUppercase.test(password)) {
+        validationErrors.push("Must contain at least 1 uppercase letter");
+      }
+      if (!regexLowercase.test(password)) {
+        validationErrors.push("Must contain at least 1 lowercase letter");
+      }
+      if (!regexDigit.test(password)) {
+        validationErrors.push("Must contain at least 1 digit");
+      }
+      if (!regexSpecialChar.test(password)) {
+        validationErrors.push(
+          "Must contain at least 1 special character ~!@#$%^&*()"
+        );
+      }
+
+      if (validationErrors.length > 0) {
+        return validationErrors;
       }
     }
     return null;
@@ -62,7 +88,7 @@ class LoginComponent extends React.Component {
 
   validateConfirmPassword = (password, confirmPassword) => {
     if (password !== confirmPassword && confirmPassword.length > 0) {
-      return "Passwords did not match";
+      return ["Passwords did not match"];
     }
     return null;
   };
@@ -80,66 +106,61 @@ class LoginComponent extends React.Component {
     const { username, email, password, confirmPassword, isRegisterPage } =
       this.state;
 
-    const emailErrorMessage = this.validateEmail(email);
-    const passwordErrorMessage = this.validatePassword(password);
-    const confirmPasswordErrorMessage = this.validateConfirmPassword(
-      password,
-      confirmPassword
-    );
+    if (isRegisterPage) {
+      const emailErrorMessage = this.validateEmail(email);
+      const passwordErrorMessage = this.validatePassword(password);
+      const confirmPasswordErrorMessage = this.validateConfirmPassword(
+        password,
+        confirmPassword
+      );
 
-    if (
-      emailErrorMessage ||
-      passwordErrorMessage ||
-      confirmPasswordErrorMessage
-    ) {
-      this.setState({
-        emailErrorMessage: emailErrorMessage,
-        passwordErrorMessage: passwordErrorMessage,
-        confirmPasswordErrorMessage: confirmPasswordErrorMessage,
-        isButtonClicked: false,
-      });
-      return;
+      if (
+        emailErrorMessage ||
+        passwordErrorMessage ||
+        confirmPasswordErrorMessage
+      ) {
+        this.setState({
+          emailErrorMessage: emailErrorMessage,
+          passwordErrorMessage: passwordErrorMessage,
+          confirmPasswordErrorMessage: confirmPasswordErrorMessage,
+          isButtonClicked: false,
+        });
+        return;
+      }
     }
 
     const url = isRegisterPage
       ? `${process.env.REACT_APP_USER_SERVICE_URL}/register`
       : `${process.env.REACT_APP_USER_SERVICE_URL}/login`;
     const body = isRegisterPage
-      ? JSON.stringify({ userName: username, email: email, password: password })
-      : JSON.stringify({ userName: username, password: password });
+      ? { userName: username, email: email, password: password }
+      : { userName: username, password: password };
 
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: body,
-        credentials: "include",
+      const response = await axios.post(url, body, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       });
 
-      if (!response.ok) {
-        const errorMessage =
-          response.status === 409
-            ? "User already exists"
-            : "Invalid username or password";
-        this.setState({
-          errorMessage: errorMessage,
-          isButtonClicked: false,
-        });
-        return;
-      }
+      localStorage.setItem("token", response.data.token);
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${response.data.token}`;
 
-      if (!isRegisterPage) {
-        showSuccessBar("Welcome " + username + "!");
-        this.props.navigate("/home");
-      } else {
-        showSuccessBar("User Registered Successfully!");
-        this.props.navigate("/login");
-      }
+      const successMessage = isRegisterPage
+        ? "User Registered Successfully!"
+        : `Welcome ${username}!`;
+      showSuccessBar(successMessage);
+
+      const redirectPath = isRegisterPage ? "/login" : "/home";
+      this.props.navigate(redirectPath);
     } catch (error) {
+      const errorMessage =
+        error.response?.status === 409
+          ? "User already exists"
+          : "Invalid username or password";
       this.setState({
-        errorMessage: "An error occurred. Please try again.",
+        errorMessage: errorMessage || "An error occurred. Please try again.",
         isButtonClicked: false,
       });
     }
@@ -186,33 +207,47 @@ class LoginComponent extends React.Component {
     showPassTarget
   ) => {
     return (
-      <TextField
-        size="medium"
-        className={
-          isStandard ? "standard-panel-text-field" : "helper-text-field"
-        }
-        onChange={(e) => this.updateState(target, e.target.value)}
-        value={value}
-        label={label}
-        type={showPassTarget && !showPassword ? "password" : "text"}
-        error={!!errorMessage}
-        helperText={errorMessage}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              {target === "username" && <PersonIcon />}
-              {target === "email" && <EmailIcon />}
-              {(target === "password" || target === "confirmPassword") && (
-                <LockIcon />
-              )}
-            </InputAdornment>
-          ),
-          endAdornment: showPassTarget
-            ? this.renderShowPasswordIcon(showPassTarget)
-            : "",
-        }}
-        required
-      />
+      <>
+        <TextField
+          size="medium"
+          className={
+            isStandard ? "standard-panel-text-field" : "helper-text-field"
+          }
+          onChange={(e) => this.updateState(target, e.target.value)}
+          value={value}
+          label={label}
+          type={showPassTarget && !showPassword ? "password" : "text"}
+          error={this.props.isRegisterPage && !!errorMessage}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                {target === "username" && <PersonIcon />}
+                {target === "email" && <EmailIcon />}
+                {(target === "password" || target === "confirmPassword") && (
+                  <LockIcon />
+                )}
+              </InputAdornment>
+            ),
+            endAdornment: showPassTarget
+              ? this.renderShowPasswordIcon(showPassTarget)
+              : "",
+          }}
+          required
+        />
+        {this.props.isRegisterPage &&
+          Array.isArray(errorMessage) &&
+          errorMessage.map((message) => {
+            return (
+              <Alert
+                key={message}
+                className="input-error-message"
+                severity="error"
+              >
+                {message}
+              </Alert>
+            );
+          })}
+      </>
     );
   };
 
@@ -431,5 +466,10 @@ class LoginComponent extends React.Component {
     );
   }
 }
+
+LoginComponent.propTypes = {
+  isRegisterPage: PropTypes.bool.isRequired,
+  navigate: PropTypes.func.isRequired,
+};
 
 export default LoginComponent;
