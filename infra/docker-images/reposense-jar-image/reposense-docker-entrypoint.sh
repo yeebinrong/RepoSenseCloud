@@ -80,8 +80,16 @@ else
     STATUS=1
 fi
 # Always update lastUpdated at the end
-DATE=$(date +%F)
-TIME=$(date +%T)
+# Get the timeZone value from DynamoDB
+TIMEZONE=$(aws dynamodb get-item \
+    --table-name rsc-localhost-job-data \
+    --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
+    --query "Item.timeZone.S" \
+    --output text)
+
+# Use TIMEZONE to get the current date and time in that zone
+DATE=$(TZ=$TIMEZONE date +%F)
+TIME=$(TZ=$TIMEZONE date +%T)
 aws dynamodb update-item \
     --table-name rsc-localhost-job-data \
     --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
