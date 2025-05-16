@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import moment from "moment";
+import moment from "moment-timezone";
 import axios from "axios";
 import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
     Button, Select, FormControl, InputLabel, MenuItem, Stack, CircularProgress } from "@mui/material";
@@ -778,16 +778,24 @@ const CreateJobComponent = (jobId) => {
                 startHour,
                 startMinute,
                 lastUpdated: {
-                    time: "",
-                    date: ""
+                    time: timeZone
+                        ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("HH:mm:ssZ")
+                        : moment().format("HH:mm:ssZ"),
+                    date: timeZone
+                        ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("YYYY-MM-DD")
+                        : moment().format("YYYY-MM-DD")
                 },
                 nextScheduled: {
                     time: "",
                     date: ""
                 },
                 settingsUpdatedAt: {
-                    time: moment().format("HH:mm:ss"),
-                    date: moment().format("YYYY-MM-DD")
+                    time: timeZone
+                        ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("HH:mm:ssZ")
+                        : moment().format("HH:mm:ssZ"),
+                    date: timeZone
+                        ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("YYYY-MM-DD")
+                        : moment().format("YYYY-MM-DD")
                 },
             };
             console.log(JSON.stringify(formData));

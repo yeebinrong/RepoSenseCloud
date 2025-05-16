@@ -2,6 +2,8 @@ package com.hamburger.job.models.dao;
 
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -174,14 +176,17 @@ public class JobDbDao {
             ) {
                 // Update the status
                 job.setStatus(newStatus);
-                jobTable.updateItem(job);
 
                 // Update last updated
-                LocalDateTime now = LocalDateTime.now();
+                String timeZone = job.getTimeZone(); // e.g., "UTC+03"
+                ZoneId zoneId = ZoneId.of(timeZone.replace("UTC", "GMT")); // "UTC+03" -> "GMT+03"
+                ZonedDateTime now = ZonedDateTime.now(zoneId);
                 Map<String, String> latestDateTime = new HashMap<>();
                 latestDateTime.put("date", now.format(DateTimeFormatter.ISO_LOCAL_DATE));
-                latestDateTime.put("time", now.format(DateTimeFormatter.ofPattern("HH:mm:ssX")));
+                latestDateTime.put("time", now.format(DateTimeFormatter.ofPattern("HH:mm:ssXXX")));
                 job.setLastUpdated(latestDateTime);
+
+                jobTable.updateItem(job);
 
                 String messageBody = "{"
                     + "\"owner\": \"" + job.getOwner() + "\","

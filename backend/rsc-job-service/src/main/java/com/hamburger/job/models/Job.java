@@ -1,5 +1,8 @@
 package com.hamburger.job.models;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +53,12 @@ public class Job {
         if(this.status == null){
             this.status = "Pending";
         }
+        // if(this.lastUpdated == null){
+        //     this.lastUpdated = new HashMap<>();
+        //     ZonedDateTime now = ZonedDateTime.now();
+        //     lastUpdated.put("date", now.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        //     lastUpdated.put("time", now.format(DateTimeFormatter.ofPattern("HH:mm:ssX")));                                                   
+        // }
     }
 
     @DynamoDbSortKey
