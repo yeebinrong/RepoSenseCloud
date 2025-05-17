@@ -20,7 +20,7 @@ Reposense v3.0 dicates the following dependencies:
 4.  UNTIL="End of date range DD/MM/YYYY" 
 5.  FORMATS="file extensions separated by space" 
 6.  VIEW="true" (always true)
-7.  IGNORE_STANDALONE_CONFIG="true/false" (to use config files) 
+7.  IGNORE_FILESIZE_LIMIT="true/false" (to use config files) 
 8.  LAST_MODIFIED_DATE="true/false" (last modified date included in report)
 9.  TIMEZONE="ZONE_ID[±hh[mm]]"
 10. FIND_PREVIOUS_AUTHORS="true" (credit previous author even if line are in ignore commit list)
@@ -35,7 +35,7 @@ docker run -v "C:/Users/Gwee/Documents/Capstone 4902/output:/app/output" `
     -e UNTIL="31/12/2018" `
     -e FORMATS="java adoc xml" `
     -e VIEW="true" `
-    -e IGNORE_STANDALONE_CONFIG="true" `
+    -e IGNORE_FILESIZE_LIMIT="true" `
     -e LAST_MODIFIED_DATE="true" `
     -e TIMEZONE="UTC+08" `
     -e FIND_PREVIOUS_AUTHORS="true" `
@@ -51,7 +51,7 @@ docker run -v "$(pwd)/output:/app/output" \
     -e UNTIL="31/12/2018" \
     -e FORMATS="java adoc xml" \
     -e VIEW="true" \
-    -e IGNORE_STANDALONE_CONFIG="true" \
+    -e IGNORE_FILESIZE_LIMIT="true" \
     -e LAST_MODIFIED_DATE="true" \
     -e TIMEZONE="UTC+08" \
     -e FIND_PREVIOUS_AUTHORS="true" \

@@ -139,7 +139,7 @@ The service uses DynamoDB with the following schema:
 - authorship (Boolean)
 - prevAuthors (Boolean)
 - shallowClone (Boolean)
-- ignoreSizeLimit (Boolean)
+- ignoreFileSizeLimit (Boolean)
 - addLastMod (Boolean)
 - formatChipValues (List<String>)
 - jobType (String)

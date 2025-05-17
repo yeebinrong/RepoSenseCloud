@@ -66,13 +66,15 @@ public class SqsHandler implements RequestHandler<SQSEvent, String> {
                 KeyValuePair.builder().name("REPOS").value(request.getRepos()).build(),
                 KeyValuePair.builder().name("SINCE").value(request.getSince()).build(),
                 KeyValuePair.builder().name("UNTIL").value(request.getUntil()).build(),
+                KeyValuePair.builder().name("PERIOD").value(request.getPeriod()).build(),
                 KeyValuePair.builder().name("FORMATS").value(request.getFormats()).build(),
-                KeyValuePair.builder().name("IGNORE_STANDALONE_CONFIG").value(String.valueOf(request.getIgnoreConfig())).build(),
-                KeyValuePair.builder().name("LAST_MODIFIED_DATE").value(String.valueOf(request.getLastModDate())).build(),
+                KeyValuePair.builder().name("ORIGINALITY_THRESHOLD").value(String.valueOf(request.getOriginalityThreshold())).build(),
                 KeyValuePair.builder().name("TIMEZONE").value(request.getTimezone()).build(),
+                KeyValuePair.builder().name("IGNORE_FILESIZE_LIMIT").value(String.valueOf(request.getIgnoreFileSizeLimit())).build(),
+                KeyValuePair.builder().name("LAST_MODIFIED_DATE").value(String.valueOf(request.getLastModDate())).build(),
                 KeyValuePair.builder().name("FIND_PREVIOUS_AUTHORS").value(String.valueOf(request.getFindPrevAuthors())).build(),
                 KeyValuePair.builder().name("ANALYZE_AUTHORSHIP").value(String.valueOf(request.getAnalyzeAuthorship())).build(),
-                KeyValuePair.builder().name("ORIGINALITY_THRESHOLD").value(String.valueOf(request.getOriginalityThreshold())).build()
+                KeyValuePair.builder().name("SHALLOW_CLONE").value(String.valueOf(request.getShallowClone())).build()
             )
             .build();
             SubmitJobRequest jobRequest = SubmitJobRequest.builder()

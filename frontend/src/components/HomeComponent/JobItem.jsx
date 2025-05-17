@@ -14,6 +14,7 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, ico
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
                 credentials: 'include',
             });

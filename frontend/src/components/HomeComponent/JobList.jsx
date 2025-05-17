@@ -8,7 +8,12 @@ function JobList() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_JOB_SERVICE_URL}/`)
+        const token = localStorage.getItem('token');
+        fetch(`${process.env.REACT_APP_JOB_SERVICE_URL}/`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        })
             .then(res => {
                 if (!res.ok) throw new Error('Network response was not ok');
                 return res.json();

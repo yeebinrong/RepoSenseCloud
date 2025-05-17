@@ -37,7 +37,7 @@ public class JobServiceApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(System.getenv("FRONTEND_ORIGIN"))
+                        .allowedOrigins(System.getenv("FRONTEND_ORIGIN"), System.getenv("REACT_APP_USER_SERVICE_URL"))
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true);
