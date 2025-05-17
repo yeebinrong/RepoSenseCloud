@@ -802,8 +802,8 @@ const CreateJobComponent = (jobId) => {
                 },
                 settingsUpdatedAt: {
                     time: timeZone
-                        ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("HH:mm")
-                        : moment().format("HH:mm"),
+                        ? getTimeWithUtcOffset(timeZone)
+                        : moment().format("HH:mm") + " UTC+0000",
                     date: timeZone
                         ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("YYYY-MM-DD")
                         : moment().format("YYYY-MM-DD")
