@@ -81,15 +81,24 @@ else
 fi
 # Always update lastUpdated at the end
 # Get the timeZone value from DynamoDB
-TIMEZONE=$(aws dynamodb get-item \
+RAW_TIMEZONE=$(aws dynamodb get-item \
     --table-name rsc-localhost-job-data \
     --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
     --query "Item.timeZone.S" \
     --output text)
 
+# Convert "UTC+08" to "Etc/GMT-8" (POSIX reverses the sign)
+TIMEZONE=$(echo "$RAW_TIMEZONE" | sed -E 's/UTC\+0*([0-9]+)/Etc\/GMT-\1/;s/UTC\-0*([0-9]+)/Etc\/GMT+\1/')
+
 # Use TIMEZONE to get the current date and time in that zone
-DATE=$(TZ=$TIMEZONE date +%F)
-TIME=$(TZ=$TIMEZONE date +%T)
+# Get the time in the specified timezone
+TIME_ONLY=$(TZ="$TIMEZONE" date +%H:%M)
+# Get the UTC offset in +0800 format (no colon)
+UTC_OFFSET=$(TZ="$TIMEZONE" date +%z)
+# Combine them
+TIME="${TIME_ONLY} UTC${UTC_OFFSET}"
+DATE=$(TZ="$TIMEZONE" date +%F)
+
 aws dynamodb update-item \
     --table-name rsc-localhost-job-data \
     --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \

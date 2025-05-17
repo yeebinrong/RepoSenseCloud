@@ -8,6 +8,13 @@ body {
     --input-border-color: #D5D8E2;
     --input-background-color: #F6F7F9;
     
+    .navigation-buttons-container {
+    display: flex;
+    margin-top: auto; // Push the container to the bottom
+    justify-content: flex-end; // Align buttons to the right
+    padding: 20px;
+    }
+    
 }
 
 .create-job-button {
@@ -20,13 +27,6 @@ body {
     padding: 14px 15px;
     border: none;
     cursor: pointer;
-}
-
-.navigation-buttons-container {
-    display: flex;
-    margin-top: auto; // Push the container to the bottom
-    justify-content: flex-end; // Align buttons to the right
-    padding: 20px;
 }
 
 .create-job-header {

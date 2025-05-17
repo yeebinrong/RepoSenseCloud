@@ -183,7 +183,11 @@ public class JobDbDao {
                 ZonedDateTime now = ZonedDateTime.now(zoneId);
                 Map<String, String> latestDateTime = new HashMap<>();
                 latestDateTime.put("date", now.format(DateTimeFormatter.ISO_LOCAL_DATE));
-                latestDateTime.put("time", now.format(DateTimeFormatter.ofPattern("HH:mm:ssXXX")));
+
+                // Format offset as "+0800" or "-0845"
+                String offset = now.getOffset().getId().replace(":", "");
+                // Compose the time string in "HH:mm UTC+0800" format
+                latestDateTime.put("time", now.format(DateTimeFormatter.ofPattern("HH:mm")) + " UTC" + offset);
                 job.setLastUpdated(latestDateTime);
 
                 jobTable.updateItem(job);

@@ -68,7 +68,7 @@ const CreateJobComponent = (jobId) => {
     const [period, setPeriod] = useState("");
     const [periodModifier, setPeriodModifier] = useState("latest");
     const [originalityThreshold, setOriginalityThreshold] = useState(0.5);
-    const [timeZone, setTimeZone] = useState("");
+    const [timeZone, setTimeZone] = useState("UTC+08");
     const [authorship, setAuthorship] = useState(false);
     const [prevAuthors, setPrevAuthors] = useState(false);
     const [shallowClone, setShallowClone] = useState(false);
@@ -92,7 +92,7 @@ const CreateJobComponent = (jobId) => {
     const [repoLinkError, setRepoLinkError] = useState(true);
     const [sinceUntilDateError, setSinceUntilDateError] = useState(false);
     const [originalityThresholdError, setOriginalityThresholdError] = useState(false);
-    const [timeZoneError, setTimeZoneError] = useState(true);
+    const [timeZoneError, setTimeZoneError] = useState(false);
     const [startHourError, setStartHourError] = useState(true);
     const [startMinuteError, setStartMinuteError] = useState(true);
     const [dateError, setDateError] = useState(true);
@@ -150,7 +150,7 @@ const CreateJobComponent = (jobId) => {
             setUntilDate("");
             setPeriod("");
             setOriginalityThreshold(0.5);
-            setTimeZone("");
+            setTimeZone("UTC+08");
             setAuthorship(false);
             setPrevAuthors(false);
             setShallowClone(false);
@@ -171,7 +171,7 @@ const CreateJobComponent = (jobId) => {
             setRepoLinkError(true);
             setSinceUntilDateError(false);
             setOriginalityThresholdError(false);
-            setTimeZoneError(true);
+            setTimeZoneError(false);
             setStartHourError(true);
             setStartMinuteError(true);
             setDateError(true);
@@ -749,6 +749,17 @@ const CreateJobComponent = (jobId) => {
         });
     }
 
+    // Helper function to get time in "HH:mm UTC+0830" format
+    function getTimeWithUtcOffset(timeZone) {
+        if (!timeZone) return moment().format("HH:mm") + " UTC+0000";
+        // Convert timeZone to a valid moment timezone string
+        const tz = timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+");
+        const m = moment().tz(tz);
+        // Get offset and remove colon
+        const offset = m.format("Z").replace(":", ""); // e.g. "+0830"
+        return `${m.format("HH:mm")} UTC${offset}`;
+    }
+
     //Submit Job Form
     const jobServiceUrl = process.env.REACT_APP_JOB_SERVICE_URL;
 
@@ -779,8 +790,8 @@ const CreateJobComponent = (jobId) => {
                 startMinute,
                 lastUpdated: {
                     time: timeZone
-                        ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("HH:mm:ssZ")
-                        : moment().format("HH:mm:ssZ"),
+                        ? getTimeWithUtcOffset(timeZone)
+                        : moment().format("HH:mm") + " UTC+0000",
                     date: timeZone
                         ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("YYYY-MM-DD")
                         : moment().format("YYYY-MM-DD")
@@ -791,8 +802,8 @@ const CreateJobComponent = (jobId) => {
                 },
                 settingsUpdatedAt: {
                     time: timeZone
-                        ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("HH:mm:ssZ")
-                        : moment().format("HH:mm:ssZ"),
+                        ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("HH:mm")
+                        : moment().format("HH:mm"),
                     date: timeZone
                         ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("YYYY-MM-DD")
                         : moment().format("YYYY-MM-DD")
