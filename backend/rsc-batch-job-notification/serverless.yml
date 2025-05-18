@@ -1,0 +1,30 @@
+service: rsc-batch-job-failure-handler
+
+
+provider:
+  name: aws
+  runtime: nodejs20.x  # or nodejs18.x / nodejs16.x
+  region: ap-southeast-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "*"
+
+functions:
+  handleBatchJobFailure:
+    handler: handler.handle
+    events:
+      - eventBridge:
+          pattern:
+            source:
+              - "aws.batch"
+            detail-type:
+              - "Batch Job State Change"
+            detail:
+              status:
+                - "FAILED"
