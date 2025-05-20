@@ -416,7 +416,7 @@ const CreateJobComponent = (jobId) => {
                                                     <text className="authorship-label">Analyse authorship:</text>
                                                 </Grid2>
                                                 <Grid2 size={2}>
-                                                    <input type="checkbox" className="authorship-checkbox" checked={authorship} onChange={(e) => setAuthorship(e.target.value)} />
+                                                    <input type="checkbox" className="authorship-checkbox" checked={authorship} onChange={(e) => setAuthorship(e.target.checked)} />
                                                 </Grid2>
                                                 <Grid2 size={10}>
                                                     <text className="prev-author-label">Find previous authors:</text>
@@ -825,6 +825,7 @@ const CreateJobComponent = (jobId) => {
             if (response.status === 201) {
                 console.log("Job created successfully");
                 showSuccessBar("Job Created Successfully");
+                window.dispatchEvent(new Event('updateJobData'));
                 handleModalClose();
             } else {
                 console.error("Error creating job: ", response.error);
