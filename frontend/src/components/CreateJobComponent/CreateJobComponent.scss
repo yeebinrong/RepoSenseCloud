@@ -8,6 +8,13 @@ body {
     --input-border-color: #D5D8E2;
     --input-background-color: #F6F7F9;
     
+    .navigation-buttons-container {
+    display: flex;
+    margin-top: auto; // Push the container to the bottom
+    justify-content: flex-end; // Align buttons to the right
+    padding: 20px;
+    }
+    
 }
 
 .create-job-button {
@@ -20,13 +27,6 @@ body {
     padding: 14px 15px;
     border: none;
     cursor: pointer;
-}
-
-.navigation-buttons-container {
-    display: flex;
-    margin-top: auto; // Push the container to the bottom
-    justify-content: flex-end; // Align buttons to the right
-    padding: 20px;
 }
 
 .create-job-header {
@@ -77,8 +77,8 @@ body {
             display: flex;
             flex-direction: column;
             width: auto;
-            margin-right: 80px;
-            margin-left: 20px;
+            margin-right: 0px;
+            margin-left: 0px;
 
             .job-name-container {
                 display: flex;
@@ -105,6 +105,8 @@ body {
                 width: 400px;
                 background-color: var(--input-background-color);
                 border-radius: 12px;
+                max-height: 300px;
+                overflow-y: auto;
 
 
                 .target-repo-label {
@@ -129,7 +131,7 @@ body {
                 }
 
                 .add-repo-link-button {
-                    color: var(--placeholder-color);
+                    color: var(--general-text-color);
                     background-color: #ffffff;
                     width: 125px;
                     margin-left: 60%;
@@ -234,6 +236,7 @@ body {
                         border-radius: 12px;
                         text-align: center;
                         border: 1px solid #cecece;
+                        appearance: none;
                     }
 
                     .error {
@@ -296,6 +299,7 @@ body {
         border-radius: 12px;
         border: 2px solid var(--input-border-color);
         text-align: center; 
+        appearance: none;
     }
 
     .time-colon{
@@ -334,14 +338,3 @@ body {
         
     }
 }
-
-
-
-
-
-
-
-
-
-
-

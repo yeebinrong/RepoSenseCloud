@@ -1,7 +1,12 @@
 package com.hamburger.job.models.dao;
 
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -143,7 +148,7 @@ public class JobDbDao {
             System.out.println("Creating job: " + job);
             jobTable.putItem(job);
         } catch (Exception e) {
-            System.err.println("Error creating job: " + e.getMessage());
+            System.err.println("Error creating job (DAO): " + e.getMessage());
         }
     }
 
@@ -171,6 +176,20 @@ public class JobDbDao {
             ) {
                 // Update the status
                 job.setStatus(newStatus);
+
+                // Update last updated
+                String timeZone = job.getTimeZone(); // e.g., "UTC+03"
+                ZoneId zoneId = ZoneId.of(timeZone.replace("UTC", "GMT")); // "UTC+03" -> "GMT+03"
+                ZonedDateTime now = ZonedDateTime.now(zoneId);
+                Map<String, String> latestDateTime = new HashMap<>();
+                latestDateTime.put("date", now.format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+                // Format offset as "+0800" or "-0845"
+                String offset = now.getOffset().getId().replace(":", "");
+                // Compose the time string in "HH:mm UTC+0800" format
+                latestDateTime.put("time", now.format(DateTimeFormatter.ofPattern("HH:mm")) + " UTC" + offset);
+                job.setLastUpdated(latestDateTime);
+
                 jobTable.updateItem(job);
 
                 String messageBody = "{"
@@ -180,12 +199,14 @@ public class JobDbDao {
                     + "\"since\": \"" + job.getSinceDate() + "\","
                     + "\"until\": \"" + job.getUntilDate() + "\","
                     + "\"formats\": \"" + String.join(" ", job.getFormatChipValues()) + "\","
-                    + "\"ignoreConfig\": true,"
-                    + "\"lastModDate\": " + job.isAddLastMod() + ","
+                    + "\"period\": \"" + job.getPeriod() + "\","
+                    + "\"originalityThreshold\": " + job.getOriginalityThreshold() + ","
                     + "\"timezone\": \"" + job.getTimeZone() + "\","
+                    + "\"ignoreFileSizeLimit\": " + job.isIgnoreFileSizeLimit() + ","
+                    + "\"shallowClone\": " + job.isShallowClone() + ","
+                    + "\"lastModDate\": " + job.isAddLastMod() + ","
                     + "\"findPrevAuthors\": " + job.isPrevAuthors() + ","
-                    + "\"analyzeAuthorship\": true,"
-                    + "\"originalityThreshold\": " + job.getOriginalityThreshold()
+                    + "\"analyzeAuthorship\": " + job.isAuthorship()
                     + "}";
 
                 sqsService.sendMessage(jobId, messageBody);
@@ -247,101 +268,5 @@ public class JobDbDao {
 
         }
     }
-
-    // public void deleteAllJob(String owner) {
-    //     // TODO: test this
-    //     try {
-    //         // Retrieve the existing jobs
-    //         List<Job> jobs = getJobsByOwner(owner);
-
-    //         if (jobs != null) {
-    //             for (Job job : jobs) {
-    //                 jobTable.deleteItem(job);
-    //             }
-    //             System.out.println("All jobs deleted successfully.");
-    //         } else {
-    //             System.err.println("No jobs found.");
-    //         }
-    //     } catch (Exception e) {
-    //         System.err.println("Error deleting all jobs: " + e.getMessage());
-    //         e.printStackTrace();
-    //     }
-    // }
-
-    // public void deleteAllScheduledJobs(String owner) {
-    //     // TODO: test this
-    //     try {
-    //         // Retrieve jobs of owner and scheduled status
-    //         List<Job> jobs = getJobsByOwnerAndStatus(owner, "SCHEDULED");
-
-    //         if (jobs != null) {
-    //             for (Job job : jobs) {
-    //                 jobTable.deleteItem(job);
-    //             }
-    //             System.out.println("All scheduled jobs deleted successfully.");
-    //         } else {
-    //             System.err.println("No jobs found.");
-    //         }
-    //     } catch (Exception e) {
-    //         System.err.println("Error deleting all jobs: " + e.getMessage());
-    //         e.printStackTrace();
-    //     }
-    // }
-
-    // public void deleteAllCompletedJobs(String owner) {
-    //     // TODO: test this
-    //     try {
-    //         // Retrieve jobs of owner and completed status
-    //         List<Job> jobs = getJobsByOwnerAndStatus(owner, "COMPLETED");
-
-    //         if (jobs != null) {
-    //             for (Job job : jobs) {
-    //                 jobTable.deleteItem(job);
-    //             }
-    //             System.out.println("All scheduled jobs deleted successfully.");
-    //         } else {
-    //             System.err.println("No jobs found.");
-    //         }
-    //     } catch (Exception e) {
-    //         System.err.println("Error deleting all jobs: " + e.getMessage());
-    //         e.printStackTrace();
-    //     }
-    // }
-
-    // public List<Job> getJobsByOwner(String owner) {
-    //     // Build the filter expression
-    //     Expression filterExpression = Expression.builder()
-    //             .expression("#owner = :owner")
-    //             .putExpressionName("#owner", "owner")
-    //             .putExpressionValue(":owner", AttributeValue.builder().s(owner).build())
-    //             .build();
-
-    //     // Build the scan request
-    //     ScanEnhancedRequest scanRequest = ScanEnhancedRequest.builder()
-    //             .filterExpression(filterExpression)
-    //             .build();
-
-    //     // Execute the scan and return the results
-    //     return jobTable.scan(scanRequest).items().stream().collect(Collectors.toList());
-    // }
-
-    // public List<Job> getJobsByOwnerAndStatus(String owner, String status) {
-    //     // Build the filter expression
-    //     Expression filterExpression = Expression.builder()
-    //             .expression("#owner = :owner and #status = :status")
-    //             .putExpressionName("#owner", "owner")
-    //             .putExpressionValue(":owner", AttributeValue.builder().s(owner).build())
-    //             .putExpressionName("#status", "status")
-    //             .putExpressionValue(":status", AttributeValue.builder().s(status).build())
-    //             .build();
-
-    //     // Build the scan request
-    //     ScanEnhancedRequest scanRequest = ScanEnhancedRequest.builder()
-    //             .filterExpression(filterExpression)
-    //             .build();
-
-    //     // Execute the scan and return the results
-    //     return jobTable.scan(scanRequest).items().stream().collect(Collectors.toList());
-    // }
 
 }
