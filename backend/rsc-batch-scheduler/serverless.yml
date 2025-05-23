@@ -1,0 +1,25 @@
+service: rsc-batch-scheduler
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-southeast-1
+  environment:
+    TABLE_NAME: rsc-localhost-job-data
+    QUEUE_URL: https://sqs.ap-southeast-1.amazonaws.com/904233118848/rsc-sqs-queue-dev.fifo
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - sqs:SendMessage
+      Resource:
+        - arn:aws:dynamodb:ap-southeast-1:904233118848:table/rsc-localhost-job-data
+        - arn:aws:sqs:ap-southeast-1:904233118848:rsc-sqs-queue-dev.fifo
+
+
+functions:
+  pollPendingTasks:
+    handler: handler.main
+    events:
+      - schedule: rate(5 minutes)
