@@ -11,7 +11,7 @@ provider:
         - batch:SubmitJob
         - batch:DescribeJobs
       Resource: "*"
-  stage: ${opt:stage, 'dev'}
+  stage: ${opt:stage, 'localhost'}
   environment:
     STAGE: ${self:provider.stage}
     BATCH_JOB_QUEUE: !Ref BatchJobQueue
