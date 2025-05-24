@@ -21,7 +21,7 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, ico
             });
             console.log('Job run successfully:', response.data);
             window.dispatchEvent(new Event('updateJobData'));
-            showSuccessBar("Job Created Successfully");
+            showSuccessBar("Job Started Successfully");
             // Optionally, trigger a reload or UI update here
         } catch (error) {
             showErrorBar("Failed to run job");
