@@ -115,11 +115,11 @@ class BasePage extends React.Component {
                                 <h1 className={styles.welcomeMessage}>Welcome, {this.props.username}</h1>
                                 <text className={styles.currentDate}>{new Date().toDateString()}</text>
                             </div>
-                            <div>
+                            {/* <div>
                                 <img style={{width: 40, height: 40}}
                                      src="noticeicon.svg"
                                 ></img>
-                            </div>
+                            </div> */}
                             <div>
 
                                 <Tooltip title="Account settings">
