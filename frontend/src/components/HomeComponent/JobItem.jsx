@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './JobList.module.css';
 import { showSuccessBar, showErrorBar } from "../../constants/snack-bar";
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Divider from '@mui/material/Divider';
+import Tooltip from '@mui/material/Tooltip';
 
 function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, settingsUpdatedAt, icon, view, edit, run}) {
     const statusClass = status.toLowerCase();
@@ -27,6 +31,16 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
             showErrorBar("Failed to run job");
             console.error('Failed to run job:', error);
         }
+    };
+
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+    const menuOpen = Boolean(menuAnchorEl);
+
+    const handleOptionsOpen = (event) => {
+        setMenuAnchorEl(event.currentTarget);
+    };
+    const handleOptionsClose = () => {
+        setMenuAnchorEl(null);
     };
 
     return (
@@ -68,10 +82,26 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                 </button>
             </td>
             <td>
-
-                <button className={styles.moreOptionsButton}>
-                    <text className={styles.moreOptionsText}>. . .</text>
-                </button>
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                    <Tooltip title="More options" arrow>
+                        <button className={styles.moreOptionsButton} onClick={handleOptionsOpen}>
+                            <span className={styles.moreOptionsText}>. . .</span>
+                        </button>
+                    </Tooltip>
+                    <Menu
+                        anchorEl={menuAnchorEl}
+                        open={menuOpen}
+                        onClose={handleOptionsClose}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    >
+                        <MenuItem onClick={handleOptionsClose}>Download Report</MenuItem>
+                        <Divider />
+                        <MenuItem onClick={handleOptionsClose}>Copy iframe</MenuItem>
+                        <Divider />
+                        <MenuItem onClick={handleOptionsClose}>Delete</MenuItem>
+                    </Menu>
+                </div>
             </td>
         </tr>
     );
