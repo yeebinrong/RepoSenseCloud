@@ -11,6 +11,9 @@ import { showSuccessBar, showErrorBar } from "../../constants/snack-bar";
 const useStyles = makeStyles(() => ({
     autocomplete: {
         width: '100%',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        border: '1px solid #D5D8E2',
     },
     chip: {
         margin: '4px',
@@ -19,6 +22,11 @@ const useStyles = makeStyles(() => ({
     },
     textField: {
         font: "DM Sans",
+        '& .MuiFilledInput-input::placeholder': {
+            fontSize: '14px',
+            color: '#888888',    
+            opacity: 1,             
+        },
     },
     modal: {
         position: 'relative',
@@ -75,6 +83,7 @@ const CreateJobComponent = (jobId) => {
     const [ignoreFileSizeLimit, setIgnoreFileSizeLimit] = useState(false);
     const [addLastMod, setAddLastMod] = useState(false);
     const [formatChipValues, setFormatChipValues] = useState([]);
+    const [inputValue, setInputValue] = useState("");
 
     //Page 2 States
     const [jobType, setJobType] = useState("manual");
@@ -230,6 +239,23 @@ const CreateJobComponent = (jobId) => {
     ///Format Chip Input
     const handleChipChange = (event, value) => {
         setFormatChipValues(value);
+    };
+
+  const handleAddChip = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const value = inputValue.trim();
+      
+      // Validate and add chip
+      if (value && !formatChipValues.includes(value)) {
+        setFormatChipValues([...formatChipValues, value]);
+        setInputValue('');
+      }
+    }
+  };
+
+    const handleDeleteChip = (chipToDelete) => {
+        setFormatChipValues(formatChipValues.filter(chip => chip !== chipToDelete));
     };
 
     //Sub-Component Rendering Functions
@@ -452,8 +478,47 @@ const CreateJobComponent = (jobId) => {
                                         <Grid2 size={2} marginTop={2}>
                                             <text className="format-label">Format:</text>
                                         </Grid2>
-                                        <Grid2 size={10}>
-                                            <Autocomplete
+                                        <Grid2 size={10} marginTop={2}>
+                                            <TextField
+                                                sx={{
+                                                    '& .MuiInputBase-root': {
+                                                        alignItems: 'flex-start', // Align chips to top
+                                                        paddingTop: 1,
+                                                        fontFamily: 'DM Sans',
+                                                        fontSize: '14px',
+                                                        minHeight: '40px',
+                                                    },
+                                                    '& .MuiInputBase-input': {
+                                                        padding: 0
+                                                    }
+                                                }}
+                                                label="Enter File Format(s) To Scan"
+                                                placeholder="e.g. js, py, java"
+                                                value={inputValue}
+                                                onChange={(e) => setInputValue(e.target.value)}
+                                                onKeyDown={handleAddChip}
+                                                InputProps={{
+                                                    startAdornment: (
+                                                        <Box sx={{
+                                                            display: 'inline',
+                                                            //flexWrap: 'wrap',
+                                                            gap: 1,
+                                                            maxWidth: '80%',
+                                                        }}>
+                                                            {formatChipValues.map((chip) => (
+                                                                <Chip
+                                                                    key={chip}
+                                                                    label={chip}
+                                                                    onDelete={() => handleDeleteChip(chip)}
+                                                                    size="small"
+                                                                />
+                                                            ))}
+                                                        </Box>
+                                                    ),
+                                                }}
+                                                fullWidth
+                                            />
+                                            {/* <Autocomplete
                                                 multiple
                                                 freeSolo
                                                 id="tags-filled"
@@ -480,7 +545,7 @@ const CreateJobComponent = (jobId) => {
                                                     />
                                                 )}
                                                 className={classes.autocomplete}
-                                            />
+                                            /> */}
                                         </Grid2>
                                     </Grid2>
                                 </div>
