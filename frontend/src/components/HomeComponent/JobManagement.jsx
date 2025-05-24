@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './JobManagement.module.css';
 import JobList from './JobList';
 import {Autocomplete, TextField} from "@mui/material";
 import CreateJobComponent from "../CreateJobComponent/CreateJobComponent";
 
 function JobManagement() {
+    const [jobListRefreshKey, setJobListRefreshKey] = useState(0);
+
     return (
         <main className={styles.homePage}>
             <section className={styles.contentSection}>
@@ -28,12 +30,15 @@ function JobManagement() {
                     <img src="filter.svg" alt="" className={styles.filterIcon}/>
                     Filters
                 </button> */}
+                <button className={styles.filterButton} onClick={() => setJobListRefreshKey(k => k + 1)}>
+                    Refresh Job List
+                </button>
                 <div className={styles.searchContainer}>
                     <img src="search.svg" alt="" className={styles.searchIcon} />
                     <input type="text" placeholder="Search" className={styles.searchInput} aria-label="Search jobs" />
                 </div>
             </section>
-            <JobList/>
+            <JobList refreshKey={jobListRefreshKey}/>
         </main>
     );
 }
