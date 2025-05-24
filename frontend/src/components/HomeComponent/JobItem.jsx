@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './JobList.module.css';
 import { showSuccessBar, showErrorBar } from "../../constants/snack-bar";
 
-function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, icon, view, edit, run}) {
+function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, settingsUpdatedAt, icon, view, edit, run}) {
     const statusClass = status.toLowerCase();
 
     const handleViewReport = () => {
@@ -50,6 +50,12 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, ico
                 <div className={styles.timeInfo}>
                     <span className={styles.time}>{nextScheduled.time}</span>
                     <span className={styles.date}>{nextScheduled.date}</span>
+                </div>
+            </td>
+            <td className={styles.jobTiming}>
+                <div className={styles.timeInfo}>
+                    <span className={styles.time}>{settingsUpdatedAt.time}</span>
+                    <span className={styles.date}>{settingsUpdatedAt.date}</span>
                 </div>
             </td>
             <td className={styles.jobActions}>
