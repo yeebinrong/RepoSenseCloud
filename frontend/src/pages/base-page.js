@@ -185,7 +185,13 @@ class BasePage extends React.Component {
                                     transformOrigin={{horizontal: "right", vertical: "top"}}
                                     anchorOrigin={{horizontal: "right", vertical: "bottom"}}
                                 >
-                                    <MenuItem>...</MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            localStorage.removeItem("token");
+                                            this.props.navigate("/login");
+                                        }}>
+                                        Logout
+                                    </MenuItem>
                                 </Menu>
                             </div>
                         </div>}
