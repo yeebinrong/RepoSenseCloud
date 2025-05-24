@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import styles from './JobList.module.css';
 import JobItem from './JobItem';
+import axios from 'axios';
 
-function JobList({ refreshKey }) {
+function JobList({ refreshKey, searchKeyword }) {
     const [jobData, setJobData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -10,17 +11,17 @@ function JobList({ refreshKey }) {
     useEffect(() => {
         function UpdateJobData() {
             const token = localStorage.getItem('token');
-            fetch(`${process.env.REACT_APP_JOB_SERVICE_URL}/`, {
+            let url = `${process.env.REACT_APP_JOB_SERVICE_URL}/`;
+            if (searchKeyword && searchKeyword.trim() !== "") {
+                url = `${process.env.REACT_APP_JOB_SERVICE_URL}/search/${searchKeyword.trim()}`;
+            }
+            axios.get(url, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 }
             })
                 .then(res => {
-                    if (!res.ok) throw new Error('Network response was not ok');
-                    return res.json();
-                })
-                .then(data => {
-                    setJobData(data);
+                    setJobData(res.data);
                     setLoading(false);
                 })
                 .catch(err => {
@@ -37,7 +38,7 @@ function JobList({ refreshKey }) {
         return () => {
             window.removeEventListener('updateJobData', UpdateJobData);
         };
-    }, [refreshKey]);
+    }, [refreshKey, searchKeyword]);
 
     if (loading) return <p>Loading jobs...</p>;
     if (error) return <p>Error loading jobs: {error.message}</p>;
