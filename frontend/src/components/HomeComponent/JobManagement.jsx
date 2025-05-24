@@ -24,10 +24,10 @@ function JobManagement() {
                 </div>
             </section>
             <section className={styles.filterSection}>
-                <button className={styles.filterButton}>
+                {/* <button className={styles.filterButton}>
                     <img src="filter.svg" alt="" className={styles.filterIcon}/>
                     Filters
-                </button>
+                </button> */}
                 <div className={styles.searchContainer}>
                     <img src="search.svg" alt="" className={styles.searchIcon} />
                     <input type="text" placeholder="Search" className={styles.searchInput} aria-label="Search jobs" />
