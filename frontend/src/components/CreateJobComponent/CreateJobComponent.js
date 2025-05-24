@@ -26,7 +26,7 @@ const useStyles = makeStyles(() => ({
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: '1115px',
-        height: '95vh',
+        height: '800px',
         //overflowY: 'auto', 
         backgroundColor: 'white',
         padding: '16px',
@@ -411,7 +411,7 @@ const CreateJobComponent = (jobId) => {
                                             {timeZoneError && page1Error && <span className="error-message">Please select a time zone</span>}
                                         </Grid2>
                                         <Grid2 size={6} marginTop={2} className="left-checklist-container">
-                                            <Grid2 container spacing={1} justifyContent="space-between">
+                                            <Grid2 container spacing={2} justifyContent="space-between">
                                                 <Grid2 size={10}>
                                                     <text className="authorship-label">Analyse authorship:</text>
                                                 </Grid2>
@@ -433,7 +433,7 @@ const CreateJobComponent = (jobId) => {
                                             </Grid2>
                                         </Grid2>
                                         <Grid2 size={6} marginTop={2} paddingLeft={6} className="right-checklist-container">
-                                            <Grid2 container spacing={1} justifyContent="space-between">
+                                            <Grid2 container spacing={2} justifyContent="space-between">
                                                 <Grid2 size={10} >
                                                     <text className="ignore-size-limit-label">Ignore file size limit:</text>
                                                 </Grid2>
@@ -613,7 +613,7 @@ const CreateJobComponent = (jobId) => {
 
         return (
             <Grid2 container spacing={2} style={{ width: "580px" }}>
-                <Grid2 item size={4}>
+                <Grid2 item size={4} container alignItems="center">
                     <text className="schedule-settings-labels">Frequency:</text>
                 </Grid2>
                 <Grid2 item size={8}>
@@ -624,7 +624,7 @@ const CreateJobComponent = (jobId) => {
                         <option value={"minutely"}>Every 5 Mins</option>
                     </select>
                 </Grid2>
-                <Grid2 item size={4}>
+                <Grid2 item size={4} container alignItems="center"> 
                     <text className="schedule-settings-labels" >Start Time:</text>
                 </Grid2>
                 <Grid2 item size={2}>
