@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './JobList.module.css';
 import JobItem from './JobItem';
 
-function JobList() {
+function JobList({ refreshKey }) {
     const [jobData, setJobData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -37,7 +37,7 @@ function JobList() {
         return () => {
             window.removeEventListener('updateJobData', UpdateJobData);
         };
-    }, []);
+    }, [refreshKey]);
 
     if (loading) return <p>Loading jobs...</p>;
     if (error) return <p>Error loading jobs: {error.message}</p>;
