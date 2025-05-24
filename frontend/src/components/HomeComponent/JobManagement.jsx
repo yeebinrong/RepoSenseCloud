@@ -6,6 +6,7 @@ import CreateJobComponent from "../CreateJobComponent/CreateJobComponent";
 
 function JobManagement() {
     const [jobListRefreshKey, setJobListRefreshKey] = useState(0);
+    const [searchKeyword, setSearchKeyword] = useState("");
 
     return (
         <main className={styles.homePage}>
@@ -35,10 +36,20 @@ function JobManagement() {
                 </button>
                 <div className={styles.searchContainer}>
                     <img src="search.svg" alt="" className={styles.searchIcon} />
-                    <input type="text" placeholder="Search" className={styles.searchInput} aria-label="Search jobs" />
+                    <input
+                        type="text"
+                        placeholder="Search"
+                        className={styles.searchInput}
+                        aria-label="Search jobs"
+                        value={searchKeyword}
+                        onChange={e => setSearchKeyword(e.target.value)}
+                        onKeyDown={e => {
+                            if (e.key === 'Enter') setJobListRefreshKey(k => k + 1);
+                        }}
+                    />
                 </div>
             </section>
-            <JobList refreshKey={jobListRefreshKey}/>
+            <JobList refreshKey={jobListRefreshKey} searchKeyword={searchKeyword}/>
         </main>
     );
 }
