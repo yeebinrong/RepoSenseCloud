@@ -5,7 +5,7 @@ FROM openjdk:11-jre-slim
 # Install Node.js 18 and Git & awscli
 # Use Node 18 as RepoSense supports up to Node.js 18
 RUN apt-get update && \
-    apt-get install -y curl unzip git && \
+    apt-get install -y curl unzip git zip && \
     curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
     # Install AWS CLI v2 for amd64 architecture
