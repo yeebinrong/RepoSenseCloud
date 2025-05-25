@@ -34,6 +34,13 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
         }
     };
 
+    const handleDownloadReport = () => {
+        handleOptionsClose();
+        const zipUrl = `${process.env.REACT_APP_REPORT_BUCKET_URL}/${owner}/${jobId}/reposense-report.zip`;
+        window.open(zipUrl, '_blank');
+        showSuccessBar('Download started');
+    };
+
     const handleCopyiframe = () => {
         handleOptionsClose();
         const iframeCode = `<iframe src="${process.env.REACT_APP_REPORT_BUCKET_URL}/${owner}/${jobId}/reposense-report/index.html" frameBorder="0" width="800px" height="616px"></iframe>`;
@@ -130,7 +137,7 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                     >
-                        <MenuItem onClick={handleOptionsClose}>Download Report</MenuItem>
+                        <MenuItem onClick={handleDownloadReport}>Download Report</MenuItem>
                         <Divider />
                         <MenuItem onClick={handleCopyiframe}>Copy iframe</MenuItem>
                         <Divider />
