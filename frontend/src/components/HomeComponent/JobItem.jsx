@@ -6,8 +6,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import axios from 'axios';
+import CreateJobComponent from '../CreateJobComponent/CreateJobComponent';
 
-function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, settingsUpdatedAt, icon, view, edit, run}) {
+function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, settingsUpdatedAt, icon, view, edit, run, ...jobProps}) {
     const statusClass = status.toLowerCase();
 
     const handleViewReport = () => {
@@ -77,12 +78,19 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
 
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
     const menuOpen = Boolean(menuAnchorEl);
+    const [editModalOpen, setEditModalOpen] = useState(false);
 
     const handleOptionsOpen = (event) => {
         setMenuAnchorEl(event.currentTarget);
     };
     const handleOptionsClose = () => {
         setMenuAnchorEl(null);
+    };
+
+    const jobData = {
+        jobId,
+        jobName,
+        ...jobProps
     };
 
     return (
@@ -118,7 +126,17 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                 <button className={styles.iconButton} onClick={() => handleViewReport()}>
                     <img src="view.svg" alt="View" className={styles.actionIcon}/>
                 </button>
-                <img src="edit.svg" alt="Edit" className={styles.actionIcon}/>
+                <button className={styles.iconButton} onClick={() => setEditModalOpen(true)}>
+                    <img src="edit.svg" alt="Edit" className={styles.actionIcon}/>
+                </button>
+                {editModalOpen && (
+                    <CreateJobComponent
+                        mode="edit"
+                        jobData={jobData}
+                        open={editModalOpen}
+                        onClose={() => setEditModalOpen(false)}
+                    />
+                )}
                 <button className={styles.iconButton} onClick={() => handleRun()}>
                     <img src="rerun.svg" alt="Run" className={styles.actionIcon} />
                 </button>
