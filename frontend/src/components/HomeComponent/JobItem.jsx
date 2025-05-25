@@ -5,6 +5,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
+import axios from 'axios';
 
 function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, settingsUpdatedAt, icon, view, edit, run}) {
     const statusClass = status.toLowerCase();
@@ -30,6 +31,27 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
         } catch (error) {
             showErrorBar("Failed to run job");
             console.error('Failed to run job:', error);
+        }
+    };
+
+    const handleDelete = async () => {
+        handleOptionsClose();
+        try {
+            const response = await axios.delete(`${process.env.REACT_APP_JOB_SERVICE_URL}/delete/${jobId}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+                withCredentials: true,
+            });
+            if (response.status === 200) {
+                showSuccessBar('Job deleted successfully');
+                window.dispatchEvent(new Event('updateJobData'));
+            } else {
+                showErrorBar('Failed to delete job');
+            }
+        } catch (error) {
+            showErrorBar('Failed to delete job');
+            console.error('Failed to delete job:', error);
         }
     };
 
@@ -99,7 +121,7 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                         <Divider />
                         <MenuItem onClick={handleOptionsClose}>Copy iframe</MenuItem>
                         <Divider />
-                        <MenuItem onClick={handleOptionsClose}>Delete</MenuItem>
+                        <MenuItem onClick={handleDelete}>Delete</MenuItem>
                     </Menu>
                 </div>
             </td>
