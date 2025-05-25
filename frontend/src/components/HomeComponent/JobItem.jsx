@@ -34,6 +34,19 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
         }
     };
 
+    const handleCopyiframe = () => {
+        handleOptionsClose();
+        const iframeCode = `<iframe src="${process.env.REACT_APP_REPORT_BUCKET_URL}/${owner}/${jobId}/reposense-report/index.html" frameBorder="0" width="800px" height="616px"></iframe>`;
+        navigator.clipboard.writeText(iframeCode)
+            .then(() => {
+                showSuccessBar('Copied iframe to clipboard');
+            })
+            .catch(err => {
+                showErrorBar('Failed to copy iframe');
+                console.error('Failed to copy iframe:', err);
+            });
+    }
+
     const handleDelete = async () => {
         handleOptionsClose();
         try {
@@ -119,7 +132,7 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                     >
                         <MenuItem onClick={handleOptionsClose}>Download Report</MenuItem>
                         <Divider />
-                        <MenuItem onClick={handleOptionsClose}>Copy iframe</MenuItem>
+                        <MenuItem onClick={handleCopyiframe}>Copy iframe</MenuItem>
                         <Divider />
                         <MenuItem onClick={handleDelete}>Delete</MenuItem>
                     </Menu>
