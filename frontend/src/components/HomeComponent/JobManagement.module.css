@@ -94,7 +94,6 @@
     display: flex;
     margin-top: 18px;
     width: 100%;
-    max-width: 1349px;
     align-items: center;
     gap: 40px 100px;
     justify-content: space-between;
@@ -187,7 +186,6 @@
     display: flex;
     margin: 22px 0;
     width: 100%;
-    max-width: 1349px;
     align-items: center;
     gap: 40px 100px;
     justify-content: space-between;

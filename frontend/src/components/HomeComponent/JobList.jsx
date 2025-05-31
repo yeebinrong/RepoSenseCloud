@@ -93,9 +93,9 @@ function JobList({ refreshKey, searchKeyword }) {
             <table className={styles.jobListContainer}>
                 <thead>
                     <tr className={styles.jobListHeader}>
-                        <th>
+                        <th style={{ width: '18%' }}>
                             <input type="checkbox" className={styles.checkBox} />
-                            <span className={styles.headerText}>Job Name</span>
+                            <span className={styles.headerText} style={{ marginLeft: "15px" }}>Job Name</span>
                             <button
                                 type="button"
                                 className={styles.sortButton}
@@ -113,7 +113,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 />
                             </button>
                         </th>
-                        <th>
+                        <th style={{ width: '15%' }}>
                             <span className={styles.headerText}>Status</span>
                             <button
                                 type="button"
@@ -132,7 +132,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 />
                             </button>
                         </th>
-                        <th>
+                        <th style={{ width: '15%' }}>
                             <span className={styles.headerText}>Last Updated</span>
                             <button
                                 type="button"
@@ -151,7 +151,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 />
                             </button>
                         </th>
-                        <th>
+                        <th style={{ width: '16%' }}>
                             <span className={styles.headerText}>Next Scheduled Job</span>
                             <button
                                 type="button"
@@ -170,7 +170,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 />
                             </button>
                         </th>
-                        <th>
+                        <th style={{ width: '16%' }}>
                             <span className={styles.headerText}>Settings Updated At</span>
                             <button
                                 type="button"
@@ -189,10 +189,11 @@ function JobList({ refreshKey, searchKeyword }) {
                                 />
                             </button>
                         </th>
-                        <th>
+                        <th style={{ width: '20%' }}>
                             <span className={styles.actionText}>View</span>
                             <span className={styles.actionText}>Edit</span>
                             <span className={styles.actionText}>Run</span>
+                            <span className={styles.actionText}></span>
                         </th>
                     </tr>
                 </thead>

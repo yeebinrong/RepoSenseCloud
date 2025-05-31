@@ -98,25 +98,25 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
         <tr className={styles.jobItem}>
             <td className={styles.jobInfo}>
                 <input type="checkbox" className={styles.checkBox}/>
-                <span className={styles.jobName}>{jobName}</span>
+                <span className={styles.jobName} style={{ marginLeft: "15px" }}>{jobName}</span>
             </td>
             <td className={`${styles.jobStatus} ${styles[statusClass]}`}>
                 <div className={styles.statusIndicator}/>
                 <span>{status}</span>
             </td>
-            <td className={styles.jobTiming}>
+            <td className={styles.jobTiming} style={{ width: '15%' }}>
                 <div className={styles.timeInfo}>
                     <span className={styles.time}>{lastUpdated.time}</span>
                     <span className={styles.date}>{lastUpdated.date}</span>
                 </div>
             </td>
-            <td className={styles.jobTiming}>
+            <td className={styles.jobTiming} style={{ width: '16%' }}>
                 <div className={styles.timeInfo}>
                     <span className={styles.time}>{nextScheduled.time}</span>
                     <span className={styles.date}>{nextScheduled.date}</span>
                 </div>
             </td>
-            <td className={styles.jobTiming}>
+            <td className={styles.jobTiming} style={{ width: '16%' }}>
                 <div className={styles.timeInfo}>
                     <span className={styles.time}>{settingsUpdatedAt.time}</span>
                     <span className={styles.date}>{settingsUpdatedAt.date}</span>
@@ -141,7 +141,7 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                     <img src="rerun.svg" alt="Run" className={styles.actionIcon} />
                 </button>
             </td>
-            <td>
+            <td style={{ width: "5%"}}>
                 <div style={{ position: 'relative', display: 'inline-block' }}>
                     <Tooltip title="More options" arrow>
                         <button className={styles.moreOptionsButton} onClick={handleOptionsOpen}>
