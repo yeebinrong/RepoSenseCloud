@@ -35,11 +35,23 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
         }
     };
 
-    const handleDownloadReport = () => {
+    const handleDownloadReport = async () => {
         handleOptionsClose();
-        const zipUrl = `${process.env.REACT_APP_REPORT_BUCKET_URL}/${owner}/${jobId}/reposense-report.zip`;
-        window.open(zipUrl, '_blank');
-        showSuccessBar('Download started');
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_JOB_SERVICE_URL}/s3-presigned-url`, {
+                params: { jobId },
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+                withCredentials: true,
+            });
+            const presignedUrl = response.data;
+            window.open(presignedUrl, '_blank');
+            showSuccessBar('Download started');
+        } catch (error) {
+            showErrorBar('Failed to get download link');
+            console.error('Failed to get presigned url:', error);
+        }
     };
 
     const handleCopyiframe = () => {
