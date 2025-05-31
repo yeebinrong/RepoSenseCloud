@@ -189,7 +189,8 @@ class BasePage extends React.Component {
                                         onClick={() => {
                                             localStorage.removeItem("token");
                                             this.props.navigate("/login");
-                                        }}>
+                                        }}
+                                        style={{ fontFamily: "DM Sans" }}>
                                         Logout
                                     </MenuItem>
                                 </Menu>

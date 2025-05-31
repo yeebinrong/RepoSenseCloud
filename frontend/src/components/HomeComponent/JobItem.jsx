@@ -155,11 +155,11 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                     >
-                        <MenuItem onClick={handleDownloadReport}>Download Report</MenuItem>
+                        <MenuItem onClick={handleDownloadReport} style={{ fontFamily: "DM Sans" }}>Download Report</MenuItem>
                         <Divider />
-                        <MenuItem onClick={handleCopyiframe}>Copy iframe</MenuItem>
+                        <MenuItem onClick={handleCopyiframe} style={{ fontFamily: "DM Sans" }}>Copy iframe</MenuItem>
                         <Divider />
-                        <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                        <MenuItem onClick={handleDelete} style={{ fontFamily: "DM Sans" }}>Delete</MenuItem>
                     </Menu>
                 </div>
             </td>

@@ -85,8 +85,8 @@ function JobList({ refreshKey, searchKeyword }) {
         }
     };
 
-    if (loading) return <p>Loading jobs...</p>;
-    if (error) return <p>Error loading jobs: {error.message}</p>;
+    if (loading) return <p style={{ fontFamily: "DM Sans" }}>Loading jobs...</p>;
+    if (error) return <p style={{ fontFamily: "DM Sans" }}>Error loading jobs: {error.message}</p>;
 
     return (
         <section className={styles.jobListSection}>

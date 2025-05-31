@@ -56,7 +56,12 @@ th {
     border: 1px solid #292D32;
 }
 
+.headerText {
+    font-family: "DM Sans", sans-serif !important;
+}
+
 .actionText {
+    font-family: "DM Sans", sans-serif !important;
     white-space: nowrap;
     padding: 0 15px;
 }
@@ -91,12 +96,17 @@ th {
     color: #000;
 }
 
+.jobName {
+    font-family: "DM Sans", sans-serif !important;
+}
+
 .jobStatus {
     display: flex;
     align-items: center;
     gap: 8px;
     white-space: nowrap;
     width: 15%;
+    font-family: "DM Sans", sans-serif !important;
 }
 
 .statusIndicator {
@@ -135,10 +145,12 @@ th {
 }
 
 .time {
+    font-family: "DM Sans", sans-serif !important;
     font-size: 16px;
 }
 
 .date {
+    font-family: "DM Sans", sans-serif !important;
     font-size: 14px;
     margin-top: 4px;
 }

@@ -18,7 +18,7 @@ const useStyles = makeStyles(() => ({
         color: '#00695c',
     },
     textField: {
-        font: "DM Sans",
+        fontFamily: 'DM Sans',
     },
     modal: {
         position: 'relative',
@@ -560,7 +560,7 @@ const CreateJobComponent = ({
                 return <TextField type="date" className="since-date-input2" value={sinceDate} onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
 
             default:
-                return <text> **{period} from date of job run</text>
+                return <text style={{ fontFamily: "DM Sans" }}> **{period} from date of job run</text>
         }
     }
 
