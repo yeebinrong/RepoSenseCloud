@@ -85,6 +85,7 @@ class ForgotComponent extends React.Component {
                   alignItems: "baseline",
                   marginTop: "12px",
                   color: "#7F5305",
+                  fontfamily: "DM Sans",
                 }}
               >
                 Don't have an account?
@@ -98,6 +99,7 @@ class ForgotComponent extends React.Component {
                     <inline
                       style={{
                         color: "#F7A81B",
+                        fontfamily: "DM Sans",
                         fontWeight: "bold",
                       }}
                     >

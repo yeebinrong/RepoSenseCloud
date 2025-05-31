@@ -55,6 +55,7 @@
 
 .welcomeMessage {
     color: #000;
+    font-family: "DM Sans", sans-serif !important;
     font-size: 16px;
     font-weight: 500;
     margin: 0;
@@ -62,6 +63,7 @@
 
 .currentDate {
     color: #ada7a7;
+    font-family: "DM Sans", sans-serif !important;
     font-size: 13px;
     font-weight: 400;
     align-self: start;
@@ -94,7 +96,6 @@
     display: flex;
     margin-top: 18px;
     width: 100%;
-    max-width: 1349px;
     align-items: center;
     gap: 40px 100px;
     justify-content: space-between;
@@ -120,6 +121,7 @@
 }
 
 .title {
+    font-family: "DM Sans", sans-serif !important;
     font-size: 24px;
     font-weight: 500;
     margin: 0;
@@ -157,7 +159,8 @@
     min-height: 52px;
     align-items: center;
     gap: 16px;
-    font-family: DM Sans, sans-serif;
+    font-family: "DM Sans", sans-serif !important;
+    font-size: 15px;
     color: #ada7a7;
     justify-content: start;
     width: 176px;
@@ -187,7 +190,6 @@
     display: flex;
     margin: 22px 0;
     width: 100%;
-    max-width: 1349px;
     align-items: center;
     gap: 40px 100px;
     justify-content: space-between;
@@ -209,11 +211,13 @@
     flex-direction: row;
     color: #000;
     justify-content: center;
-    width: 122px;
+    width: 155px;
     padding: 10px 13px;
     border: 1px solid #eaeaea;
     cursor: pointer;
     align-items: center;
+    font-family: "DM Sans", sans-serif !important;
+    font-size: 15px;
 }
 
 .filterIcon {
@@ -253,7 +257,7 @@
     border: none;
     background: transparent;
     color: #ada7a7;
-    font-family: DM Sans, sans-serif;
+    font-family: "DM Sans", sans-serif !important;
     font-size: 16px;
     width: calc(100% - 40px);
 }
