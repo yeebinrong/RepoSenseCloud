@@ -1,4 +1,5 @@
 const { EC2Client, DescribeInstancesCommand } = require("@aws-sdk/client-ec2");
+const moment = require('moment-timezone');
 
 const ec2 = new EC2Client({ region: "ap-southeast-1" });
 
@@ -42,13 +43,18 @@ exports.handler = async (event) => {
     try {
         const data = await ec2.send(new DescribeInstancesCommand({}));
 
-        const instanceInfo = [];
+        let instanceInfo = [];
+        let totalInstances = 0;
+        let stopppedInstances = 0;
         data.Reservations.forEach(reservation => {
             reservation.Instances.forEach(instance => {
                 const instanceId = instance.InstanceId;
                 const instanceType = instance.InstanceType;
                 const state = instance.State.Name;
-                const launchTime = instance.LaunchTime.toISOString().replace(/T/, ' ').replace(/\..+/, '') + ' UTC';
+                const rawLaunchTime = instance.LaunchTime.toISOString()
+                const launchTime = moment(rawLaunchTime).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss');
+                const launchToNowVarTime = new Date() - new Date(rawLaunchTime);
+                const runTime = `${Math.floor(launchToNowVarTime / 1000 / 60 / 60)} hours ${Math.floor(launchToNowVarTime / 1000 / 60 % 60)} minutes`;
 
                 let instanceName = 'N/A';
                 if (instance.Tags){
@@ -58,29 +64,42 @@ exports.handler = async (event) => {
                     }
                 }
 
-                instanceInfo.push({
-                    Name: instanceName,
-                    ID: instanceId,
-                    Type: instanceType,
-                    State: state,
-                    LaunchTime: launchTime,
-                });
+                if (state != 'terminated') {
+                    totalInstances += 1;
+                    if (state == 'stopped') {
+                        stopppedInstances += 1;
+                    }
+                    if (state == 'running') {
+                        instanceInfo.push({
+                            Name: instanceName,
+                            ID: instanceId,
+                            Type: instanceType,
+                            State: state,
+                            LaunchTime: launchTime,
+                            RunTime: runTime
+                        });
+                    }
+                }
             })
         })
 
-        if (instanceInfo.length === 0) {
+        if (totalInstances === 0) {
             message = "No EC2 instances found in your account.";
         } else {
             message = "<b>Daily EC2 Instance Report:</b>\n";
-            message += "<b>EC2 Dashboard:</b> https://ap-southeast-1.console.aws.amazon.com/ec2/home?region=ap-southeast-1#Home:\n\n";
-            instanceInfo.forEach((inst, index) => {
-                message += `<b>${index + 1}. Name:</b> ${inst.Name}\n`;
-                message += `  <b>ID:</b> <code>${inst.ID}</code>\n`;
-                message += `  <b>Type:</b> ${inst.Type}\n`;
-                message += `  <b>State:</b> ${inst.State}\n`;
-                message += `  <b>Launch Time:</b> ${inst.LaunchTime}\n`;
-                message += "\n";
-            });
+            message += '<b>EC2 Dashboard:</b> <a href="https://ap-southeast-1.console.aws.amazon.com/ec2/home?region=ap-southeast-1#Home:">Dashboard Link</a>\n';
+            message += `Total number of stopped instances: ${stopppedInstances}/${totalInstances}\n\n`;
+            if(instanceInfo.length > 0){
+                instanceInfo.forEach((inst, index) => {
+                    message += `<b>${index + 1}. Name:</b> ${inst.Name}\n`;
+                    message += `  <b>ID:</b> <code>${inst.ID}</code>\n`;
+                    message += `  <b>Type:</b> ${inst.Type}\n`;
+                    message += `  <b>State:</b> ${inst.State}\n`;
+                    message += `  <b>Launch Time:</b> ${inst.LaunchTime} UTC+8\n`;
+                    message += `  <b>Run Time:</b> ${inst.RunTime} \n`;
+                    message += "\n";
+                });
+            }
         }
 
         await sendTelegramMessage(message);
