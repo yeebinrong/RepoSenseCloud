@@ -9,14 +9,10 @@ import jakarta.servlet.http.HttpServletRequest;
 public class JwtHelper {
     
     public String extractJwtFromRequest(HttpServletRequest request) {
+        String jwt = request.getHeader("Authorization");
         System.out.println("Extracting JWT from request: " + request);
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("JWT".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
+        if (jwt != null && jwt.startsWith("Bearer ")) {
+            return jwt.substring(7);
         }
         return null;
     }

@@ -3,8 +3,6 @@ package com.hamburger.user;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hamburger.user.middleware.JwtAuthorization;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -12,6 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.hamburger.user.middleware.JwtAuthorization;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.hamburger.common", "com.hamburger.user"})
@@ -47,7 +47,8 @@ public class UserServiceApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOriginPatterns("*")
+                        .allowedOrigins(System.getenv("FRONTEND_ORIGIN"),
+                            System.getenv("REACT_APP_JOB_SERVICE_URL"))
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true);

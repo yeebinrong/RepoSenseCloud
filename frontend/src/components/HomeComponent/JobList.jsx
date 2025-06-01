@@ -8,20 +8,35 @@ function JobList() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_JOB_SERVICE_URL}/`)
-            .then(res => {
-                if (!res.ok) throw new Error('Network response was not ok');
-                return res.json();
+        function UpdateJobData() {
+            const token = localStorage.getItem('token');
+            fetch(`${process.env.REACT_APP_JOB_SERVICE_URL}/`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
             })
-            .then(data => {
-                setJobData(data);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error('Error fetching jobs:', err);
-                setError(err);
-                setLoading(false);
-            });
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then(data => {
+                    setJobData(data);
+                    setLoading(false);
+                })
+                .catch(err => {
+                    console.error('Error fetching jobs:', err);
+                    setError(err);
+                    setLoading(false);
+                });
+        }
+
+        UpdateJobData();
+
+        window.addEventListener('updateJobData', UpdateJobData);
+
+        return () => {
+            window.removeEventListener('updateJobData', UpdateJobData);
+        };
     }, []);
 
     if (loading) return <p>Loading jobs...</p>;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import moment from "moment";
+import moment from "moment-timezone";
+import axios from "axios";
 import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
     Button, Select, FormControl, InputLabel, MenuItem, Stack, CircularProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
@@ -10,7 +11,6 @@ import { showSuccessBar, showErrorBar } from "../../constants/snack-bar";
 const useStyles = makeStyles(() => ({
     autocomplete: {
         width: '100%',
-        marginTop: '16px',
     },
     chip: {
         margin: '4px',
@@ -26,8 +26,8 @@ const useStyles = makeStyles(() => ({
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: '1115px',
-        height: '90vh',
-        overflowY: 'auto', 
+        height: '95vh',
+        //overflowY: 'auto', 
         backgroundColor: 'white',
         padding: '16px',
         borderRadius: '16px',
@@ -39,6 +39,8 @@ const useStyles = makeStyles(() => ({
 
 
 const CreateJobComponent = (jobId) => {
+
+    const token = localStorage.getItem("token");
 
     const classes = useStyles();
     const timezoneList = [
@@ -66,11 +68,11 @@ const CreateJobComponent = (jobId) => {
     const [period, setPeriod] = useState("");
     const [periodModifier, setPeriodModifier] = useState("latest");
     const [originalityThreshold, setOriginalityThreshold] = useState(0.5);
-    const [timeZone, setTimeZone] = useState("");
+    const [timeZone, setTimeZone] = useState("UTC+08");
     const [authorship, setAuthorship] = useState(false);
     const [prevAuthors, setPrevAuthors] = useState(false);
     const [shallowClone, setShallowClone] = useState(false);
-    const [ignoreSizeLimit, setIgnoreSizeLimit] = useState(false);
+    const [ignoreFileSizeLimit, setIgnoreFileSizeLimit] = useState(false);
     const [addLastMod, setAddLastMod] = useState(false);
     const [formatChipValues, setFormatChipValues] = useState([]);
 
@@ -84,11 +86,13 @@ const CreateJobComponent = (jobId) => {
     const [isLoading, setIsLoading] = useState(false);
 
     //Form Validation States
+    const [page1Error, setPage1Error] = useState(false);
+    const [page2Error, setPage2Error] = useState(false);
     const [jobNameError, setJobNameError] = useState(true);
     const [repoLinkError, setRepoLinkError] = useState(true);
     const [sinceUntilDateError, setSinceUntilDateError] = useState(false);
     const [originalityThresholdError, setOriginalityThresholdError] = useState(false);
-    const [timeZoneError, setTimeZoneError] = useState(true);
+    const [timeZoneError, setTimeZoneError] = useState(false);
     const [startHourError, setStartHourError] = useState(true);
     const [startMinuteError, setStartMinuteError] = useState(true);
     const [dateError, setDateError] = useState(true);
@@ -110,7 +114,7 @@ const CreateJobComponent = (jobId) => {
                     setAuthorship(data.authorship);
                     setPrevAuthors(data.prevAuthors);
                     setShallowClone(data.shallowClone);
-                    setIgnoreSizeLimit(data.ignoreSizeLimit);
+                    setIgnoreFileSizeLimit(data.ignoreFileSizeLimit);
                     setAddLastMod(data.addLastMod);
                     setFormatChipValues(data.formatChipValues);
                     setJobType(data.jobType);
@@ -126,12 +130,12 @@ const CreateJobComponent = (jobId) => {
         }
     };
 
-    // Keep the useEffect but also expose the load function
-    useEffect(() => {
-        if (jobId != null) {
-            loadJobDetails(jobId);
-        }
-    }, [jobId]);
+    // // Keep the useEffect but also expose the load function
+    // useEffect(() => {
+    //     if (jobId != null) {
+    //         loadJobDetails(jobId);
+    //     }
+    // }, [jobId]);
 
     
     // Reset state when modal closes
@@ -145,12 +149,12 @@ const CreateJobComponent = (jobId) => {
             setSinceDate("");
             setUntilDate("");
             setPeriod("");
-            setOriginalityThreshold("");
-            setTimeZone("");
+            setOriginalityThreshold(0.5);
+            setTimeZone("UTC+08");
             setAuthorship(false);
             setPrevAuthors(false);
             setShallowClone(false);
-            setIgnoreSizeLimit(false);
+            setIgnoreFileSizeLimit(false);
             setAddLastMod(false);
             setFormatChipValues([]);
             // page 2 states
@@ -160,12 +164,14 @@ const CreateJobComponent = (jobId) => {
             setStartHour("--");
             setStartDate("")
             setEndDate("");
-            // form validation states  
+            // form validation states
+            setPage1Error(false);
+            setPage2Error(false);
             setJobNameError(true);
             setRepoLinkError(true);
             setSinceUntilDateError(false);
             setOriginalityThresholdError(false);
-            setTimeZoneError(true);
+            setTimeZoneError(false);
             setStartHourError(true);
             setStartMinuteError(true);
             setDateError(true);
@@ -253,7 +259,7 @@ const CreateJobComponent = (jobId) => {
 
     const validateRepoLink = (id) => {
         const link = repoLink.find(link => link.id === id);
-        if (link.value === "") {
+        if (link.value === "" ) {
             setRepoLinkError(true);
         } else {
             setRepoLinkError(false);
@@ -290,7 +296,7 @@ const CreateJobComponent = (jobId) => {
         if (jobNameError || repoLinkError || sinceUntilDateError || originalityThresholdError || timeZoneError) {
             hasError = true;
         }
-    
+        setPage1Error(hasError);
         if (callback) {
             callback(hasError);
         }
@@ -331,13 +337,16 @@ const CreateJobComponent = (jobId) => {
                         <div className="create-job-input-left">
                             <div className="job-name-container">
                                 <text className="job-name-label">Job Name</text>
+                                {console.log("page1Error:"+page1Error)}
+                                {console.log("jobNameError:"+jobNameError)}
                                 <TextField className="job-name-textbox" placeholder="Enter Job Name" value = {jobName} 
                                     //onChange={(e)=> { validateJobName(); setJobName(e.target.value)}} 
                                     onInput={(e)=> {setJobName(e.target.value)}}
                                     onPaste={(e)=> {setJobName(e.target.value)}}
                                     autoComplete="off"
-                                    error={jobNameError}        
-                                    helperText={jobNameError ? "Please Enter Job Name" : ""}/>
+
+                                    error={(jobNameError && page1Error)}        
+                                    helperText={(jobNameError && page1Error) ? "Please Enter Job Name" : ""}/>
                             </div>
                             <div className="target-repo-container">
                                 <text className="target-repo-label">Target Repository</text>
@@ -348,8 +357,8 @@ const CreateJobComponent = (jobId) => {
                                             onInput={(e) => {handleRepoLinkChange(link.id, e.target.value) }}
                                             onPaste={(e) => {handleRepoLinkChange(link.id, e.target.value) }}
                                             autoComplete="off"
-                                            error={repoLinkError}
-                                            helperText={repoLinkError ? "Please Paste Repository URL" : ""} />
+                                            error={repoLinkError && page1Error}
+                                            helperText={repoLinkError && page1Error ? "Please Paste Repository URL" : ""} />
                                         {index > 0 && (<button className="delete-repo-link-button" onClick={() => deleteRepoLink(link.id)}>✕</button>)}
                                     </span>
                                 ))}
@@ -387,7 +396,7 @@ const CreateJobComponent = (jobId) => {
                                         </Grid2>
                                         <Grid2 size={6}>
                                             <select
-                                                className={`timezone-dropdown ${timeZoneError ? 'error' : ''}`}
+                                                className={`timezone-dropdown ${timeZoneError && page1Error ? 'error' : ''}`}
                                                 value={timeZone}
                                                 onChange={(e) => {
                                                     setTimeZone(e.target.value);
@@ -399,43 +408,43 @@ const CreateJobComponent = (jobId) => {
                                                     <option key={timezone} value={timezone}>{timezone}</option>
                                                 ))}
                                             </select>
-                                            {timeZoneError && <span className="error-message">Please select a time zone</span>}
+                                            {timeZoneError && page1Error && <span className="error-message">Please select a time zone</span>}
                                         </Grid2>
                                         <Grid2 size={6} marginTop={2} className="left-checklist-container">
-                                            <Grid2 container spacing={3} justifyContent="space-between">
-                                                <Grid2 size={6}>
+                                            <Grid2 container spacing={1} justifyContent="space-between">
+                                                <Grid2 size={10}>
                                                     <text className="authorship-label">Analyse authorship:</text>
                                                 </Grid2>
-                                                <Grid2 size={6}>
-                                                    <input type="checkbox" className="authorship-checkbox" onChange={(e) => setAuthorship(e.target.value)} />
+                                                <Grid2 size={2}>
+                                                    <input type="checkbox" className="authorship-checkbox" checked={authorship} onChange={(e) => setAuthorship(e.target.checked)} />
                                                 </Grid2>
-                                                <Grid2 size={6}>
+                                                <Grid2 size={10}>
                                                     <text className="prev-author-label">Find previous authors:</text>
                                                 </Grid2>
-                                                <Grid2 size={6}>
-                                                    <input type="checkbox" className="prev-author-checkbox" onChange={(e) => setPrevAuthors(e.target.value)} />
+                                                <Grid2 size={2}>
+                                                    <input type="checkbox" className="prev-author-checkbox" checked={prevAuthors} onChange={(e) => setPrevAuthors(e.target.checked)} />
                                                 </Grid2>
-                                                <Grid2 size={6}>
+                                                <Grid2 size={10}>
                                                     <text className="shallow-clone-label">Shallow cloning:</text>
                                                 </Grid2>
-                                                <Grid2 size={6} >
-                                                    <input type="checkbox" className="shallow-clone-checkbox" onChange={(e) => setShallowClone(e.target.value)}/>
+                                                <Grid2 size={2} >
+                                                    <input type="checkbox" className="shallow-clone-checkbox" checked={shallowClone} onChange={(e) => setShallowClone(e.target.checked)}/>
                                                 </Grid2>
                                             </Grid2>
                                         </Grid2>
                                         <Grid2 size={6} marginTop={2} paddingLeft={6} className="right-checklist-container">
-                                            <Grid2 container spacing={3} justifyContent="space-between">
-                                                <Grid2 size={6} >
+                                            <Grid2 container spacing={1} justifyContent="space-between">
+                                                <Grid2 size={10} >
                                                     <text className="ignore-size-limit-label">Ignore file size limit:</text>
                                                 </Grid2>
-                                                <Grid2 size={6} >
-                                                    <input type="checkbox" className="ignore-size-limit-checkbox" onChange={(e) => setIgnoreSizeLimit(e.target.value)} />
+                                                <Grid2 size={2} >
+                                                    <input type="checkbox" className="ignore-size-limit-checkbox" checked={ignoreFileSizeLimit} onChange={(e) => setIgnoreFileSizeLimit(e.target.checked)} />
                                                 </Grid2>
-                                                <Grid2 size={6}>
+                                                <Grid2 size={10}>
                                                     <text className="Add-last-mod-label">Add last modified date:</text>
                                                 </Grid2>
-                                                <Grid2 size={6} >
-                                                    <input type="checkbox" className="add-last-mod-checkbox" onChange={(e) => setAddLastMod(e.target.value)} />
+                                                <Grid2 size={2} >
+                                                    <input type="checkbox" className="add-last-mod-checkbox" checked={addLastMod} onChange={(e) => setAddLastMod(e.target.checked)} />
                                                 </Grid2>
 
                                             </Grid2>
@@ -443,7 +452,7 @@ const CreateJobComponent = (jobId) => {
                                         <Grid2 size={2} marginTop={2}>
                                             <text className="format-label">Format:</text>
                                         </Grid2>
-                                        <Grid2 size={8}>
+                                        <Grid2 size={10}>
                                             <Autocomplete
                                                 multiple
                                                 freeSolo
@@ -610,9 +619,9 @@ const CreateJobComponent = (jobId) => {
                 <Grid2 item size={8}>
                     <select className="frequency-dropdown"
                         onChange={(e) => setFrequency(e.target.value)}>
-                        <option value={"weekly"}>Weekly</option>
-                        <option value={"monthly"}>Monthly</option>
-                        <option value={"quarterly"}>Quarterly</option>
+                        <option value={"daily"}>Daily</option>
+                        <option value={"hourly"}>Hourly</option>
+                        <option value={"minutely"}>Every 5 Mins</option>
                     </select>
                 </Grid2>
                 <Grid2 item size={4}>
@@ -620,7 +629,7 @@ const CreateJobComponent = (jobId) => {
                 </Grid2>
                 <Grid2 item size={2}>
                     <select
-                        className={`time-dropdown  ${startHourError ? 'error' : ''}`}
+                        className={`time-dropdown  ${startHourError && page2Error ? 'error' : ''}`}
                         value={startHour}
                         onChange={(e) => { setStartHour(e.target.value); validateStartHour(e.target.value);}}
                     >
@@ -636,7 +645,7 @@ const CreateJobComponent = (jobId) => {
                 </Grid2>
                 <Grid2 item size={2}>
                     <select
-                            className={`time-dropdown ${startMinuteError ? 'error' : ''}`}
+                            className={`time-dropdown ${startMinuteError && page2Error ? 'error' : ''}`}
                             value={startMinute}
                             onChange={(e) => { setStartMinute(e.target.value); validateStartMinute(e.target.value)}}
                         >
@@ -654,7 +663,7 @@ const CreateJobComponent = (jobId) => {
                     <TextField type="date" className="start-date-input" value = {startDate}
                         onChange={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}} 
                         onInput={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}} 
-                        error = {dateError} placeholder="DD/MM/YYYY" />
+                        error = {dateError && page2Error } placeholder="DD/MM/YYYY" />
                 </Grid2>
                 <Grid2 item size={4} container alignItems="center">
                     <text className="end-date-label">End Date:</text>
@@ -663,8 +672,8 @@ const CreateJobComponent = (jobId) => {
                     <TextField type="date" className="end-date-input" value = {endDate} 
                         onChange={(e) => { setEndDate(e.target.value); validateDate(startDate, e.target.value)}} placeholder="DD/MM/YYYY" 
                         onInput={(e) => {setEndDate(e.target.value); validateDate(startDate, e.target.value) }} 
-                        error = {dateError}
-                        helperText={(endDate!==""&& dateError)? "Improper Date Range":""}/>
+                        error = {dateError && page2Error}
+                        helperText={(endDate!==""&& dateError )? "Improper Date Range":""}/>
                 </Grid2>
                 
             </Grid2>
@@ -701,6 +710,7 @@ const CreateJobComponent = (jobId) => {
 
     const validateForm = () => {
         return new Promise((resolve, reject) => {
+            setPage2Error(true);
             if (jobName === "") {
                 return reject(new Error("Job name cannot be blank."));
             }
@@ -734,9 +744,20 @@ const CreateJobComponent = (jobId) => {
                     return reject(new Error('"Start Date" should be earlier than "End Date".'))
                 }    
             }
-
+            setPage2Error(false);
             return resolve();
         });
+    }
+
+    // Helper function to get time in "HH:mm UTC+0830" format
+    function getTimeWithUtcOffset(timeZone) {
+        if (!timeZone) return moment().format("HH:mm") + " UTC+0000";
+        // Convert timeZone to a valid moment timezone string
+        const tz = timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+");
+        const m = moment().tz(tz);
+        // Get offset and remove colon
+        const offset = m.format("Z").replace(":", ""); // e.g. "+0830"
+        return `${m.format("HH:mm")} UTC${offset}`;
     }
 
     //Submit Job Form
@@ -760,7 +781,7 @@ const CreateJobComponent = (jobId) => {
                 authorship,
                 prevAuthors,
                 shallowClone,
-                ignoreSizeLimit,
+                ignoreFileSizeLimit,
                 addLastMod,
                 formatChipValues,
                 jobType,
@@ -768,24 +789,43 @@ const CreateJobComponent = (jobId) => {
                 startHour,
                 startMinute,
                 lastUpdated: {
-                    time: moment().format("HH:mm:ss"),
-                    date: moment().format("YYYY-MM-DD")
-                }
+                    time: timeZone
+                        ? getTimeWithUtcOffset(timeZone)
+                        : moment().format("HH:mm") + " UTC+0000",
+                    date: timeZone
+                        ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("YYYY-MM-DD")
+                        : moment().format("YYYY-MM-DD")
+                },
+                nextScheduled: {
+                    time: "",
+                    date: ""
+                },
+                settingsUpdatedAt: {
+                    time: timeZone
+                        ? getTimeWithUtcOffset(timeZone)
+                        : moment().format("HH:mm") + " UTC+0000",
+                    date: timeZone
+                        ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("YYYY-MM-DD")
+                        : moment().format("YYYY-MM-DD")
+                },
             };
             console.log(JSON.stringify(formData));
 
-            const response = await fetch(`${jobServiceUrl}/create`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(formData),
-            });
+            const response = await axios.post(`${jobServiceUrl}/create`, 
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    withCredentials: true
+                }
+            );
 
-            if (response.ok) {
+            if (response.status === 201) {
                 console.log("Job created successfully");
                 showSuccessBar("Job Created Successfully");
+                window.dispatchEvent(new Event('updateJobData'));
                 handleModalClose();
             } else {
                 console.error("Error creating job: ", response.error);

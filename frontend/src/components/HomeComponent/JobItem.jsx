@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './JobList.module.css';
+import { showSuccessBar, showErrorBar } from "../../constants/snack-bar";
 
 function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, icon, view, edit, run}) {
     const statusClass = status.toLowerCase();
@@ -14,12 +15,16 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, ico
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
                 credentials: 'include',
             });
             console.log('Job run successfully:', response.data);
+            window.dispatchEvent(new Event('updateJobData'));
+            showSuccessBar("Job Created Successfully");
             // Optionally, trigger a reload or UI update here
         } catch (error) {
+            showErrorBar("Failed to run job");
             console.error('Failed to run job:', error);
         }
     };

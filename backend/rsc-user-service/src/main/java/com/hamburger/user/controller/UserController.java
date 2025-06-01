@@ -12,12 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hamburger.user.dao.entity.User;
 import com.hamburger.user.dto.LoginReqDto;
 import com.hamburger.user.dto.RegisterReqDto;
+import com.hamburger.user.dto.AuthReqDto;
 import com.hamburger.user.service.UserService;
 import com.hamburger.user.service.util.JwtUtil;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -50,37 +53,38 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody LoginReqDto req, HttpServletResponse response) {
+    public ResponseEntity<Map<String, Object>> loginUser(@RequestBody LoginReqDto req, HttpServletResponse response) {
         User user = userService.getUser(req.getUserName());
         if (user == null || !req.isPasswordValid(req.getPassword(), user.getHashedPassword())) {
-            return ResponseEntity.status(400).body("Invalid username or password");
+            return ResponseEntity.status(400).body(Map.of("error", "Invalid username or password"));
         }
         String token = req.getToken(req.getUserName());
-        Cookie cookie = new Cookie("JWT", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-        return ResponseEntity.ok("Login successful");
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", "Login successful");
+        responseBody.put("token", token);
+        responseBody.put("userInfo", Map.of(
+            "userName", user.getUserName()
+        ));
+
+        return ResponseEntity.ok(responseBody);
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<String> validateToken(HttpServletRequest request) {
-        System.out.println("Received request to validate token");
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("JWT".equals(cookie.getName())) {
-                    String token = cookie.getValue();
-                    System.out.println("Found JWT cookie: " + token);
-                    if (JwtUtil.validateToken(token)) {
-                        System.out.println("username: " + JwtUtil.extractUsername(token));
-                        return ResponseEntity.ok("Token is valid. Username: " + JwtUtil.extractUsername(token));
-                    }
-                    break;
-                }
-            }
+    public ResponseEntity<Map<String, Object>> validateToken(@RequestBody AuthReqDto requestBody) {
+        String token = requestBody.getToken();
+        System.out.println("Received token for validation: " + token);
+        if (token == null || !JwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid or expired token"));
         }
-        return ResponseEntity.status(401).body("Invalid or expired token");
+
+        String username = JwtUtil.extractUsername(token);
+        System.out.println("Token validated for user: " + username);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", "Valid token");
+        responseBody.put("username", username);
+
+        return ResponseEntity.ok(responseBody);
     }
 
     @GetMapping("/{userName}")

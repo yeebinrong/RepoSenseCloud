@@ -11,7 +11,7 @@ provider:
         - batch:SubmitJob
         - batch:DescribeJobs
       Resource: "*"
-  stage: ${opt:stage, 'dev'}
+  stage: ${opt:stage, 'localhost'}
   environment:
     STAGE: ${self:provider.stage}
     BATCH_JOB_QUEUE: !Ref BatchJobQueue
@@ -72,13 +72,13 @@ resources:
     BatchComputeEnvironment:
       Type: AWS::Batch::ComputeEnvironment
       Properties:
-        ComputeEnvironmentName: rsc-batch-job-compute-env-V5-${self:provider.stage}
+        ComputeEnvironmentName: rsc-batch-job-compute-env-V6-${self:provider.stage}
         Type: MANAGED
         State: ENABLED
         ComputeResources:
           Type: EC2
           InstanceTypes:
-            - a1.large # graviton only works with arm64 architecture
+            - m5.large
           MaxvCpus: 8  # Maximum vCPUs you want to allocate for the environment
           MinvCpus: 0  # Minimum vCPUs to allocate
           DesiredvCpus: 4  # Desired vCPUs, this controls the scaling of EC2 instances
