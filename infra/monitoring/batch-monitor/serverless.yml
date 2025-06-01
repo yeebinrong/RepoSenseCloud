@@ -14,7 +14,11 @@ provider:
             - logs:CreateLogGroup
             - logs:CreateLogStream
             - logs:PutLogEvents
+            - ssm:GetParameter
           Resource: "*"
+  environment:
+    TELEGRAM_CHAT_ID: ${ssm:/reposense/backend/telegram/chat-id}
+    TELEGRAM_BOT_TOKEN: ${ssm:/reposense/backend/telegram/bot-token}
 
 functions:
   handleBatchJobFailure:

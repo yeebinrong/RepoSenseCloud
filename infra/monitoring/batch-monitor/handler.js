@@ -3,8 +3,8 @@
 const https = require('https');
 
 // Telegram Bot Configuration
-// const TELEGRAM_BOT_TOKEN = 'xxx';// Replace with your Telegram bot token
-// const TELEGRAM_CHAT_ID = 'xxx'; // Replace with your Telegram chat ID
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 const REGION = 'ap-southeast-1'; // or process.env.AWS_REGION
 
