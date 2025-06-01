@@ -363,8 +363,6 @@ const CreateJobComponent = (jobId) => {
                         <div className="create-job-input-left">
                             <div className="job-name-container">
                                 <text className="job-name-label">Job Name</text>
-                                {console.log("page1Error:"+page1Error)}
-                                {console.log("jobNameError:"+jobNameError)}
                                 <TextField className="job-name-textbox" placeholder="Enter Job Name" value = {jobName} 
                                     //onChange={(e)=> { validateJobName(); setJobName(e.target.value)}} 
                                     onInput={(e)=> {setJobName(e.target.value)}}
@@ -478,10 +476,11 @@ const CreateJobComponent = (jobId) => {
                                         <Grid2 size={2} marginTop={2}>
                                             <text className="format-label">Format:</text>
                                         </Grid2>
-                                        <Grid2 size={10} marginTop={2}>
+                                        <Grid2  size={10} marginTop={2}>
                                             <TextField
                                                 sx={{
                                                     '& .MuiInputBase-root': {
+                                                        flexDirection: 'column',
                                                         alignItems: 'flex-start', // Align chips to top
                                                         paddingTop: 1,
                                                         fontFamily: 'DM Sans',
@@ -489,11 +488,17 @@ const CreateJobComponent = (jobId) => {
                                                         minHeight: '40px',
                                                     },
                                                     '& .MuiInputBase-input': {
-                                                        padding: 0
-                                                    }
+                                                        padding: 0,
+                                                        paddingBottom: '5px',
+                                                    },
+                                                    '& label.MuiInputLabel-root': {
+                                                        background: 'white',
+                                                        px: 0.5,
+                                                        left: '-7px',
+                                                    },
                                                 }}
                                                 label="Enter File Format(s) To Scan"
-                                                placeholder="e.g. js, py, java"
+                                                placeholder={formatChipValues.length > 1? "" : "e.g. js, py, java"}
                                                 value={inputValue}
                                                 onChange={(e) => setInputValue(e.target.value)}
                                                 onKeyDown={handleAddChip}
@@ -501,7 +506,6 @@ const CreateJobComponent = (jobId) => {
                                                     startAdornment: (
                                                         <Box sx={{
                                                             display: 'inline',
-                                                            //flexWrap: 'wrap',
                                                             gap: 1,
                                                             maxWidth: '80%',
                                                         }}>
@@ -518,34 +522,6 @@ const CreateJobComponent = (jobId) => {
                                                 }}
                                                 fullWidth
                                             />
-                                            {/* <Autocomplete
-                                                multiple
-                                                freeSolo
-                                                id="tags-filled"
-                                                options={["js", "java", "python", "c", "cpp", "html", "css"]}
-                                                value={formatChipValues}
-                                                onChange={handleChipChange}
-                                                renderTags={(value, getTagProps) =>
-                                                    value.map((option, index) => (
-                                                        <Chip
-                                                            variant="outlined"
-                                                            label={option}
-                                                            {...getTagProps({ index })}
-                                                            className={classes.chip}
-                                                        />
-                                                    ))
-                                                }
-                                                renderInput={(params) => (
-                                                    <TextField
-                                                        {...params}
-                                                        variant="filled"
-                                                        label="Enter File Format(s) To Scan"
-                                                        placeholder="e.g. js, py"
-                                                        className={classes.textField}
-                                                    />
-                                                )}
-                                                className={classes.autocomplete}
-                                            /> */}
                                         </Grid2>
                                     </Grid2>
                                 </div>
@@ -874,7 +850,7 @@ const CreateJobComponent = (jobId) => {
                         : moment().format("YYYY-MM-DD")
                 },
             };
-            console.log(JSON.stringify(formData));
+            //console.log(JSON.stringify(formData));
 
             const response = await axios.post(`${jobServiceUrl}/create`, 
                 formData,
