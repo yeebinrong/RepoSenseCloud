@@ -60,6 +60,7 @@ body {
         border-left: 4px dotted #dedcdc;
         height: 80wh;
         margin: 10px;
+        margin-left: 30px;
     }
 
     .create-job-input-container {
@@ -272,10 +273,12 @@ body {
 
                     .left-checklist-container {
                         width: 200px;
+                        margin-bottom: 10px;
                     }
 
                     .right-checklist-container {
                         width: 260px;
+                        margin-bottom: 10px;
                     }
                 }
             }
