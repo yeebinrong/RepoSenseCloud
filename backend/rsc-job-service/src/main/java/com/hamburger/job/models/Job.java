@@ -47,7 +47,7 @@ public class Job {
     private Map<String,String> settingsUpdatedAt;
 
     public Job () {
-        if(this.jobId == null){
+        if(this.jobId == ""){
             this.jobId = UUID.randomUUID().toString();
         }
         if(this.status == null){

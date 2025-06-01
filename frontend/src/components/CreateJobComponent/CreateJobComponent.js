@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import moment from "moment-timezone";
 import axios from "axios";
 import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
@@ -106,7 +106,7 @@ const CreateJobComponent = ({
     const [timeZoneError, setTimeZoneError] = useState(false);
     const [startHourError, setStartHourError] = useState(true);
     const [startMinuteError, setStartMinuteError] = useState(true);
-    const [dateError, setDateError] = useState(true);
+    const [dateError, setDateError] = useState(false);
 
     // Reset state when modal closes
     useEffect(() => {
@@ -144,7 +144,7 @@ const CreateJobComponent = ({
             setTimeZoneError(false);
             setStartHourError(true);
             setStartMinuteError(true);
-            setDateError(true);
+            setDateError(false);
         }
     }, [open]);
 
@@ -166,6 +166,7 @@ const CreateJobComponent = ({
                 setPeriodMode("Specific Date Range");
                 setPeriod("");
             }
+            setPeriodModifier(checkEditPeriodModifier() || "latest");
             setSinceDate(jobData.sinceDate || "");
             setUntilDate(jobData.untilDate || "");
             setOriginalityThreshold(
@@ -193,7 +194,7 @@ const CreateJobComponent = ({
             setTimeZoneError(false);
             setStartHourError(true);
             setStartMinuteError(true);
-            setDateError(true);
+            setDateError(false);
         }
     }, [mode, jobData, modalOpen]);
 
@@ -207,30 +208,68 @@ const CreateJobComponent = ({
 
     //Reset period states when period mode changes
     useEffect(() => {
-        if (periodMode !== "Specific Date Range" ){
+        if (mode !== "edit" && periodMode !== "Specific Date Range" ){
             setPeriod("7d");
             setSinceDate("");
             setUntilDate("");
-        } else {
+        } else if (mode !== "edit" && periodMode === "Specific Date Range") {
             setPeriod("");
             setPeriodModifier("latest");
             setSinceDate("");
             setUntilDate("");
         }
-    }, [periodMode]);
+    }, [mode, periodMode]);
+
+    //Reset period states when period mode changes for edit mode
+    useEffect(() => {
+        if (mode === "edit" && periodMode === "By Days/Weeks") {
+            setPeriod(jobData.period || "7d");
+            switch (periodModifier) {
+                case "latest": {
+                    setSinceDate("");
+                    setUntilDate("");
+                    break;
+                }
+                case "before": {
+                    setSinceDate("");
+                    setUntilDate(jobData.untilDate || "");
+                    break;
+                }
+                default: {
+                    setSinceDate(jobData.sinceDate || "");
+                    setUntilDate("");
+                }
+            }
+
+        } else if (mode === "edit" && periodMode === "Specific Date Range") {
+            setPeriod("");
+            setPeriodModifier("latest");
+            jobData ? setSinceDate(jobData.sinceDate) : setSinceDate("");
+            jobData ? setUntilDate(jobData.untilDate) : setUntilDate("");
+        }
+    }, [mode, periodMode,periodModifier, jobData]);
 
     //Reset scheduled job states when job type changes
     useEffect(() => {
-        if (jobType !== "scheduled") {
+        if (mode !== "edit" && jobType !== "scheduled") {
             setFrequency("");
             setStartHour("--");
             setStartMinute("--"); 
             setStartDate("");
             setEndDate("");
-        } else {
+        } else if (mode !== "edit" && jobType === "scheduled") {
             setFrequency("weekly");
         }
     }, [jobType]);
+
+    //console
+    useEffect(() => {
+        console.log("Frequency: ", frequency);
+        console.log("Start Hour: ", startHour);
+        console.log("Start Minute: ", startMinute);
+        console.log("Start Date: ", startDate);
+        console.log("End Date: ", endDate);
+    }, [frequency, startHour, startMinute, startDate, endDate]);
 
     //State Change Functions
     ///Repo Link Input
@@ -364,8 +403,6 @@ const CreateJobComponent = ({
                         <div className="create-job-input-left">
                             <div className="job-name-container">
                                 <text className="job-name-label">Job Name</text>
-                                {console.log("page1Error:"+page1Error)}
-                                {console.log("jobNameError:"+jobNameError)}
                                 <TextField className="job-name-textbox" placeholder="Enter Job Name" value = {jobName} 
                                     //onChange={(e)=> { validateJobName(); setJobName(e.target.value)}} 
                                     onInput={(e)=> {setJobName(e.target.value)}}
@@ -407,7 +444,8 @@ const CreateJobComponent = ({
                                         </Grid2>
                                         <Grid2 size={6}>
                                             <Grid2 size={6}>
-                                                <select className="period-mode-dropdown" onChange={(e) => setPeriodMode(e.target.value)}>
+                                                <select className="period-mode-dropdown" value = {periodMode} 
+                                                    onChange={(e) => setPeriodMode(e.target.value)}>
                                                     <option value="Specific Date Range">Specific Date Range</option>
                                                     <option value="By Days/Weeks">By Days/Weeks</option>
                                                 </select>
@@ -552,7 +590,8 @@ const CreateJobComponent = ({
     }
 
     const renderPeriodModifierInput = () => {
-        switch (periodModifier) {
+        let mod = periodModifier;
+        switch (mod) {
             case "before":
                 return <TextField type="date" className="until-date-input2" value={untilDate} onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
 
@@ -571,7 +610,8 @@ const CreateJobComponent = ({
                     <text className="period-label">Period:</text>
                 </Grid2>
                 <Grid2 size={6}>
-                    <select className="period-range-dropdown" onChange={(e) => setPeriod(e.target.value)}>
+                    <select className="period-range-dropdown" value = {period} 
+                        onChange={(e) => setPeriod(e.target.value)}>
                         <option value="7d">7 days</option>
                         <option value="30d">30 days</option>
                         <option value="3-month">3 Months</option>
@@ -579,7 +619,9 @@ const CreateJobComponent = ({
                     </select>
                 </Grid2>
                 <Grid2 size={3} container alignItems="center">
-                    <select className="period-modifier-dropdown" onChange={(e) => setPeriodModifier(e.target.value)}>
+                    
+                    <select className="period-modifier-dropdown" value = {periodModifier} 
+                        onChange={(e) => setPeriodModifier(e.target.value)}>
                         <option value="latest">Latest</option>
                         <option value="before">Before Date:</option>
                         <option value="after">After Date:</option>
@@ -595,6 +637,16 @@ const CreateJobComponent = ({
                 </Grid2>
             </Grid2>
         )
+    }
+
+    const checkEditPeriodModifier = () => {
+        if(jobData.sinceDate === "" && jobData.untilDate === "") {
+            return "latest";
+        } else if (jobData.sinceDate !== ""){
+            return "after";
+        } else {
+            return "before";
+        }
     }
 
     const periodSwitchCase = (periodMode) => {
@@ -818,6 +870,7 @@ const CreateJobComponent = ({
             startHour === "--" ? formData.startHour = "" : formData.startHour = startHour;
             startMinute === "--" ? formData.startMinute = "" : formData.startMinute = startMinute;
             formData = {
+                jobId: mode === "edit" && jobData ? jobData.jobId : "",
                 jobName,
                 repoLink: repoLink.map(link => link.value).join(" "),
                 sinceDate,
@@ -835,6 +888,8 @@ const CreateJobComponent = ({
                 frequency,
                 startHour,
                 startMinute,
+                startDate,
+                endDate,
                 lastUpdated: {
                     time: timeZone
                         ? getTimeWithUtcOffset(timeZone)
@@ -856,7 +911,7 @@ const CreateJobComponent = ({
                         : moment().format("YYYY-MM-DD")
                 },
             };
-            console.log(JSON.stringify(formData));
+            //console.log(JSON.stringify(formData));
             let response;
             if (mode === "edit" && jobData) {
                 response = await axios.patch(
