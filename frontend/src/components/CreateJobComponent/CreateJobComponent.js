@@ -7,6 +7,7 @@ import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
 import "./CreateJobComponent.scss";
 import { showSuccessBar, showErrorBar } from "../../constants/snack-bar";
+import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles(() => ({
     autocomplete: {
@@ -261,15 +262,6 @@ const CreateJobComponent = ({
             setFrequency("weekly");
         }
     }, [jobType]);
-
-    //console
-    useEffect(() => {
-        console.log("Frequency: ", frequency);
-        console.log("Start Hour: ", startHour);
-        console.log("Start Minute: ", startMinute);
-        console.log("Start Date: ", startDate);
-        console.log("End Date: ", endDate);
-    }, [frequency, startHour, startMinute, startDate, endDate]);
 
     //State Change Functions
     ///Repo Link Input
@@ -870,7 +862,7 @@ const CreateJobComponent = ({
             startHour === "--" ? formData.startHour = "" : formData.startHour = startHour;
             startMinute === "--" ? formData.startMinute = "" : formData.startMinute = startMinute;
             formData = {
-                jobId: mode === "edit" && jobData ? jobData.jobId : "",
+                jobId: mode === "edit" && jobData ? jobData.jobId : uuidv4(),
                 jobName,
                 repoLink: repoLink.map(link => link.value).join(" "),
                 sinceDate,
@@ -911,7 +903,7 @@ const CreateJobComponent = ({
                         : moment().format("YYYY-MM-DD")
                 },
             };
-            //console.log(JSON.stringify(formData));
+            console.log(JSON.stringify(formData));
             let response;
             if (mode === "edit" && jobData) {
                 response = await axios.patch(

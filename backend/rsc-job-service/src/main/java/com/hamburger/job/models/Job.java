@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.boot.origin.SystemEnvironmentOrigin;
+
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
@@ -47,9 +49,6 @@ public class Job {
     private Map<String,String> settingsUpdatedAt;
 
     public Job () {
-        if(this.jobId == ""){
-            this.jobId = UUID.randomUUID().toString();
-        }
         if(this.status == null){
             this.status = "Pending";
         }
