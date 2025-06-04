@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hamburger.job.models.Job;
 import com.hamburger.job.models.exceptions.StartJobException;
 import com.hamburger.job.service.JobService;
+import com.hamburger.job.service.S3Service;
 import com.hamburger.job.util.JobUserAuth;
 import com.hamburger.job.util.JwtHelper;
 
@@ -29,13 +30,15 @@ public class JobServiceController {
     private final JobService jobService;
     private final JobUserAuth jobUserAuth;
     private final JwtHelper jwtHelper;
+    private final S3Service s3Service;
     private static final String env = "prod"; // change to prod to use auth
 
     @Autowired
-    public JobServiceController(JobService jobService, JobUserAuth jobUserAuth, JwtHelper jwtHelper) {
+    public JobServiceController(JobService jobService, JobUserAuth jobUserAuth, JwtHelper jwtHelper, S3Service s3Service) {
         this.jobService = jobService;
         this.jobUserAuth = jobUserAuth;
         this.jwtHelper = jwtHelper;
+        this.s3Service = s3Service;
     }
 
 
@@ -205,6 +208,23 @@ public class JobServiceController {
         }
     }
     
+    @GetMapping("/s3-presigned-url")
+    public ResponseEntity<String> getS3PresignedUrl(@RequestParam String jobId, HttpServletRequest request) {
+        try {
+            String jwtToken = jwtHelper.extractJwtFromRequest(request);
+            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
+            if (owner == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            String url = s3Service.generateS3PresignedUrl(owner, jobId, 15); // 15 minutes expiry
+            if (url == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Folder or report not found");
+            }
+            return ResponseEntity.ok(url);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 //     @DeleteMapping("/delete-all")
 //     public ResponseEntity<Void> deleteAllJobs() {
