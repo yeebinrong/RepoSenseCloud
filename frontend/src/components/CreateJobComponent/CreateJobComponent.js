@@ -903,7 +903,7 @@ const CreateJobComponent = ({
                         : moment().format("YYYY-MM-DD")
                 },
             };
-            console.log(JSON.stringify(formData));
+            //console.log(JSON.stringify(formData));
             let response;
             if (mode === "edit" && jobData) {
                 response = await axios.patch(
