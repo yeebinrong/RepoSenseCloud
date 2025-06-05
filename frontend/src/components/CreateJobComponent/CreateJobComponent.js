@@ -233,11 +233,11 @@ const CreateJobComponent = ({
                 }
                 case "before": {
                     setSinceDate("");
-                    setUntilDate(jobData.untilDate || "");
+                    setUntilDate(moment(jobData.untilDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
                     break;
                 }
                 default: {
-                    setSinceDate(jobData.sinceDate || "");
+                    setSinceDate(moment(jobData.sinceDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
                     setUntilDate("");
                 }
             }
@@ -909,7 +909,7 @@ const CreateJobComponent = ({
                         : moment().format("YYYY-MM-DD")
                 },
             };
-            //console.log(JSON.stringify(formData));
+            // console.log(JSON.stringify(formData));
             let response;
             if (mode === "edit" && jobData) {
                 response = await axios.patch(

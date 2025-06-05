@@ -233,8 +233,8 @@ public class JobDbDao {
                     .sortValue(jobReplacement.getJobId())
                     .build());
 
-            if (jobTarget != null && "Pending".equals(jobTarget.getStatus())) {
-                // Update the status
+            if (jobTarget != null && !"Running".equals(jobTarget.getStatus())&& !"Completed".equals(jobTarget.getStatus())) {
+                jobReplacement.setStatus("Pending");
                 jobTable.updateItem(jobReplacement);
                 System.out.println("Job updated  successfully.");
             } else {
