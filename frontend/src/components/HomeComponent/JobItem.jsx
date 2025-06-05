@@ -25,6 +25,9 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                 },
                 credentials: 'include',
             });
+            if (!response.ok) {
+                throw new Error(`Job run error! status: ${response.status}`);
+            }
             console.log('Job run successfully:', response.data);
             window.dispatchEvent(new Event('updateJobData'));
             showSuccessBar("Job Started Successfully");

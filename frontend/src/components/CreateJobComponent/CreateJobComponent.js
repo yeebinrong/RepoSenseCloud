@@ -931,6 +931,7 @@ const CreateJobComponent = ({
                 );
             }
             if (response.status === 201 || response.status === 200) {
+                console.log("Job created/updated successfully:", response.status);
                 showSuccessBar(
                 mode === "edit" ? "Job Updated Successfully" : "Job Created Successfully"
                 );
