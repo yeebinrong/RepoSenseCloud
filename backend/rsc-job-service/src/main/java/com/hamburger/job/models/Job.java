@@ -35,7 +35,7 @@ public class Job {
     private boolean shallowClone;
     private boolean ignoreFileSizeLimit; 
     private boolean addLastMod;
-    private String formatChipValues;
+    private List<String> formatChipValues;
     private String jobType;
     private String frequency;
     private String startMinute;

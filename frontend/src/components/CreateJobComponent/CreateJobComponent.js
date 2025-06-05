@@ -920,7 +920,7 @@ const CreateJobComponent = ({
                 shallowClone,
                 ignoreFileSizeLimit,
                 addLastMod,
-                formatChipValues: formatChipValues.join(" "),
+                formatChipValues,
                 jobType,
                 frequency,
                 startHour,

@@ -191,14 +191,13 @@ public class JobDbDao {
                 job.setLastUpdated(latestDateTime);
 
                 jobTable.updateItem(job);
-
                 String messageBody = "{"
                     + "\"owner\": \"" + job.getOwner() + "\","
                     + "\"id\": \"" + job.getJobId() + "\","
                     + "\"repos\": \"" + job.getRepoLink() + "\","
                     + "\"since\": \"" + job.getSinceDate() + "\","
                     + "\"until\": \"" + job.getUntilDate() + "\","
-                    + "\"formats\": \"" + job.getFormatChipValues() + "\","
+                    + "\"formats\": \"" + String.join(" ", job.getFormatChipValues()) + "\","
                     + "\"period\": \"" + job.getPeriod() + "\","
                     + "\"originalityThreshold\": " + job.getOriginalityThreshold() + ","
                     + "\"timezone\": \"" + job.getTimeZone() + "\","
