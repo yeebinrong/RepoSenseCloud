@@ -612,8 +612,8 @@ const CreateJobComponent = ({
                         onChange={(e) => setPeriod(e.target.value)}>
                         <option value="7d">7 days</option>
                         <option value="30d">30 days</option>
-                        <option value="3-month">3 Months</option>
-                        <option value="6-month">6 Months</option>
+                        <option value="12w">12 Weeks</option>
+                        <option value="24w">24 Weeks</option>
                     </select>
                 </Grid2>
                 <Grid2 size={3} container alignItems="center">
