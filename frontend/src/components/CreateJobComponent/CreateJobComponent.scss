@@ -20,6 +20,8 @@ body {
     border-radius: 8px;
     background-color: #f7a81b;
     min-height: 52px;
+    font-family: "DM Sans", sans-serif !important;
+    font-size: 15px;
     color: #fff;
     width: 124px;
     padding: 14px 15px;
@@ -33,6 +35,7 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
+    font-family: "DM Sans", sans-serif !important;
 
     .h1 {
         margin-bottom: 26px;
@@ -87,10 +90,12 @@ body {
                     font-weight: bold;
                     text-align: left;
                     margin-bottom: 10px;
+                    font-family: "DM Sans", sans-serif !important;
                 }
 
                 .job-name-textbox {
                     margin-bottom: 30px;
+                    font-family: "DM Sans", sans-serif !important;
                 }
 
                 .job-name-textbox input {
@@ -117,12 +122,14 @@ body {
                     font-weight: bold;
                     margin: 15px;
                     text-align: left;
+                    font-family: "DM Sans", sans-serif !important;
                 }
 
                 .target-repo-textbox {
                     margin-bottom: 5px;
                     margin-left: 25px;
                     width: 325px;
+                    font-family: "DM Sans", sans-serif !important;
                 }
 
                 .target-repo-textbox input {
@@ -151,6 +158,7 @@ body {
                     padding-bottom: 2%;
                     border: 2px solid var(--input-border-color);
                     border-radius: 6px;
+                    font-family: "DM Sans", sans-serif !important;
                     cursor: pointer;
                 }
             }
@@ -168,6 +176,7 @@ body {
 
 
                 .settings-header-label {
+                    font-family: "DM Sans", sans-serif !important;
                     font-size: 20px;
                     font-weight: bold;
                     text-align: left;
@@ -181,7 +190,8 @@ body {
 
                     .originality-label,
                     .until-label {
-                        margin-bottom: 15px
+                        margin-bottom: 15px;
+                        font-family: "DM Sans", sans-serif !important;
                     }
 
                     .since-date-input,
@@ -190,6 +200,7 @@ body {
                         width: 243px;
                         height: 35px;
                         
+                        font-family: "DM Sans", sans-serif !important;
                         .MuiInputBase-root {
                             height: 100%;
                             width: 100%;
@@ -214,6 +225,7 @@ body {
                     .until-date-input2 {
                         width: 243px;
                         height: 35px;
+                        font-family: "DM Sans", sans-serif !important;
                         .MuiInputBase-root {
                             height: 100%;
                             width: 100%;
@@ -241,9 +253,42 @@ body {
                         border-radius: 12px;
                         border: 2px solid var(--input-border-color);
                         text-align: center;
+                        font-family: "DM Sans", sans-serif !important;
                         font-weight: bold;
                         border: 1px solid #cecece;
                         appearance: none;
+                    }
+
+                    .navigation-buttons,
+                    .authorship-label,
+                    .prev-author-label,
+                    .shallow-clone-label,
+                    .ignore-size-limit-label,
+                    .Add-last-mod-label,
+                    .format-label,
+                    .timezone-label,
+                    .since-label,
+                    .start-date-label,
+                    .end-date-label,
+                    .period-label,
+                    .period-mode-label {
+                        font-family: "DM Sans", sans-serif !important;
+                    }
+
+                    .navigation-buttons,
+                    .authorship-label,
+                    .prev-author-label,
+                    .shallow-clone-label,
+                    .ignore-size-limit-label,
+                    .Add-last-mod-label,
+                    .format-label,
+                    .timezone-label,
+                    .since-label,
+                    .start-date-label,
+                    .end-date-label,
+                    .period-label,
+                    .period-mode-label {
+                        font-family: "DM Sans", sans-serif !important;
                     }
 
                     .period-mode-dropdown,
@@ -255,6 +300,7 @@ body {
                         text-align: center;
                         border: 1px solid #cecece;
                         appearance: none;
+                        font-family: "DM Sans", sans-serif !important;
                     }
 
                     .error {
@@ -263,7 +309,7 @@ body {
                     
                     .error-message {
                         color: rgba(177, 0, 0, 0.774);
-                        font-family: "DM Sans", sans-serif;
+                        font-family: "DM Sans", sans-serif !important;
                         font-size: 12px;
                         margin-left: 15px;
                         margin-top: 4px;
@@ -305,6 +351,7 @@ body {
     .job-type-box {
         background-color: #fff;
         width: 600px;
+        font-family: "DM Sans", sans-serif !important;
     }
 
     .schedule-settings-labels {
@@ -343,6 +390,7 @@ body {
     .end-date-input {
         width: 243px;
         height: 35px;
+        font-family: "DM Sans", sans-serif !important;
         .MuiInputBase-root {
             height: 100%;
             width: 100%;
