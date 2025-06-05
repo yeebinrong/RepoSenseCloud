@@ -198,7 +198,7 @@ public class JobDbDao {
                     + "\"repos\": \"" + job.getRepoLink() + "\","
                     + "\"since\": \"" + job.getSinceDate() + "\","
                     + "\"until\": \"" + job.getUntilDate() + "\","
-                    + "\"formats\": \"" + String.join(" ", job.getFormatChipValues()) + "\","
+                    + "\"formats\": \"" + job.getFormatChipValues() + "\","
                     + "\"period\": \"" + job.getPeriod() + "\","
                     + "\"originalityThreshold\": " + job.getOriginalityThreshold() + ","
                     + "\"timezone\": \"" + job.getTimeZone() + "\","

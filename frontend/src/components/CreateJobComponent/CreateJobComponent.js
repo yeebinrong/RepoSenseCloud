@@ -536,54 +536,56 @@ const CreateJobComponent = ({
 
                                             </Grid2>
                                         </Grid2>
-                                        <Grid2 size={2} marginTop={2}>
+                                        <Grid2 size={2} marginTop={2} container alignItems="center">
                                             <text className="format-label">Format:</text>
                                         </Grid2>
-                                        <Grid2  size={10} marginTop={2}>
-                                            <TextField
-                                                sx={{
-                                                    '& .MuiInputBase-root': {
-                                                        flexDirection: 'column',
-                                                        alignItems: 'flex-start', // Align chips to top
-                                                        paddingTop: 1,
-                                                        fontFamily: 'DM Sans',
-                                                        fontSize: '14px',
-                                                        minHeight: '40px',
-                                                    },
-                                                    '& .MuiInputBase-input': {
-                                                        padding: 0,
-                                                        paddingBottom: '5px',
-                                                    },
-                                                    '& label.MuiInputLabel-root': {
-                                                        background: 'white',
-                                                        px: 0.5,
-                                                        left: '-7px',
-                                                    },
-                                                }}
-                                                label="Enter File Format(s) To Scan"
-                                                placeholder={formatChipValues.length > 1? "" : "e.g. js, py, java"}
-                                                value={inputValue}
-                                                onChange={(e) => setInputValue(e.target.value)}
-                                                onKeyDown={handleAddChip}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <Box sx={{
-                                                            display: 'inline',
-                                                            gap: 1,
-                                                            maxWidth: '80%',
-                                                        }}>
-                                                            {formatChipValues.map((chip) => (
-                                                                <Chip
-                                                                    key={chip}
-                                                                    label={chip}
-                                                                    onDelete={() => handleDeleteChip(chip)}
-                                                                    size="small"
-                                                                />
-                                                            ))}
-                                                        </Box>
-                                                    ),
-                                                }}
-                                                fullWidth
+                                        <Grid2 size={10} marginTop={2}>
+                                            <Autocomplete
+                                                multiple
+                                                freeSolo
+                                                options={["js", "java", "python", "c", "cpp", "html", "css"]}
+                                                value={formatChipValues}
+                                                onChange={(event, newValue) => setFormatChipValues(newValue)}
+                                                inputValue={inputValue}
+                                                onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
+                                                renderTags={(value, getTagProps) =>
+                                                    value.map((option, index) => (
+                                                        <Chip
+                                                            variant="outlined"
+                                                            label={option}
+                                                            {...getTagProps({ index })}
+                                                            size="small"
+                                                        />
+                                                    ))
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        //label="Enter File Format(s) To Scan"
+                                                        placeholder={formatChipValues.length < 1? "e.g. js, py, java":""}
+                                                        sx={{
+                                                            '& label.MuiInputLabel-root': {
+                                                                background: 'white',
+                                                                px: 0.5,
+                                                                left: '-7px',
+                                                                fontSize: '14px',
+                                                            },
+                                                            '& .MuiInputBase-root': {
+                                                                flexDirection: 'wrap',
+                                                                alignItems: 'flex-start',
+                                                                paddingTop: 1,
+                                                                fontFamily: 'DM Sans',
+                                                                fontSize: '14px',
+                                                                minHeight: '40px',
+                                                            },
+                                                            '& .MuiInputBase-input': {
+                                                                padding: 0,
+                                                                paddingBottom: '5px',
+                                                            },
+                                                        }}
+                                                        fullWidth
+                                                    />
+                                                )}
                                             />
                                         </Grid2>
                                     </Grid2>
@@ -918,7 +920,7 @@ const CreateJobComponent = ({
                 shallowClone,
                 ignoreFileSizeLimit,
                 addLastMod,
-                formatChipValues,
+                formatChipValues: formatChipValues.join(" "),
                 jobType,
                 frequency,
                 startHour,
