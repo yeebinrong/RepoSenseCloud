@@ -135,7 +135,7 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                 </div>
             </td>
             <td className={styles.jobActions}>
-                <button className={styles.iconButton} onClick={() => handleViewReport()}>
+                <button className={styles.iconButton} disabled = {status !== "Completed"} onClick={() => handleViewReport()}>
                     <img src="view.svg" alt="View" className={styles.actionIcon}/>
                 </button>
                 <button className={styles.iconButton} onClick={() => setEditModalOpen(true)}>
@@ -149,7 +149,7 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                         onClose={() => setEditModalOpen(false)}
                     />
                 )}
-                <button className={styles.iconButton} onClick={() => handleRun()}>
+                <button className={styles.iconButton} disabled = {status === "Completed" || status === "Running" } onClick={() => handleRun()}>
                     <img src="rerun.svg" alt="Run" className={styles.actionIcon} />
                 </button>
             </td>
