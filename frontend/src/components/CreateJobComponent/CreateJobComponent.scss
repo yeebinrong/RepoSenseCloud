@@ -1,6 +1,5 @@
 body {
-    font-family: "DM Sans", sans-serif;
-    font-weight: bold;
+    font-family: "DM Sans", sans-serif;;
     background-color: #fff;
     --general-text-color: #292D32;
     --general-text-size: 14px;
@@ -64,6 +63,7 @@ body {
         border-left: 4px dotted #dedcdc;
         height: 80wh;
         margin: 10px;
+        margin-left: 30px;
     }
 
     .create-job-input-container {
@@ -87,6 +87,7 @@ body {
                 flex-direction: column;
 
                 .job-name-label {
+                    font-weight: bold;
                     text-align: left;
                     margin-bottom: 10px;
                     font-family: "DM Sans", sans-serif !important;
@@ -95,6 +96,11 @@ body {
                 .job-name-textbox {
                     margin-bottom: 30px;
                     font-family: "DM Sans", sans-serif !important;
+                }
+
+                .job-name-textbox input {
+                    font-size: var(--general-text-size);
+                    height: 5px;
                 }
             }
 
@@ -113,6 +119,7 @@ body {
 
 
                 .target-repo-label {
+                    font-weight: bold;
                     margin: 15px;
                     text-align: left;
                     font-family: "DM Sans", sans-serif !important;
@@ -125,8 +132,13 @@ body {
                     font-family: "DM Sans", sans-serif !important;
                 }
 
+                .target-repo-textbox input {
+                    font-size: var(--general-text-size);
+                    height: 5px;
+                }
+
                 .delete-repo-link-button {
-                    margin-top: 15px;
+                    padding: 7px;
                     border-color: transparent;
                     background-color: transparent;
                     color: #000000;
@@ -166,6 +178,7 @@ body {
                 .settings-header-label {
                     font-family: "DM Sans", sans-serif !important;
                     font-size: 20px;
+                    font-weight: bold;
                     text-align: left;
                     margin-bottom: 1%;
                 }
@@ -185,7 +198,8 @@ body {
                     .until-date-input,
                     .originality-input {
                         width: 243px;
-                        height: 42px;
+                        height: 35px;
+                        
                         font-family: "DM Sans", sans-serif !important;
                         .MuiInputBase-root {
                             height: 100%;
@@ -194,9 +208,12 @@ body {
                             font-size: var(--general-text-size);
                         }
                         input {
+                            text-transform: uppercase;
                             text-align: center;
                         }
-                        
+                        input::placeholder{
+                            color: var(--placeholder-color);
+                        }
                     }
 
                     .until-date-input,
@@ -207,7 +224,7 @@ body {
                     .since-date-input2,
                     .until-date-input2 {
                         width: 243px;
-                        height: 45px;
+                        height: 35px;
                         font-family: "DM Sans", sans-serif !important;
                         .MuiInputBase-root {
                             height: 100%;
@@ -216,6 +233,7 @@ body {
                             font-size: var(--general-text-size);
                         }
                         input {
+                            text-transform: uppercase;
                             text-align: center;
                         }
                         
@@ -224,19 +242,37 @@ body {
 
                     .period-settings-label{
                         margin: 10px 0 10px 0;
+                        font-size: var(--general-text-size);
                         color: var(--placeholder-color);
                         
                     }
 
                     .period-modifier-dropdown {
-                        width: 243px;
-                        height: 45px;
+                        width: 100px;
+                        height: 35px;
                         border-radius: 12px;
                         border: 2px solid var(--input-border-color);
-                        text-align: left;
+                        text-align: center;
                         font-family: "DM Sans", sans-serif !important;
                         font-weight: bold;
+                        border: 1px solid #cecece;
+                        appearance: none;
+                    }
 
+                    .navigation-buttons,
+                    .authorship-label,
+                    .prev-author-label,
+                    .shallow-clone-label,
+                    .ignore-size-limit-label,
+                    .Add-last-mod-label,
+                    .format-label,
+                    .timezone-label,
+                    .since-label,
+                    .start-date-label,
+                    .end-date-label,
+                    .period-label,
+                    .period-mode-label {
+                        font-family: "DM Sans", sans-serif !important;
                     }
 
                     .navigation-buttons,
@@ -259,7 +295,7 @@ body {
                     .timezone-dropdown,
                     .period-range-dropdown {
                         width: 243px;
-                        height: 45px;
+                        height: 35px;
                         border-radius: 12px;
                         text-align: center;
                         border: 1px solid #cecece;
@@ -283,10 +319,12 @@ body {
 
                     .left-checklist-container {
                         width: 200px;
+                        margin-bottom: 10px;
                     }
 
                     .right-checklist-container {
                         width: 260px;
+                        margin-bottom: 10px;
                     }
                 }
             }
@@ -317,14 +355,11 @@ body {
     }
 
     .schedule-settings-labels {
-        height: 50px;
-        display: flex;
-        align-items: center;
     }
 
     .frequency-dropdown {
         width: 243px;
-        height: 45px;
+        height: 35px;
         border-radius: 12px;
         border: 2px solid var(--input-border-color);
         text-align: center; 
@@ -341,7 +376,7 @@ body {
     .time-dropdown{
         margin-top: 5px;
         width: 80px;
-        height: 42px;
+        height: 35px;
         border-color: var(--input-border-color);
         border-radius: 5px;
         text-align: center;
@@ -354,7 +389,7 @@ body {
     .start-date-input, 
     .end-date-input {
         width: 243px;
-        height: 45px;
+        height: 35px;
         font-family: "DM Sans", sans-serif !important;
         .MuiInputBase-root {
             height: 100%;
@@ -364,6 +399,7 @@ body {
         }
         input {
             text-align: center;
+            text-transform: uppercase;
         }
         
     }
