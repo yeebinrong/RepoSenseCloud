@@ -177,8 +177,8 @@ const CreateJobComponent = ({
                 setPeriod("");
             }
             setPeriodModifier(checkEditPeriodModifier() || "latest");
-            setSinceDate(jobData.sinceDate || "");
-            setUntilDate(jobData.untilDate || "");
+            setSinceDate(moment(jobData.sinceDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
+            setUntilDate(moment(jobData.untilDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
             setOriginalityThreshold(
                 typeof jobData.originalityThreshold === "number" ? jobData.originalityThreshold : 0.5
             );
@@ -242,11 +242,11 @@ const CreateJobComponent = ({
                 }
                 case "before": {
                     setSinceDate("");
-                    setUntilDate(jobData.untilDate || "");
+                    setUntilDate(moment(jobData.untilDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
                     break;
                 }
                 default: {
-                    setSinceDate(jobData.sinceDate || "");
+                    setSinceDate(moment(jobData.sinceDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
                     setUntilDate("");
                 }
             }
@@ -254,8 +254,8 @@ const CreateJobComponent = ({
         } else if (mode === "edit" && periodMode === "Specific Date Range") {
             setPeriod("");
             setPeriodModifier("latest");
-            jobData ? setSinceDate(jobData.sinceDate) : setSinceDate("");
-            jobData ? setUntilDate(jobData.untilDate) : setUntilDate("");
+            jobData ? setSinceDate(moment(jobData.sinceDate, "DD/MM/YYYY").format("YYYY-MM-DD")) : setSinceDate("");
+            jobData ? setUntilDate(moment(jobData.untilDate, "DD/MM/YYYY").format("YYYY-MM-DD")) : setUntilDate("");
         }
     }, [mode, periodMode,periodModifier, jobData]);
 
@@ -271,6 +271,12 @@ const CreateJobComponent = ({
             setFrequency("weekly");
         }
     }, [jobType]);
+
+    // useEffect(() => {
+    //     console.log("Period Mode:", periodMode);
+    //     console.log("Since Date:", sinceDate);
+    //     console.log("Until Date:", untilDate);
+    // }, [sinceDate, untilDate]);
 
     //State Change Functions
     ///Repo Link Input
@@ -651,8 +657,8 @@ const CreateJobComponent = ({
                         onChange={(e) => setPeriod(e.target.value)}>
                         <option value="7d">7 days</option>
                         <option value="30d">30 days</option>
-                        <option value="3-month">3 Months</option>
-                        <option value="6-month">6 Months</option>
+                        <option value="12w">12 Weeks</option>
+                        <option value="24w">24 Weeks</option>
                     </select>
                 </Grid2>
                 <Grid2 size={3} container alignItems="center">
@@ -910,8 +916,8 @@ const CreateJobComponent = ({
                 jobId: mode === "edit" && jobData ? jobData.jobId : uuidv4(),
                 jobName,
                 repoLink: repoLink.map(link => link.value).join(" "),
-                sinceDate,
-                untilDate,
+                sinceDate: sinceDate ? moment(sinceDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+                untilDate: untilDate ? moment(untilDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
                 period,
                 originalityThreshold,
                 timeZone,
@@ -925,8 +931,8 @@ const CreateJobComponent = ({
                 frequency,
                 startHour,
                 startMinute,
-                startDate,
-                endDate,
+                startDate: startDate ? moment(startDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+                endDate: endDate ? moment(endDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
                 lastUpdated: {
                     time: timeZone
                         ? getTimeWithUtcOffset(timeZone)
@@ -948,7 +954,7 @@ const CreateJobComponent = ({
                         : moment().format("YYYY-MM-DD")
                 },
             };
-            //console.log(JSON.stringify(formData));
+            // console.log(JSON.stringify(formData));
             let response;
             if (mode === "edit" && jobData) {
                 response = await axios.patch(
