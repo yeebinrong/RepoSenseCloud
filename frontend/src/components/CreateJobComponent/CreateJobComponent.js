@@ -263,6 +263,12 @@ const CreateJobComponent = ({
         }
     }, [jobType]);
 
+    // useEffect(() => {
+    //     console.log("Period Mode:", periodMode);
+    //     console.log("Since Date:", sinceDate);
+    //     console.log("Until Date:", untilDate);
+    // }, [sinceDate, untilDate]);
+
     //State Change Functions
     ///Repo Link Input
     const addRepoLink = () => {
@@ -865,8 +871,8 @@ const CreateJobComponent = ({
                 jobId: mode === "edit" && jobData ? jobData.jobId : uuidv4(),
                 jobName,
                 repoLink: repoLink.map(link => link.value).join(" "),
-                sinceDate,
-                untilDate,
+                sinceDate: sinceDate ? moment(sinceDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+                untilDate: untilDate ? moment(untilDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
                 period,
                 originalityThreshold,
                 timeZone,
@@ -880,8 +886,8 @@ const CreateJobComponent = ({
                 frequency,
                 startHour,
                 startMinute,
-                startDate,
-                endDate,
+                startDate: startDate ? moment(startDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+                endDate: endDate ? moment(endDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
                 lastUpdated: {
                     time: timeZone
                         ? getTimeWithUtcOffset(timeZone)
