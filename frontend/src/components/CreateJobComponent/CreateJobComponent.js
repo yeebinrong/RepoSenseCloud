@@ -168,8 +168,8 @@ const CreateJobComponent = ({
                 setPeriod("");
             }
             setPeriodModifier(checkEditPeriodModifier() || "latest");
-            setSinceDate(jobData.sinceDate || "");
-            setUntilDate(jobData.untilDate || "");
+            setSinceDate(moment(jobData.sinceDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
+            setUntilDate(moment(jobData.untilDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
             setOriginalityThreshold(
                 typeof jobData.originalityThreshold === "number" ? jobData.originalityThreshold : 0.5
             );
@@ -245,8 +245,8 @@ const CreateJobComponent = ({
         } else if (mode === "edit" && periodMode === "Specific Date Range") {
             setPeriod("");
             setPeriodModifier("latest");
-            jobData ? setSinceDate(jobData.sinceDate) : setSinceDate("");
-            jobData ? setUntilDate(jobData.untilDate) : setUntilDate("");
+            jobData ? setSinceDate(moment(jobData.sinceDate, "DD/MM/YYYY").format("YYYY-MM-DD")) : setSinceDate("");
+            jobData ? setUntilDate(moment(jobData.untilDate, "DD/MM/YYYY").format("YYYY-MM-DD")) : setUntilDate("");
         }
     }, [mode, periodMode,periodModifier, jobData]);
 
