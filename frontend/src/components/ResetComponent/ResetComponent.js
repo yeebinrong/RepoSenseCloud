@@ -21,6 +21,7 @@ class ResetComponent extends React.Component {
     super(props);
 
     this.state = {
+      errorMessage: "",
       passwordErrorMessage: "",
       confirmPasswordErrorMessage: "",
       email: "",
@@ -79,6 +80,7 @@ class ResetComponent extends React.Component {
   handleSubmit = async (e) => {
     e.preventDefault();
     this.setState({
+      errorMessage: "",
       passwordErrorMessage: "",
       confirmPasswordErrorMessage: "",
       isButtonClicked: true,
@@ -118,8 +120,7 @@ class ResetComponent extends React.Component {
     } catch (error) {
       this.setState({
         errorMessage:
-          error.response?.data.message ||
-          "An error occurred. Please try again.",
+          error.response?.data.error || "An error occurred. Please try again.",
         isButtonClicked: false,
       });
     }
@@ -299,6 +300,11 @@ class ResetComponent extends React.Component {
             <Typography className={"reset-panel-sub-title"}>
               Enter your new secure password
             </Typography>
+            {this.state.errorMessage !== "" && (
+              <Alert className="reset-panel-error" severity="error">
+                {this.state.errorMessage}
+              </Alert>
+            )}
             {this.renderResetForm()}
           </FormControl>
         </form>
