@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import "./App.scss";
 import LoginPage from "./pages/login-page";
 import ForgotPage from "./pages/forgot-page";
+import ResetPage from "./pages/reset-page";
 import HomePage from "./pages/home-page";
 import ErrorPage from "./pages/error-page";
 import CreateJobPage from "./pages/create-job-page";
@@ -20,7 +21,7 @@ const App = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const publicRoutes = ["/login", "/register", "/forgot"];
+    const publicRoutes = ["/login", "/register", "/forgot", "/reset"];
 
     if (!token && !publicRoutes.includes(window.location.pathname)) {
       navigate("/login");
@@ -66,6 +67,7 @@ const App = () => {
         element={<LoginPage {...mainProps} isRegisterPage />}
       />
       <Route path="/forgot" exact element={<ForgotPage {...mainProps} />} />
+      <Route path="/reset" exact element={<ResetPage {...mainProps} />} />
       <Route path="/home" exact element={<HomePage {...mainProps} />} />
       {/* Below is a temp route to test create job TODO: remove this */}
       {/* <Route path="/create-job" element={<CreateJobPage {...mainProps} />} /> */}
