@@ -112,6 +112,21 @@
         - **Status 401: Unauthorized**
             - Failed JWT authentication
 
+#### GET S3 Presigned URL
+- **GET** `/api/jobs/s3-presigned-url`
+    - Gets a specific S3 presigned URL
+    - Request parameter: jobId
+    - Requires authentication
+    - Results:
+        - **Status 200: Success**
+            - Returns: Report URL
+        - **Status 401: Unauthorized**
+            - Failed JWT authentication
+        - **Status 404: Not Found**
+            - Report URL Not Found
+        - **Status 500: Internal Server Error**
+            - S3 Unavailable
+
 ## Authentication
 Endpoints require JWT authentication token stored in cookie.
 All endpoint extracts "owner" name from JWT within service function call.
@@ -119,6 +134,7 @@ All endpoint extracts "owner" name from JWT within service function call.
 ## Error Responses
 - **Status 400: Bad Request**
 - **Status 401: Unauthorized**
+- **Status 404: Not Found**
 - **Status 500: Internal Server Error**
 
 ## Database

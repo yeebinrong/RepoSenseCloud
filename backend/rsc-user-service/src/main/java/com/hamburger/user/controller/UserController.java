@@ -13,6 +13,7 @@ import com.hamburger.user.dao.entity.User;
 import com.hamburger.user.dto.LoginReqDto;
 import com.hamburger.user.dto.RegisterReqDto;
 import com.hamburger.user.dto.AuthReqDto;
+import com.hamburger.user.dto.ResetReqDto;
 import com.hamburger.user.service.UserService;
 import com.hamburger.user.service.util.JwtUtil;
 
@@ -71,8 +72,8 @@ public class UserController {
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<Map<String, Object>> validateToken(@RequestBody AuthReqDto requestBody) {
-        String token = requestBody.getToken();
+    public ResponseEntity<Map<String, Object>> validateToken(@RequestBody AuthReqDto req) {
+        String token = req.getToken();
         System.out.println("Received token for validation: " + token);
         if (token == null || !JwtUtil.validateToken(token)) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid or expired token"));
@@ -94,5 +95,34 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, Object>> forgotPassword(@RequestBody ResetReqDto req) {
+        if (!req.isEmailValid()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Invalid email format");
+            return ResponseEntity.status(400).body(response);
+        }
+        userService.requestResetPassword(req.getEmail());
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Reset password email is sent");
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, Object>> resetPassword(@RequestBody ResetReqDto req) {
+        String email = req.getEmail();
+        String token = req.getToken();
+        String newPassword = req.getNewPassword();
+        boolean isPasswordReset = userService.resetPassword(email, token, newPassword);
+        Map<String, Object> response = new HashMap<>();
+        if (isPasswordReset) {
+            response.put("message", "Password has been reset successfully");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("error", "Invalid url or token expired");
+            return ResponseEntity.status(400).body(response);
+        }
     }
 }
