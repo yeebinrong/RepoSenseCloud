@@ -41,7 +41,7 @@ class ForgotComponent extends React.Component {
     } catch (error) {
       this.setState({
         errorMessage:
-          error.response?.data.message || "An error occurred. Please try again.",
+          error.response?.data.error || "An error occurred. Please try again.",
         isButtonClicked: false,
       });
     }
