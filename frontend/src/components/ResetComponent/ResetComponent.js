@@ -13,6 +13,8 @@ import NavigateButton from "../NavigateButton";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import LockIcon from "@mui/icons-material/Lock";
+import { showSuccessBar } from "../../constants/snack-bar";
+import axios from "axios";
 
 class ResetComponent extends React.Component {
   constructor(props) {
@@ -21,7 +23,17 @@ class ResetComponent extends React.Component {
     this.state = {
       passwordErrorMessage: "",
       confirmPasswordErrorMessage: "",
+      email: "",
+      token: "",
     };
+  }
+
+  componentDidMount() {
+    // Extract email and token from URL query params
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email") || "";
+    const token = params.get("token") || "";
+    this.setState({ email, token });
   }
 
   validatePassword = (password) => {
@@ -72,7 +84,7 @@ class ResetComponent extends React.Component {
       isButtonClicked: true,
     });
 
-    const { password, confirmPassword } = this.state;
+    const { email, token, password, confirmPassword } = this.state;
 
     const passwordErrorMessage = this.validatePassword(password);
     const confirmPasswordErrorMessage = this.validateConfirmPassword(
@@ -87,6 +99,29 @@ class ResetComponent extends React.Component {
         isButtonClicked: false,
       });
       return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_USER_SERVICE_URL}/reset-password`,
+        {
+          email: email,
+          token: token,
+          newPassword: password,
+        }
+      );
+      if (response.status === 200) {
+        showSuccessBar(response.data.message);
+        this.setState({ errorMessage: "", isButtonClicked: false });
+        this.props.navigate("/login");
+      }
+    } catch (error) {
+      this.setState({
+        errorMessage:
+          error.response?.data.message ||
+          "An error occurred. Please try again.",
+        isButtonClicked: false,
+      });
     }
   };
 
