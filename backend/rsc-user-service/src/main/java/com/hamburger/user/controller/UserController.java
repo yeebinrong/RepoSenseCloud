@@ -101,7 +101,7 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> forgotPassword(@RequestBody ResetReqDto req) {
         if (!req.isEmailValid()) {
             Map<String, Object> response = new HashMap<>();
-            response.put("message", "Invalid email format");
+            response.put("error", "Invalid email format");
             return ResponseEntity.status(400).body(response);
         }
         userService.requestResetPassword(req.getEmail());
@@ -121,7 +121,7 @@ public class UserController {
             response.put("message", "Password has been reset successfully");
             return ResponseEntity.ok(response);
         } else {
-            response.put("message", "Invalid email or token expired");
+            response.put("error", "Invalid url or token expired");
             return ResponseEntity.status(400).body(response);
         }
     }
