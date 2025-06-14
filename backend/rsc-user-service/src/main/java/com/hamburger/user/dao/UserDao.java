@@ -22,6 +22,8 @@ public interface UserDao {
     void delete(String id);
     User findById(String id);
     User findByUserName(String userName);
+    User findByEmail(String email);
+    void update(String email, String newPassword);
 
     @Repository
     public class UserDaoAWSDynamoDB implements UserDao {
@@ -81,5 +83,42 @@ public interface UserDao {
                 .hashedPassword(resp.get("hashedPassword").s())
                 .build();
         }
+
+        @Override
+        public User findByEmail(String email) {
+            String indexName = "EmailIndex";
+            String tableName = "rsc-localhost-user-data";
+            Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
+            expressionAttributeValues.put(":email", AttributeValue.builder().s(email).build());
+
+            QueryRequest queryRequest = QueryRequest.builder()
+                .tableName(tableName)
+                .indexName(indexName)
+                .keyConditionExpression("email = :email")
+                .expressionAttributeValues(expressionAttributeValues)
+                .build();
+
+            QueryResponse queryResponse = dynamoDbClient.query(queryRequest);
+            if (queryResponse.items().isEmpty()) {
+                return null;
+            }
+            System.out.println(queryResponse.items().get(0));
+            Map<String, AttributeValue> resp = queryResponse.items().get(0);
+            return User.builder()
+                .id(resp.get("id").s())
+                .userName(resp.get("userName").s())
+                .email(resp.get("email").s())
+                .hashedPassword(resp.get("hashedPassword").s())
+                .build();
+        }
+
+        @Override
+        public void update(String email, String hashedPassword) {
+            User user = findByEmail(email);
+            if (user != null) {
+                user.setHashedPassword(hashedPassword);
+                userTable.putItem(user);
+            }
+        }  
     }
 }
