@@ -20,6 +20,11 @@ module "ddb_user_data" {
       name            = "UserNameIndex"
       hash_key        = "userName"
       projection_type = "ALL"
+    },
+    {
+      name            = "EmailIndex"
+      hash_key        = "email"
+      projection_type = "ALL"
     }
   ]
   tags = {
