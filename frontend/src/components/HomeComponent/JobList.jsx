@@ -203,12 +203,12 @@ function JobList({ refreshKey, searchKeyword }) {
                     ))}
                     {loading &&
                         <tr>
-                            <td><Skeleton /></td>
-                            <td><Skeleton /></td>
-                            <td><Skeleton /></td>
-                            <td><Skeleton /></td>
-                            <td><Skeleton /></td>
-                            <td><Skeleton /></td>
+                            <td className={styles.loadingJobItem}><Skeleton sx={{ bgcolor: '#f7a81b'}} /></td>
+                            <td className={styles.loadingJobItem}><Skeleton sx={{ bgcolor: '#f7a81b'}} /></td>
+                            <td className={styles.loadingJobItem}><Skeleton sx={{ bgcolor: '#f7a81b'}} /></td>
+                            <td className={styles.loadingJobItem}><Skeleton sx={{ bgcolor: '#f7a81b'}} /></td>
+                            <td className={styles.loadingJobItem}><Skeleton sx={{ bgcolor: '#f7a81b'}} /></td>
+                            <td className={styles.loadingJobItem}><Skeleton sx={{ bgcolor: '#f7a81b'}} /></td>
                         </tr>
                     }
                 </tbody>

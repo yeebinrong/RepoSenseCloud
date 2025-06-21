@@ -34,7 +34,7 @@
 
 .jobListHeader {
     /*display: flex;*/
-    align-items: center;
+    /*align-items: center;*/
     justify-content: space-between;
     color: #000;
     flex-wrap: nowrap;
@@ -64,6 +64,10 @@ th {
     font-family: "DM Sans", sans-serif !important;
     white-space: nowrap;
     padding: 0 15px;
+}
+
+.loadingJobItem {
+    padding: 15px;
 }
 
 .jobItem {
