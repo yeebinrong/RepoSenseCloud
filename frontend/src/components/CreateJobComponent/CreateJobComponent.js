@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import moment from "moment-timezone";
 import axios from "axios";
 import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
@@ -7,10 +7,14 @@ import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
 import "./CreateJobComponent.scss";
 import { showSuccessBar, showErrorBar } from "../../constants/snack-bar";
+import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles(() => ({
     autocomplete: {
         width: '100%',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        border: '1px solid #D5D8E2',
     },
     chip: {
         margin: '4px',
@@ -19,6 +23,11 @@ const useStyles = makeStyles(() => ({
     },
     textField: {
         font: "DM Sans",
+        '& .MuiFilledInput-input::placeholder': {
+            fontSize: '14px',
+            color: '#888888',    
+            opacity: 1,             
+        },
     },
     modal: {
         position: 'relative',
@@ -26,7 +35,7 @@ const useStyles = makeStyles(() => ({
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: '1115px',
-        height: '95vh',
+        height: '800px',
         //overflowY: 'auto', 
         backgroundColor: 'white',
         padding: '16px',
@@ -37,9 +46,12 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-
-const CreateJobComponent = (jobId) => {
-
+const CreateJobComponent = ({
+  mode = "create",
+  jobData = null,
+  open: controlledOpen = undefined,
+  onClose: controlledOnClose = undefined,
+}) => {
     const token = localStorage.getItem("token");
 
     const classes = useStyles();
@@ -56,8 +68,16 @@ const CreateJobComponent = (jobId) => {
     //Modal States
     const [currentPage, setCurrentPage] = useState(1);
     const [open, setOpen] = useState(false);
-    const handleModalOpen = () => setOpen(true);
-    const handleModalClose = () => setOpen(false);
+    const isControlled = controlledOpen !== undefined;
+    const modalOpen = isControlled ? controlledOpen : open;
+    const handleModalOpen = () => {
+        if (isControlled) return;
+        setOpen(true);
+    };
+    const handleModalClose = () => {
+        if (controlledOnClose) controlledOnClose();
+        if (!isControlled) setOpen(false);
+    };
 
     //Page 1 States
     const [jobName, setJobName] = useState("");
@@ -75,6 +95,7 @@ const CreateJobComponent = (jobId) => {
     const [ignoreFileSizeLimit, setIgnoreFileSizeLimit] = useState(false);
     const [addLastMod, setAddLastMod] = useState(false);
     const [formatChipValues, setFormatChipValues] = useState([]);
+    const [inputValue, setInputValue] = useState("");
 
     //Page 2 States
     const [jobType, setJobType] = useState("manual");
@@ -95,49 +116,8 @@ const CreateJobComponent = (jobId) => {
     const [timeZoneError, setTimeZoneError] = useState(false);
     const [startHourError, setStartHourError] = useState(true);
     const [startMinuteError, setStartMinuteError] = useState(true);
-    const [dateError, setDateError] = useState(true);
+    const [dateError, setDateError] = useState(false);
 
-
-    //Retrieve Job Details for Editing
-    const loadJobDetails = (jobId) => {
-        if (jobId) {
-            fetch(`/api/job/${jobId}`)
-                .then((response) => response.json())
-                .then(data => {
-                    setJobName(data.jobName);
-                    setRepoLink(data.repoLink);
-                    setPeriodMode(data.periodMode);
-                    setSinceDate(data.sinceDate);
-                    setUntilDate(data.untilDate); 
-                    setOriginalityThreshold(data.originalityThreshold);
-                    setTimeZone(data.timeZone);
-                    setAuthorship(data.authorship);
-                    setPrevAuthors(data.prevAuthors);
-                    setShallowClone(data.shallowClone);
-                    setIgnoreFileSizeLimit(data.ignoreFileSizeLimit);
-                    setAddLastMod(data.addLastMod);
-                    setFormatChipValues(data.formatChipValues);
-                    setJobType(data.jobType);
-                    setFrequency(data.frequency);
-                    setStartHour(data.startHour);
-                    setStartMinute(data.startMinute);
-                    setStartDate(data.startDate);
-                    setEndDate(data.endDate);
-                })
-                .catch((error) => {
-                    console.error("Error fetching job details:", error);
-                });
-        }
-    };
-
-    // // Keep the useEffect but also expose the load function
-    // useEffect(() => {
-    //     if (jobId != null) {
-    //         loadJobDetails(jobId);
-    //     }
-    // }, [jobId]);
-
-    
     // Reset state when modal closes
     useEffect(() => {
         if (!open) {
@@ -174,9 +154,59 @@ const CreateJobComponent = (jobId) => {
             setTimeZoneError(false);
             setStartHourError(true);
             setStartMinuteError(true);
-            setDateError(true);
+            setDateError(false);
         }
     }, [open]);
+
+    // Set state when editing modal opens
+    useEffect(() => {
+        if (mode === "edit" && jobData && modalOpen) {
+            setCurrentPage(1);
+            // page 1 states
+            setJobName(jobData.jobName || "");
+            setRepoLink(
+                jobData.repoLink
+                ? jobData.repoLink.split(" ").map((value, idx) => ({ id: Date.now() + idx, value }))
+                : [{ id: Date.now(), value: "" }]
+            );
+            if (jobData.period) {
+                setPeriodMode("By Days/Weeks");
+                setPeriod(jobData.period);
+            } else {
+                setPeriodMode("Specific Date Range");
+                setPeriod("");
+            }
+            setPeriodModifier(checkEditPeriodModifier() || "latest");
+            setSinceDate(moment(jobData.sinceDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
+            setUntilDate(moment(jobData.untilDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
+            setOriginalityThreshold(
+                typeof jobData.originalityThreshold === "number" ? jobData.originalityThreshold : 0.5
+            );
+            setTimeZone(jobData.timeZone || "UTC+08");
+            setAuthorship(!!jobData.authorship);
+            setPrevAuthors(!!jobData.prevAuthors);
+            setShallowClone(!!jobData.shallowClone);
+            setIgnoreFileSizeLimit(!!jobData.ignoreFileSizeLimit);
+            setAddLastMod(!!jobData.addLastMod);
+            setFormatChipValues(jobData.formatChipValues || []);
+            // page 2 states
+            setJobType(jobData.jobType || "manual");
+            setFrequency(jobData.frequency || "");
+            setStartMinute(jobData.startMinute || "--");
+            setStartHour(jobData.startHour || "--");
+            setStartDate(jobData.startDate || "");
+            setEndDate(jobData.endDate || "");
+            // form validation states
+            setPage1Error(false);
+            setPage2Error(false);
+            setSinceUntilDateError(false);
+            setOriginalityThresholdError(false);
+            setTimeZoneError(false);
+            setStartHourError(true);
+            setStartMinuteError(true);
+            setDateError(false);
+        }
+    }, [mode, jobData, modalOpen]);
 
     useEffect(() => {
         validateJobName();
@@ -188,30 +218,65 @@ const CreateJobComponent = (jobId) => {
 
     //Reset period states when period mode changes
     useEffect(() => {
-        if (periodMode !== "Specific Date Range" ){
+        if (mode !== "edit" && periodMode !== "Specific Date Range" ){
             setPeriod("7d");
             setSinceDate("");
             setUntilDate("");
-        } else {
+        } else if (mode !== "edit" && periodMode === "Specific Date Range") {
             setPeriod("");
             setPeriodModifier("latest");
             setSinceDate("");
             setUntilDate("");
         }
-    }, [periodMode]);
+    }, [mode, periodMode]);
+
+    //Reset period states when period mode changes for edit mode
+    useEffect(() => {
+        if (mode === "edit" && periodMode === "By Days/Weeks") {
+            setPeriod(jobData.period || "7d");
+            switch (periodModifier) {
+                case "latest": {
+                    setSinceDate("");
+                    setUntilDate("");
+                    break;
+                }
+                case "before": {
+                    setSinceDate("");
+                    setUntilDate(moment(jobData.untilDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
+                    break;
+                }
+                default: {
+                    setSinceDate(moment(jobData.sinceDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
+                    setUntilDate("");
+                }
+            }
+
+        } else if (mode === "edit" && periodMode === "Specific Date Range") {
+            setPeriod("");
+            setPeriodModifier("latest");
+            jobData ? setSinceDate(moment(jobData.sinceDate, "DD/MM/YYYY").format("YYYY-MM-DD")) : setSinceDate("");
+            jobData ? setUntilDate(moment(jobData.untilDate, "DD/MM/YYYY").format("YYYY-MM-DD")) : setUntilDate("");
+        }
+    }, [mode, periodMode,periodModifier, jobData]);
 
     //Reset scheduled job states when job type changes
     useEffect(() => {
-        if (jobType !== "scheduled") {
+        if (mode !== "edit" && jobType !== "scheduled") {
             setFrequency("");
             setStartHour("--");
             setStartMinute("--"); 
             setStartDate("");
             setEndDate("");
-        } else {
+        } else if (mode !== "edit" && jobType === "scheduled") {
             setFrequency("weekly");
         }
     }, [jobType]);
+
+    // useEffect(() => {
+    //     console.log("Period Mode:", periodMode);
+    //     console.log("Since Date:", sinceDate);
+    //     console.log("Until Date:", untilDate);
+    // }, [sinceDate, untilDate]);
 
     //State Change Functions
     ///Repo Link Input
@@ -232,21 +297,46 @@ const CreateJobComponent = (jobId) => {
         setFormatChipValues(value);
     };
 
+  const handleAddChip = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const value = inputValue.trim();
+      
+      // Validate and add chip
+      if (value && !formatChipValues.includes(value)) {
+        setFormatChipValues([...formatChipValues, value]);
+        setInputValue('');
+      }
+    }
+  };
+
+    const handleDeleteChip = (chipToDelete) => {
+        setFormatChipValues(formatChipValues.filter(chip => chip !== chipToDelete));
+    };
+
     //Sub-Component Rendering Functions
     /// Header Render for both pages
     const renderJobFormHeader = () => {
         return (
             <div className="create-job-header">
-                <h1 >Create a Job</h1>
-                <h4>Fill In Job Detail To Queue Or Run A New ReposenseCloud Job</h4>
+                <h1>{mode === "edit" ? "Edit Job" : "Create a Job"}</h1>
+                <h4>
+                {mode === "edit"
+                    ? "Modify Job Details"
+                    : "Fill In Job Detail To Queue Or Run A New ReposenseCloud Job"}
+                </h4>
                 <span className="create-job-page-status">
                 <img src={PageIcon} alt="Page Icon" />
-                    <div className="dotted-line" />
-                    <img src={PageIcon} alt="Page Icon" className= {currentPage === 1? "page-icon2" : "page-icon1"} />
+                <div className="dotted-line" />
+                <img
+                    src={PageIcon}
+                    alt="Page Icon"
+                    className={currentPage === 1 ? "page-icon2" : "page-icon1"}
+                />
                 </span>
             </div>
-        )
-    }
+        );
+    };
 
     //Form Validation Rules
     const validateJobName = () => {
@@ -337,8 +427,6 @@ const CreateJobComponent = (jobId) => {
                         <div className="create-job-input-left">
                             <div className="job-name-container">
                                 <text className="job-name-label">Job Name</text>
-                                {console.log("page1Error:"+page1Error)}
-                                {console.log("jobNameError:"+jobNameError)}
                                 <TextField className="job-name-textbox" placeholder="Enter Job Name" value = {jobName} 
                                     //onChange={(e)=> { validateJobName(); setJobName(e.target.value)}} 
                                     onInput={(e)=> {setJobName(e.target.value)}}
@@ -346,7 +434,9 @@ const CreateJobComponent = (jobId) => {
                                     autoComplete="off"
 
                                     error={(jobNameError && page1Error)}        
-                                    helperText={(jobNameError && page1Error) ? "Please Enter Job Name" : ""}/>
+                                    helperText={(jobNameError && page1Error) ? "Please Enter Job Name" : ""}
+                                    disabled={mode === "edit"}
+                                />
                             </div>
                             <div className="target-repo-container">
                                 <text className="target-repo-label">Target Repository</text>
@@ -358,11 +448,13 @@ const CreateJobComponent = (jobId) => {
                                             onPaste={(e) => {handleRepoLinkChange(link.id, e.target.value) }}
                                             autoComplete="off"
                                             error={repoLinkError && page1Error}
-                                            helperText={repoLinkError && page1Error ? "Please Paste Repository URL" : ""} />
-                                        {index > 0 && (<button className="delete-repo-link-button" onClick={() => deleteRepoLink(link.id)}>✕</button>)}
+                                            helperText={repoLinkError && page1Error ? "Please Paste Repository URL" : ""}
+                                            disabled={mode === "edit"}
+                                        />
+                                        {index > 0 && (<button className="delete-repo-link-button" onClick={() => deleteRepoLink(link.id)} disabled={mode === "edit"}>✕</button>)}
                                     </span>
                                 ))}
-                                <button className="add-repo-link-button" onClick={addRepoLink}> + Add repository</button>
+                                <button className="add-repo-link-button" onClick={addRepoLink} disabled={mode === "edit"}> + Add repository</button>
                             </div>
                         </div>
                         <div className="dotted-line-down" />
@@ -376,7 +468,8 @@ const CreateJobComponent = (jobId) => {
                                         </Grid2>
                                         <Grid2 size={6}>
                                             <Grid2 size={6}>
-                                                <select className="period-mode-dropdown" onChange={(e) => setPeriodMode(e.target.value)}>
+                                                <select className="period-mode-dropdown" value = {periodMode} 
+                                                    onChange={(e) => setPeriodMode(e.target.value)}>
                                                     <option value="Specific Date Range">Specific Date Range</option>
                                                     <option value="By Days/Weeks">By Days/Weeks</option>
                                                 </select>
@@ -411,7 +504,7 @@ const CreateJobComponent = (jobId) => {
                                             {timeZoneError && page1Error && <span className="error-message">Please select a time zone</span>}
                                         </Grid2>
                                         <Grid2 size={6} marginTop={2} className="left-checklist-container">
-                                            <Grid2 container spacing={1} justifyContent="space-between">
+                                            <Grid2 container spacing={2} justifyContent="space-between">
                                                 <Grid2 size={10}>
                                                     <text className="authorship-label">Analyse authorship:</text>
                                                 </Grid2>
@@ -433,7 +526,7 @@ const CreateJobComponent = (jobId) => {
                                             </Grid2>
                                         </Grid2>
                                         <Grid2 size={6} marginTop={2} paddingLeft={6} className="right-checklist-container">
-                                            <Grid2 container spacing={1} justifyContent="space-between">
+                                            <Grid2 container spacing={2} justifyContent="space-between">
                                                 <Grid2 size={10} >
                                                     <text className="ignore-size-limit-label">Ignore file size limit:</text>
                                                 </Grid2>
@@ -449,37 +542,56 @@ const CreateJobComponent = (jobId) => {
 
                                             </Grid2>
                                         </Grid2>
-                                        <Grid2 size={2} marginTop={2}>
+                                        <Grid2 size={2} marginTop={2} container alignItems="center">
                                             <text className="format-label">Format:</text>
                                         </Grid2>
-                                        <Grid2 size={10}>
+                                        <Grid2 size={10} marginTop={2}>
                                             <Autocomplete
                                                 multiple
                                                 freeSolo
-                                                id="tags-filled"
                                                 options={["js", "java", "python", "c", "cpp", "html", "css"]}
                                                 value={formatChipValues}
-                                                onChange={handleChipChange}
+                                                onChange={(event, newValue) => setFormatChipValues(newValue)}
+                                                inputValue={inputValue}
+                                                onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
                                                 renderTags={(value, getTagProps) =>
                                                     value.map((option, index) => (
                                                         <Chip
                                                             variant="outlined"
                                                             label={option}
                                                             {...getTagProps({ index })}
-                                                            className={classes.chip}
+                                                            size="small"
                                                         />
                                                     ))
                                                 }
                                                 renderInput={(params) => (
                                                     <TextField
                                                         {...params}
-                                                        variant="filled"
-                                                        label="Enter File Format(s) To Scan"
-                                                        placeholder="e.g. js, py"
-                                                        className={classes.textField}
+                                                        //label="Enter File Format(s) To Scan"
+                                                        placeholder={formatChipValues.length < 1? "e.g. js, py, java":""}
+                                                        sx={{
+                                                            '& label.MuiInputLabel-root': {
+                                                                background: 'white',
+                                                                px: 0.5,
+                                                                left: '-7px',
+                                                                fontSize: '14px',
+                                                            },
+                                                            '& .MuiInputBase-root': {
+                                                                flexDirection: 'wrap',
+                                                                alignItems: 'flex-start',
+                                                                paddingTop: 1,
+                                                                fontFamily: 'DM Sans',
+                                                                fontSize: '14px',
+                                                                minHeight: '40px',
+                                                            },
+                                                            '& .MuiInputBase-input': {
+                                                                padding: 0,
+                                                                paddingBottom: '5px',
+                                                            },
+                                                        }}
+                                                        fullWidth
                                                     />
                                                 )}
-                                                className={classes.autocomplete}
                                             />
                                         </Grid2>
                                     </Grid2>
@@ -521,7 +633,8 @@ const CreateJobComponent = (jobId) => {
     }
 
     const renderPeriodModifierInput = () => {
-        switch (periodModifier) {
+        let mod = periodModifier;
+        switch (mod) {
             case "before":
                 return <TextField type="date" className="until-date-input2" value={untilDate} onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
 
@@ -529,7 +642,7 @@ const CreateJobComponent = (jobId) => {
                 return <TextField type="date" className="since-date-input2" value={sinceDate} onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
 
             default:
-                return <text> **{period} from date of job run</text>
+                return <text style={{ fontFamily: "DM Sans" }}> **{period} from date of job run</text>
         }
     }
 
@@ -540,15 +653,18 @@ const CreateJobComponent = (jobId) => {
                     <text className="period-label">Period:</text>
                 </Grid2>
                 <Grid2 size={6}>
-                    <select className="period-range-dropdown" onChange={(e) => setPeriod(e.target.value)}>
+                    <select className="period-range-dropdown" value = {period} 
+                        onChange={(e) => setPeriod(e.target.value)}>
                         <option value="7d">7 days</option>
                         <option value="30d">30 days</option>
-                        <option value="3-month">3 Months</option>
-                        <option value="6-month">6 Months</option>
+                        <option value="12w">12 Weeks</option>
+                        <option value="24w">24 Weeks</option>
                     </select>
                 </Grid2>
                 <Grid2 size={3} container alignItems="center">
-                    <select className="period-modifier-dropdown" onChange={(e) => setPeriodModifier(e.target.value)}>
+                    
+                    <select className="period-modifier-dropdown" value = {periodModifier} 
+                        onChange={(e) => setPeriodModifier(e.target.value)}>
                         <option value="latest">Latest</option>
                         <option value="before">Before Date:</option>
                         <option value="after">After Date:</option>
@@ -564,6 +680,16 @@ const CreateJobComponent = (jobId) => {
                 </Grid2>
             </Grid2>
         )
+    }
+
+    const checkEditPeriodModifier = () => {
+        if(jobData.sinceDate === "" && jobData.untilDate === "") {
+            return "latest";
+        } else if (jobData.sinceDate !== ""){
+            return "after";
+        } else {
+            return "before";
+        }
     }
 
     const periodSwitchCase = (periodMode) => {
@@ -613,7 +739,7 @@ const CreateJobComponent = (jobId) => {
 
         return (
             <Grid2 container spacing={2} style={{ width: "580px" }}>
-                <Grid2 item size={4}>
+                <Grid2 item size={4} container alignItems="center">
                     <text className="schedule-settings-labels">Frequency:</text>
                 </Grid2>
                 <Grid2 item size={8}>
@@ -624,7 +750,7 @@ const CreateJobComponent = (jobId) => {
                         <option value={"minutely"}>Every 5 Mins</option>
                     </select>
                 </Grid2>
-                <Grid2 item size={4}>
+                <Grid2 item size={4} container alignItems="center"> 
                     <text className="schedule-settings-labels" >Start Time:</text>
                 </Grid2>
                 <Grid2 item size={2}>
@@ -684,29 +810,45 @@ const CreateJobComponent = (jobId) => {
     const renderNavigationButtons = () => {
         return (
             <div className="navigation-buttons">
-                <Button variant="contained" sx={{backgroundColor:'#FFFFFF', color:"#ADA7A7", width:"125px", marginRight: "50px"}} onClick={ () => currentPage === 2? setCurrentPage(1) : handleModalClose() }>
-                    {currentPage === 1 ? "Cancel" : "Back"}
-                </Button>
-                <Button variant="contained" sx={{ backgroundColor: '#F7A81B', width: "125px" }} onClick={() => {
-
-                    if (currentPage === 1) {
-                        validatePage1((hasError) => {
-                            if (hasError) {
-                                showErrorBar("incomplete form");
-                            } else {
-                                setCurrentPage(2);
-                            }
-                        });
-                    } else {
-                        submitJobForm();
-                    }
-                }}disabled={isLoading}
+                <Button
+                variant="contained"
+                sx={{
+                    backgroundColor: "#FFFFFF",
+                    color: "#ADA7A7",
+                    width: "125px",
+                    marginRight: "50px",
+                }}
+                onClick={() =>
+                    currentPage === 2 ? setCurrentPage(1) : handleModalClose()
+                }
                 >
-                {isLoading ? <CircularProgress size={24} /> : (currentPage === 2 ? "Save" : "Next")}
+                {currentPage === 1 ? "Cancel" : "Back"}
+                </Button>
+                <Button
+                variant="contained"
+                sx={{ backgroundColor: "#F7A81B", width: "125px" }}
+                onClick={() => {
+                    if (currentPage === 1) {
+                    validatePage1((hasError) => {
+                        if (hasError) {
+                        showErrorBar("incomplete form");
+                        } else {
+                        setCurrentPage(2);
+                        }
+                    });
+                    } else {
+                    submitJobForm();
+                    }
+                }}
+                disabled={isLoading}
+                >
+                {isLoading ? (
+                    <CircularProgress size={24} />
+                ) : currentPage === 2 ? (mode === "edit" ? "Update" : "Save") : "Next"}
                 </Button>
             </div>
-        )
-    }
+        );
+    };
 
     const validateForm = () => {
         return new Promise((resolve, reject) => {
@@ -771,10 +913,11 @@ const CreateJobComponent = (jobId) => {
             startHour === "--" ? formData.startHour = "" : formData.startHour = startHour;
             startMinute === "--" ? formData.startMinute = "" : formData.startMinute = startMinute;
             formData = {
+                jobId: mode === "edit" && jobData ? jobData.jobId : uuidv4(),
                 jobName,
                 repoLink: repoLink.map(link => link.value).join(" "),
-                sinceDate,
-                untilDate,
+                sinceDate: sinceDate ? moment(sinceDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+                untilDate: untilDate ? moment(untilDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
                 period,
                 originalityThreshold,
                 timeZone,
@@ -788,6 +931,8 @@ const CreateJobComponent = (jobId) => {
                 frequency,
                 startHour,
                 startMinute,
+                startDate: startDate ? moment(startDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+                endDate: endDate ? moment(endDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
                 lastUpdated: {
                     time: timeZone
                         ? getTimeWithUtcOffset(timeZone)
@@ -809,51 +954,71 @@ const CreateJobComponent = (jobId) => {
                         : moment().format("YYYY-MM-DD")
                 },
             };
-            console.log(JSON.stringify(formData));
-
-            const response = await axios.post(`${jobServiceUrl}/create`, 
+            // console.log(JSON.stringify(formData));
+            let response;
+            if (mode === "edit" && jobData) {
+                response = await axios.patch(
+                `${jobServiceUrl}/edit/${jobData.jobId}`,
                 formData,
                 {
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                     },
-                    withCredentials: true
+                    withCredentials: true,
                 }
-            );
-
-            if (response.status === 201) {
-                console.log("Job created successfully");
-                showSuccessBar("Job Created Successfully");
-                window.dispatchEvent(new Event('updateJobData'));
+                );
+            } else {
+                response = await axios.post(
+                `${jobServiceUrl}/create`,
+                formData,
+                {
+                    headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                }
+                );
+            }
+            if (response.status === 201 || response.status === 200) {
+                showSuccessBar(
+                mode === "edit" ? "Job Updated Successfully" : "Job Created Successfully"
+                );
+                window.dispatchEvent(new Event("updateJobData"));
                 handleModalClose();
             } else {
-                console.error("Error creating job: ", response.error);
-                showErrorBar("Error Creating Job");
+                showErrorBar(mode === "edit" ? "Error Updating Job" : "Error Creating Job");
             }
         } catch (error) {
-            console.error("Form Submission Error: ", error);
             showErrorBar(error.message);
         } finally {
             setIsLoading(false);
         }
     }
 
-
     //Main Render
     return (
         <div>
-            <button className="create-job-button" onClick={handleModalOpen} >Create Job</button>
-            <Modal open={open} onClose={handleModalClose} aria-labelledby="modal-title" aria-describedby="modal-description">
-                <Box className={classes.modal}>
-                    {renderJobFormHeader()}
-                    {currentPage === 1 ? renderJobFormPage1() : renderJobFormPage2()}
-                    <div className="navigation-buttons-container">
-                        {renderNavigationButtons()}
-                    </div>
-                </Box>
-            </Modal>
-
+        {!isControlled && (
+            <button className="create-job-button" onClick={handleModalOpen}>
+            {mode === "edit" ? "Edit Job" : "Create Job"}
+            </button>
+        )}
+        <Modal
+            open={modalOpen}
+            onClose={handleModalClose}
+            aria-labelledby="modal-title"
+            aria-describedby="modal-description"
+        >
+            <Box className={classes.modal}>
+            {renderJobFormHeader()}
+            {currentPage === 1 ? renderJobFormPage1() : renderJobFormPage2()}
+            <div className="navigation-buttons-container">
+                {renderNavigationButtons()}
+            </div>
+            </Box>
+        </Modal>
         </div>
     );
 }

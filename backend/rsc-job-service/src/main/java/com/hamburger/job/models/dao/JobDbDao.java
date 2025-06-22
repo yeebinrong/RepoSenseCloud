@@ -191,7 +191,6 @@ public class JobDbDao {
                 job.setLastUpdated(latestDateTime);
 
                 jobTable.updateItem(job);
-
                 String messageBody = "{"
                     + "\"owner\": \"" + job.getOwner() + "\","
                     + "\"id\": \"" + job.getJobId() + "\","
@@ -233,8 +232,8 @@ public class JobDbDao {
                     .sortValue(jobReplacement.getJobId())
                     .build());
 
-            if (jobTarget != null && "Pending".equals(jobTarget.getStatus())) {
-                // Update the status
+            if (jobTarget != null && !"Running".equals(jobTarget.getStatus())&& !"Completed".equals(jobTarget.getStatus())) {
+                jobReplacement.setStatus("Pending");
                 jobTable.updateItem(jobReplacement);
                 System.out.println("Job updated  successfully.");
             } else {

@@ -21,7 +21,7 @@ CMD="$CMD --repos $REPOS"
 [ -n "$SINCE" ] && CMD="$CMD --since $SINCE"
 [ -n "$UNTIL" ] && CMD="$CMD --until $UNTIL"
 [ -n "$PERIOD" ] && CMD="$CMD --period $PERIOD"
-[ -n "$FORMAT" ] && CMD="$CMD --formats $FORMAT"
+[ -n "$FORMATS" ] && CMD="$CMD --formats $FORMATS"
 [ -n "$TIMEZONE" ] && CMD="$CMD --timezone $TIMEZONE"
 [ -n "$ORIGINALITY_THRESHOLD" ] && CMD="$CMD --originality-threshold $ORIGINALITY_THRESHOLD"
 
@@ -67,6 +67,22 @@ if aws s3 cp --recursive "$OUTPUT" "s3://$REPORT_BUCKET/$OWNER/$JOBID/"; then
         --expression-attribute-values '{":completed": {"S": "Completed"}}' \
         --region ap-southeast-1
     STATUS=0
+
+    # Zip report in local folder
+    echo "Zipping the report folder..."
+    cd "$OUTPUT"
+    zip -r /tmp/reposense-report.zip ./*
+    cd -
+    # Upload zipped report to S3
+    echo "Uploading zipped report to S3..."
+    if aws s3 cp /tmp/reposense-report.zip "s3://$REPORT_BUCKET/$OWNER/$JOBID/reposense-report.zip"; then
+        echo "Zipped report successfully uploaded to S3."
+    else
+        echo "Failed to upload zipped report to S3." >&2
+    fi
+    # Remove local zipped report after upload
+    echo "Cleaning up local zipped report..."
+    rm -f /tmp/reposense-report.zip
 else
     # Update DDB job to Failed
     aws dynamodb update-item \

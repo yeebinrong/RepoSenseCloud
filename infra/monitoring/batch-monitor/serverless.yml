@@ -1,0 +1,35 @@
+service: rsc-batch-job-failure-handler
+
+
+provider:
+  name: aws
+  runtime: nodejs18.x  # or nodejs18.x / nodejs16.x
+  region: ap-southeast-1
+  stage: ${opt:stage, 'common'}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            - ssm:GetParameter
+          Resource: "*"
+  environment:
+    TELEGRAM_CHAT_ID: ${ssm:/reposense/backend/telegram/chat-id}
+    TELEGRAM_BOT_TOKEN: ${ssm:/reposense/backend/telegram/bot-token}
+
+functions:
+  handleBatchJobFailure:
+    handler: handler.handle
+    events:
+      - eventBridge:
+          pattern:
+            source:
+              - "aws.batch"
+            detail-type:
+              - "Batch Job State Change"
+            detail:
+              status:
+                - "FAILED"
