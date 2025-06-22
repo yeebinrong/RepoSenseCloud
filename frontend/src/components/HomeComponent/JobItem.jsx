@@ -105,6 +105,7 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
     const jobData = {
         jobId,
         jobName,
+        status,
         ...jobProps
     };
 
