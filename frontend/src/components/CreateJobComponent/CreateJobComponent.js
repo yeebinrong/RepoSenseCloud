@@ -1,7 +1,7 @@
 import React, { useState, useEffect, use } from "react";
 import moment from "moment-timezone";
 import axios from "axios";
-import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
+import { Alert, Autocomplete, TextField, Grid2, Chip, Modal, Box, 
     Button, Select, FormControl, InputLabel, MenuItem, Stack, CircularProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
@@ -108,6 +108,7 @@ const CreateJobComponent = ({
     const [startHourError, setStartHourError] = useState(true);
     const [startMinuteError, setStartMinuteError] = useState(true);
     const [dateError, setDateError] = useState(false);
+    const [submissionError, setSubmissionError] = useState(false);
 
     // Reset state when modal closes
     useEffect(() => {
@@ -302,6 +303,18 @@ const CreateJobComponent = ({
                     className={currentPage === 1 ? "page-icon2" : "page-icon1"}
                 />
                 </span>
+                <div>
+                    {submissionError ? <Alert
+                        severity="warning"
+                        sx={{
+                            color: "black",
+                            backgroundColor: "#F7A81B",
+                            "& .MuiAlert-icon": {
+                                color: "black"
+                            }
+                        }}
+                    > An error occured saving the job, please contact the administrator.</Alert> : null}
+                </div>
             </div>
         );
     };
@@ -952,6 +965,7 @@ const CreateJobComponent = ({
                 showErrorBar(mode === "edit" ? "Error Updating Job" : "Error Creating Job");
             }
         } catch (error) {
+            setSubmissionError(true);
             showErrorBar(error.message);
         } finally {
             setIsLoading(false);

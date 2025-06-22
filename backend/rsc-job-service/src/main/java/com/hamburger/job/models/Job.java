@@ -44,6 +44,7 @@ public class Job {
     private String endDate;
     private String owner;
     private String status;
+    private String prevStatus;
     private Map<String,String> lastUpdated;
     private Map<String,String> nextScheduled;
     private Map<String,String> settingsUpdatedAt;
@@ -51,6 +52,7 @@ public class Job {
     public Job () {
         if(this.status == null){
             this.status = "Pending";
+            this.prevStatus = "Pending";
         }
         // if(this.lastUpdated == null){
         //     this.lastUpdated = new HashMap<>();

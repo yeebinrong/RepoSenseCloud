@@ -1,23 +1,25 @@
 package com.hamburger.job.service;
+
 import software.amazon.awssdk.services.batch.model.ListJobsRequest;
 import software.amazon.awssdk.services.batch.model.ListJobsResponse;
 import software.amazon.awssdk.services.batch.BatchClient;
 import software.amazon.awssdk.services.batch.model.JobSummary;
 import software.amazon.awssdk.services.batch.model.TerminateJobRequest;
-
-import software.amazon.awssdk.services.sqs.SqsClient;
-
-import java.util.List;
-
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
+import org.springframework.stereotype.Service;
 
-public class batchService {
+import java.util.List;
+
+
+
+@Service
+public class BatchService {
     
     private final BatchClient batchClient;
 
-    public batchService() {
+    public BatchService() {
             this.batchClient = BatchClient.builder()
             .region(Region.AP_SOUTHEAST_1)
             .credentialsProvider(DefaultCredentialsProvider.create())
