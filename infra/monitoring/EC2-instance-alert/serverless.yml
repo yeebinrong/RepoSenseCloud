@@ -1,0 +1,34 @@
+service: ec2-instance-alert
+
+provider:
+  name: aws
+  runtime: nodejs18.x  # or nodejs18.x / nodejs16.x
+  region: ap-southeast-1
+  stage: ${opt:stage, 'common'}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - ssm:GetParameter
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "arn:aws:logs:${self:provider.region}:${aws:accountId}:log-group:/aws/lambda/EC2DailyAlert:*"
+        - Effect: Allow
+          Action:
+            - ec2:DescribeInstances
+          Resource: "*"
+functions:
+  ec2InstanceAlert:               
+      handler: EC2-instance-alert/index.handler
+      environment:
+        TELEGRAM_CHAT_ID: ${ssm:/reposense/backend/telegram/chat-id}
+        TELEGRAM_BOT_TOKEN: ${ssm:/reposense/backend/telegram/bot-token}
+      events:
+          - schedule: cron(0 16 * * ? *)   # 12:00 AM SGT (16:00 UTC previous day)
+          - schedule: cron(0 2 * * ? *)    # 10:00 AM SGT (2:00 UTC)
+          - schedule: cron(0 10 15 * ? *)   # 6:15 PM SGT (10:15 UTC)

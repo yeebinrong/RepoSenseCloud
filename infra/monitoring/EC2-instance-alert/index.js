@@ -4,8 +4,8 @@ const moment = require('moment-timezone');
 const ec2 = new EC2Client({ region: "ap-southeast-1" });
 
 // Telegram Bot Configuration
-const TELEGRAM_BOT_TOKEN = 'xxx';// Replace with your Telegram bot token
-const TELEGRAM_CHAT_ID = 'xxx'; // Replace with your Telegram chat ID
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 async function sendTelegramMessage(message) {
     const telegramApiUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
