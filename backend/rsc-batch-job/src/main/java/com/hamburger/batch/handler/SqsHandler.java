@@ -14,6 +14,8 @@ import software.amazon.awssdk.services.batch.model.ContainerOverrides;
 import software.amazon.awssdk.services.batch.model.KeyValuePair;
 import software.amazon.awssdk.services.batch.model.SubmitJobRequest;
 import software.amazon.awssdk.services.batch.model.SubmitJobResponse;
+import software.amazon.awssdk.services.batch.model.TerminateJobRequest;
+import software.amazon.awssdk.services.batch.model.TerminateJobResponse;
 
 @Log4j2
 public class SqsHandler implements RequestHandler<SQSEvent, String> {

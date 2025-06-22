@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import com.hamburger.job.models.Job;
 import com.hamburger.job.models.exceptions.StartJobException;
 import com.hamburger.job.service.SqsService;
+import com.hamburger.job.service.batchService;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -38,12 +39,14 @@ public class JobDbDao {
     private final DynamoDbTable<Job> jobTable;
     private final DynamoDbClient dynamoDbClient;
     private final SqsService sqsService;
+    private final batchService batchService;
 
     @Autowired
     public JobDbDao(DynamoDbClient dynamoDbClient, DynamoDbEnhancedClient enhancedDynamoDbClient, SqsService sqsService) {
         this.jobTable = enhancedDynamoDbClient.table("rsc-localhost-job-data", TableSchema.fromBean(Job.class));
         this.dynamoDbClient = dynamoDbClient;
         this.sqsService = sqsService;
+        this.batchService = new batchService();
     }
 
     public Optional<List<Job>> getAllJobs(String owner) {
@@ -235,6 +238,10 @@ public class JobDbDao {
 
             if (jobTarget != null && !"Completed".equals(jobTarget.getStatus())) {
                 // Update the status
+                if("Running".equals(jobTarget.getStatus())){
+                    System.out.println("@DAO: Job is currently running, terminating all batch jobs for jobId: " + jobTarget.getJobId());
+                    batchService.terminateAllBatchJobsForJobId(jobTarget.getJobId(), "User Edited Job Settings");
+                }
                 jobTable.updateItem(jobReplacement);
                 System.out.println("Job updated  successfully.");
             } else {
