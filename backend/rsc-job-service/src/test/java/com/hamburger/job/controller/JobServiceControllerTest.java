@@ -45,7 +45,6 @@ public class JobServiceControllerTest {
         jobServiceController = new JobServiceController(jobService, jobUserAuth, jwtHelper, s3Service);
         request = new MockHttpServletRequest();
         
-        // Common setup for authentication
         try {
             when(jwtHelper.extractJwtFromRequest(any(HttpServletRequest.class))).thenReturn("mockToken");
             when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok("testUser"));
@@ -54,7 +53,6 @@ public class JobServiceControllerTest {
         }
     }
 
-    // Test for getJobsByPage endpoint
     @Test
     void getJobsByPage_Success() {
         // Arrange
@@ -97,7 +95,6 @@ public class JobServiceControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
-    // Test for getJobById endpoint
     @Test
     void getJobById_Success() {
         // Arrange
@@ -153,7 +150,6 @@ public class JobServiceControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
-    // Test for getAllJobs endpoint
     @Test
     void getAllJobs_Success() {
         // Arrange
@@ -209,7 +205,6 @@ public class JobServiceControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
-    // Test for getJobsByKeyword endpoint
     @Test
     void getJobsByKeyword_Success() {
         // Arrange
@@ -265,7 +260,6 @@ public class JobServiceControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
-    // Test for saveJob endpoint
     @Test
     void saveJob_Success() {
         // Arrange
@@ -291,7 +285,6 @@ public class JobServiceControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
-    // Test for createJob endpoint
     @Test
     void createJob_Success() {
         // Arrange
@@ -334,7 +327,6 @@ public class JobServiceControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
-    // Test for startJob endpoint
     @Test
     void startJob_Success() {
         // Arrange
@@ -429,7 +421,6 @@ public class JobServiceControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
-    // Test for deleteJob endpoint
     @Test
     void deleteJob_Success() {
         // Arrange
@@ -468,7 +459,6 @@ public class JobServiceControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
-    // Test for getS3PresignedUrl endpoint
     @Test
     void getS3PresignedUrl_Success() {
         // Arrange
@@ -521,7 +511,6 @@ public class JobServiceControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
-    // Test for JWT extraction exception
     @Test
     void jwtExtractionFails() throws Exception {
         // Arrange
@@ -535,7 +524,6 @@ public class JobServiceControllerTest {
         verify(jobService, never()).getJobsByPage(anyString(), anyInt(), anyInt());
     }
 
-    // Test for authentication exception
     @Test
     void authenticationFails() throws Exception {
         // Arrange
