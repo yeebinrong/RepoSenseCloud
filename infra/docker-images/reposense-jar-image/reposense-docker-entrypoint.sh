@@ -21,7 +21,7 @@ CMD="$CMD --repos $REPOS"
 [ -n "$SINCE" ] && CMD="$CMD --since $SINCE"
 [ -n "$UNTIL" ] && CMD="$CMD --until $UNTIL"
 [ -n "$PERIOD" ] && CMD="$CMD --period $PERIOD"
-[ -n "$FORMAT" ] && CMD="$CMD --formats $FORMAT"
+[ -n "$FORMATS" ] && CMD="$CMD --formats $FORMATS"
 [ -n "$TIMEZONE" ] && CMD="$CMD --timezone $TIMEZONE"
 [ -n "$ORIGINALITY_THRESHOLD" ] && CMD="$CMD --originality-threshold $ORIGINALITY_THRESHOLD"
 
