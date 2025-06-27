@@ -1,4 +1,4 @@
-package com.hamburger.batch.scheduler;
+package com.hamburger;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
