@@ -20,7 +20,8 @@ public class JwtAuthorization extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         // Exclude specific URL patterns
-        if (requestURI.equals("/api/user/register") || requestURI.equals("/api/user/login")) {
+
+        if (requestURI.endsWith("/api/user/register") || requestURI.endsWith("/api/user/login")) {
             filterChain.doFilter(request, response);
             return;
         }
