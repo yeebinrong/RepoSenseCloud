@@ -178,3 +178,8 @@ th {
     cursor: pointer;
     padding: 0;
 }
+
+.iconButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

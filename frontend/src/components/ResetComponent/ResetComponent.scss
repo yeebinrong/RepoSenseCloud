@@ -1,4 +1,4 @@
-.login-container {
+.reset-container {
   display: flex;
   justify-content: center;
   margin: 70px 0;
@@ -9,7 +9,16 @@
   translate: 50%;
 }
 
-.login-panel-main-title {
+.reset-panel-text-field {
+  margin: 0 0 32px 0 !important;
+  background-color: #f8fdff;
+
+  div {
+    border-radius: 8px !important;
+  }
+}
+
+.reset-panel-main-title {
   font-family: "DM Sans", sans-serif !important;
   text-align: center;
   padding: 10px 56px 0 56px;
@@ -18,7 +27,7 @@
   font-weight: bold !important;
 }
 
-.login-panel-sub-title {
+.reset-panel-sub-title {
   font-family: "DM Sans", sans-serif !important;
   text-align: center;
   padding: 18px 56px 36px 56px;
@@ -27,7 +36,7 @@
   font-weight: lighter !important;
 }
 
-.form-login-control input {
+.form-reset-control input {
   background-color: white;
   display: flex;
   flex-direction: column;
@@ -35,7 +44,7 @@
   padding: 20px;
 }
 
-.from-login-panel {
+.from-reset-panel {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -46,34 +55,11 @@
   background-color: white;
 }
 
-.main-panel-error {
-  margin: 0px 32px 16px 32px;
+.reset-panel-error {
+  margin: 0px 0 16px 0;
 }
 
-.helper-text-field {
-  border-radius: 8px !important;
-  margin: 0 32px 16px 32px !important;
-  background-color: white;
-
-  .MuiFormHelperText-root {
-    background-color: white;
-  }
-
-  div {
-    border-radius: 8px !important;
-  }
-}
-
-.standard-panel-text-field {
-  margin: 0 32px 32px 32px !important;
-  background-color: #f8fdff;
-
-  div {
-    border-radius: 8px !important;
-  }
-}
-
-.login-panel-main-button {
+.reset-panel-main-button {
   background-color: #f7a81b !important;
   color: white;
   border-radius: 8px !important;
@@ -89,8 +75,35 @@
   flex-shrink: 0;
 }
 
-.input-error-message {
+.reset-input-error-message {
   width: 316px;
   border-radius: 8px !important;
-  margin: -32px 32px 32px 32px !important;
+  margin: -32px 0 32px 0 !important;
+}
+
+.reset-flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.reset-center-button {
+  margin-top: 12px;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.reset-inline-text {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  margin-top: 12px;
+  color: #7f5305;
+  font-family: "DM Sans", sans-serif !important;
+}
+
+.reset-login-text {
+  color: #f7a81b;
+  font-family: "DM Sans", sans-serif !important;
+  font-weight: bold;
 }

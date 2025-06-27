@@ -8,8 +8,9 @@ import Tooltip from '@mui/material/Tooltip';
 import axios from 'axios';
 import CreateJobComponent from '../CreateJobComponent/CreateJobComponent';
 
-function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, settingsUpdatedAt, icon, view, edit, run, ...jobProps}) {
+function JobItem({owner, jobName, jobId, status, prevStatus, lastUpdated, nextScheduled, settingsUpdatedAt, icon, view, edit, run, ...jobProps}) {
     const statusClass = status.toLowerCase();
+
 
     const handleViewReport = () => {
         window.open(`${process.env.REACT_APP_REPORT_BUCKET_URL}/${owner}/${jobId}/reposense-report/index.html`, '_blank');
@@ -25,6 +26,9 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                 },
                 credentials: 'include',
             });
+            if (!response.ok) {
+                throw new Error(`Job run error! status: ${response.status}`);
+            }
             console.log('Job run successfully:', response.data);
             window.dispatchEvent(new Event('updateJobData'));
             showSuccessBar("Job Started Successfully");
@@ -102,6 +106,8 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
     const jobData = {
         jobId,
         jobName,
+        status,
+        prevStatus,
         ...jobProps
     };
 
@@ -135,7 +141,7 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                 </div>
             </td>
             <td className={styles.jobActions}>
-                <button className={styles.iconButton} onClick={() => handleViewReport()}>
+                <button className={styles.iconButton} disabled = {status !== "Completed" && !(status === "Running" && prevStatus === "Completed")} onClick={() => handleViewReport()}>
                     <img src="view.svg" alt="View" className={styles.actionIcon}/>
                 </button>
                 <button className={styles.iconButton} onClick={() => setEditModalOpen(true)}>
@@ -149,7 +155,7 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                         onClose={() => setEditModalOpen(false)}
                     />
                 )}
-                <button className={styles.iconButton} onClick={() => handleRun()}>
+                <button className={styles.iconButton} disabled = { status === "Running" } onClick={() => handleRun()}>
                     <img src="rerun.svg" alt="Run" className={styles.actionIcon} />
                 </button>
             </td>
@@ -167,9 +173,9 @@ function JobItem({owner, jobName, jobId, status, lastUpdated, nextScheduled, set
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                     >
-                        <MenuItem onClick={handleDownloadReport} style={{ fontFamily: "DM Sans" }}>Download Report</MenuItem>
+                        <MenuItem onClick={handleDownloadReport} disabled= {status !== "Completed" && !(status === "Running" && prevStatus === "Completed")} style={{ fontFamily: "DM Sans" }}>Download Report</MenuItem>
                         <Divider />
-                        <MenuItem onClick={handleCopyiframe} style={{ fontFamily: "DM Sans" }}>Copy iframe</MenuItem>
+                        <MenuItem onClick={handleCopyiframe} disabled= {status !== "Completed" && !(status === "Running" && prevStatus === "Completed")} style={{ fontFamily: "DM Sans" }}>Copy iframe</MenuItem>
                         <Divider />
                         <MenuItem onClick={handleDelete} style={{ fontFamily: "DM Sans" }}>Delete</MenuItem>
                     </Menu>

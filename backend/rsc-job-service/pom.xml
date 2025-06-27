@@ -59,6 +59,11 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>batch</artifactId>
+            <version>2.25.37</version> <!-- Use the latest version if possible -->
+        </dependency>
     </dependencies>
 
     <build>

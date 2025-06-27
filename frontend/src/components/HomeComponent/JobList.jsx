@@ -5,6 +5,36 @@ import axios from 'axios';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import {Skeleton} from "@mui/material";
+import PropTypes from 'prop-types';
+
+function SortButton({ column, sortColumn, sortOrder, onSort, label }) {
+    return (
+        <button
+            type="button"
+            className={styles.sortButton}
+            onClick={() => onSort(column)}
+            aria-label={`Sort by ${label} (${sortOrder === 'asc' && sortColumn === column ? 'ascending' : 'descending'})`}
+            style={{ background: 'none', border: 'none', padding: 0, marginLeft: 4, cursor: 'pointer' }}
+        >
+            <ArrowUpwardIcon
+                fontSize="small"
+                style={{ color: sortColumn === column && sortOrder === 'asc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
+            />
+            <ArrowDownwardIcon
+                fontSize="small"
+                style={{ color: sortColumn === column && sortOrder === 'desc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
+            />
+        </button>
+    );
+}
+
+SortButton.propTypes = {
+    column: PropTypes.string.isRequired,
+    sortColumn: PropTypes.string.isRequired,
+    sortOrder: PropTypes.string.isRequired,
+    onSort: PropTypes.func.isRequired,
+    label: PropTypes.string.isRequired,
+};
 
 function JobList({ refreshKey, searchKeyword }) {
     const [jobData, setJobData] = useState([]);
@@ -96,98 +126,53 @@ function JobList({ refreshKey, searchKeyword }) {
                         <th>
                             <input type="checkbox" className={styles.checkBox} />
                             <span className={styles.headerText} style={{ marginLeft: "15px" }}>Job Name</span>
-                            <button
-                                type="button"
-                                className={styles.sortButton}
-                                onClick={() => handleSort('jobName')}
-                                aria-label={`Sort by job name (${sortOrder === 'asc' && sortColumn === 'jobName' ? 'ascending' : 'descending'})`}
-                                style={{ background: 'none', border: 'none', padding: 0, marginLeft: 4, cursor: 'pointer' }}
-                            >
-                                <ArrowUpwardIcon
-                                    fontSize="small"
-                                    style={{ color: sortColumn === 'jobName' && sortOrder === 'asc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
-                                />
-                                <ArrowDownwardIcon
-                                    fontSize="small"
-                                    style={{ color: sortColumn === 'jobName' && sortOrder === 'desc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
-                                />
-                            </button>
+                            <SortButton
+                                column="jobName"
+                                sortColumn={sortColumn}
+                                sortOrder={sortOrder}
+                                onSort={handleSort}
+                                label="job name"
+                            />
                         </th>
                         <th>
                             <span className={styles.headerText}>Status</span>
-                            <button
-                                type="button"
-                                className={styles.sortButton}
-                                onClick={() => handleSort('status')}
-                                aria-label={`Sort by status (${sortOrder === 'asc' && sortColumn === 'status' ? 'ascending' : 'descending'})`}
-                                style={{ background: 'none', border: 'none', padding: 0, marginLeft: 4, cursor: 'pointer' }}
-                            >
-                                <ArrowUpwardIcon
-                                    fontSize="small"
-                                    style={{ color: sortColumn === 'status' && sortOrder === 'asc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
-                                />
-                                <ArrowDownwardIcon
-                                    fontSize="small"
-                                    style={{ color: sortColumn === 'status' && sortOrder === 'desc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
-                                />
-                            </button>
+                            <SortButton
+                                column="status"
+                                sortColumn={sortColumn}
+                                sortOrder={sortOrder}
+                                onSort={handleSort}
+                                label="status"
+                            />
                         </th>
                         <th>
                             <span className={styles.headerText}>Last Updated</span>
-                            <button
-                                type="button"
-                                className={styles.sortButton}
-                                onClick={() => handleSort('lastUpdated')}
-                                aria-label={`Sort by last updated (${sortOrder === 'asc' && sortColumn === 'lastUpdated' ? 'ascending' : 'descending'})`}
-                                style={{ background: 'none', border: 'none', padding: 0, marginLeft: 4, cursor: 'pointer' }}
-                            >
-                                <ArrowUpwardIcon
-                                    fontSize="small"
-                                    style={{ color: sortColumn === 'lastUpdated' && sortOrder === 'asc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
-                                />
-                                <ArrowDownwardIcon
-                                    fontSize="small"
-                                    style={{ color: sortColumn === 'lastUpdated' && sortOrder === 'desc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
-                                />
-                            </button>
+                            <SortButton
+                                column="lastUpdated"
+                                sortColumn={sortColumn}
+                                sortOrder={sortOrder}
+                                onSort={handleSort}
+                                label="last updated"
+                            />
                         </th>
                         <th>
                             <span className={styles.headerText}>Next Scheduled Job</span>
-                            <button
-                                type="button"
-                                className={styles.sortButton}
-                                onClick={() => handleSort('nextScheduledJob')}
-                                aria-label={`Sort by next scheduled job (${sortOrder === 'asc' && sortColumn === 'nextScheduledJob' ? 'ascending' : 'descending'})`}
-                                style={{ background: 'none', border: 'none', padding: 0, marginLeft: 4, cursor: 'pointer' }}
-                            >
-                                <ArrowUpwardIcon
-                                    fontSize="small"
-                                    style={{ color: sortColumn === 'nextScheduledJob' && sortOrder === 'asc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
-                                />
-                                <ArrowDownwardIcon
-                                    fontSize="small"
-                                    style={{ color: sortColumn === 'nextScheduledJob' && sortOrder === 'desc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
-                                />
-                            </button>
+                            <SortButton
+                                column="nextScheduledJob"
+                                sortColumn={sortColumn}
+                                sortOrder={sortOrder}
+                                onSort={handleSort}
+                                label="next scheduled job"
+                            />
                         </th>
                         <th>
                             <span className={styles.headerText}>Settings Updated At</span>
-                            <button
-                                type="button"
-                                className={styles.sortButton}
-                                onClick={() => handleSort('settingsUpdatedAt')}
-                                aria-label={`Sort by settings updated at (${sortOrder === 'asc' && sortColumn === 'settingsUpdatedAt' ? 'ascending' : 'descending'})`}
-                                style={{ background: 'none', border: 'none', padding: 0, marginLeft: 4, cursor: 'pointer' }}
-                            >
-                                <ArrowUpwardIcon
-                                    fontSize="small"
-                                    style={{ color: sortColumn === 'settingsUpdatedAt' && sortOrder === 'asc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
-                                />
-                                <ArrowDownwardIcon
-                                    fontSize="small"
-                                    style={{ color: sortColumn === 'settingsUpdatedAt' && sortOrder === 'desc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
-                                />
-                            </button>
+                            <SortButton
+                                column="settingsUpdatedAt"
+                                sortColumn={sortColumn}
+                                sortOrder={sortOrder}
+                                onSort={handleSort}
+                                label="settings updated at"
+                            />
                         </th>
                         <th>
                             <span className={styles.actionText}>View</span>

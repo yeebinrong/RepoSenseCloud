@@ -59,12 +59,18 @@ echo "Uploading report to S3..."
 if aws s3 cp --recursive "$OUTPUT" "s3://$REPORT_BUCKET/$OWNER/$JOBID/"; then
     echo "Report successfully uploaded to S3."
     # Update DDB job to Completed
+    CUR_STATUS=$(aws dynamodb get-item \
+    --table-name rsc-localhost-job-data \
+    --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
+    --query "Item.status.S" \
+    --output text)
+
     aws dynamodb update-item \
         --table-name rsc-localhost-job-data \
         --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
-        --update-expression "SET #s = :completed" \
-        --expression-attribute-names '{"#s": "status"}' \
-        --expression-attribute-values '{":completed": {"S": "Completed"}}' \
+        --update-expression "SET #s = :completed, #ps = :prev" \
+        --expression-attribute-names '{"#s": "status", "#ps": "prevStatus"}' \
+        --expression-attribute-values '{":completed": {"S": "Completed"}, ":prev": {"S": "'"$CUR_STATUS"'"}}' \
         --region ap-southeast-1
     STATUS=0
 
@@ -85,12 +91,18 @@ if aws s3 cp --recursive "$OUTPUT" "s3://$REPORT_BUCKET/$OWNER/$JOBID/"; then
     rm -f /tmp/reposense-report.zip
 else
     # Update DDB job to Failed
+    CUR_STATUS=$(aws dynamodb get-item \
+    --table-name rsc-localhost-job-data \
+    --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
+    --query "Item.status.S" \
+    --output text)
+
     aws dynamodb update-item \
         --table-name rsc-localhost-job-data \
         --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
-        --update-expression "SET #s = :failed" \
-        --expression-attribute-names '{"#s": "status"}' \
-        --expression-attribute-values '{":failed": {"S": "Failed"}}' \
+        --update-expression "SET #s = :failed, #ps = :prev" \
+        --expression-attribute-names '{"#s": "status", "#ps": "prevStatus"}' \
+        --expression-attribute-values '{":failed": {"S": "Failed"}, ":prev": {"S": "'"$CUR_STATUS"'"}}' \
         --region ap-southeast-1
     echo "Failed to upload report to S3." >&2
     STATUS=1

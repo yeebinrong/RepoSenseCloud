@@ -18,6 +18,8 @@ import org.springframework.stereotype.Repository;
 import com.hamburger.job.models.Job;
 import com.hamburger.job.models.exceptions.StartJobException;
 import com.hamburger.job.service.SqsService;
+import com.hamburger.job.service.BatchService;
+import com.hamburger.job.service.S3Service;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -38,12 +40,18 @@ public class JobDbDao {
     private final DynamoDbTable<Job> jobTable;
     private final DynamoDbClient dynamoDbClient;
     private final SqsService sqsService;
+    private final BatchService batchService;
+    private final S3Service s3Service;
+    String reportBucketUrl = System.getenv("REACT_APP_REPORT_BUCKET_URL");
 
     @Autowired
-    public JobDbDao(DynamoDbClient dynamoDbClient, DynamoDbEnhancedClient enhancedDynamoDbClient, SqsService sqsService) {
+    public JobDbDao(DynamoDbClient dynamoDbClient, DynamoDbEnhancedClient enhancedDynamoDbClient, 
+        SqsService sqsService, BatchService batchService, S3Service s3Service) {
         this.jobTable = enhancedDynamoDbClient.table("rsc-localhost-job-data", TableSchema.fromBean(Job.class));
         this.dynamoDbClient = dynamoDbClient;
         this.sqsService = sqsService;
+        this.batchService = batchService;
+        this.s3Service = s3Service;
     }
 
     public Optional<List<Job>> getAllJobs(String owner) {
@@ -155,6 +163,7 @@ public class JobDbDao {
     public void startJob(String owner, String jobId) {
         String newStatus = "Running";
 
+
         try {
             Job job;
             // Retrieve the existing job
@@ -174,7 +183,7 @@ public class JobDbDao {
                     "Failed".equals(job.getStatus())
                 )
             ) {
-                // Update the status
+                job.setPrevStatus(job.getStatus());
                 job.setStatus(newStatus);
 
                 // Update last updated
@@ -232,7 +241,19 @@ public class JobDbDao {
                     .sortValue(jobReplacement.getJobId())
                     .build());
 
-            if (jobTarget != null && !"Running".equals(jobTarget.getStatus())&& !"Completed".equals(jobTarget.getStatus())) {
+            if (jobTarget != null) {
+                // Update the status
+                if("Running".equals(jobTarget.getStatus())){
+                    System.out.println("@DAO: Job is currently running, terminating all batch jobs for jobId: " + jobTarget.getJobId());
+                    batchService.terminateAllBatchJobsForJobId(jobTarget.getJobId(), "User Edited Job Settings");
+                }
+                String resp = s3Service.deleteReport(jobTarget.getOwner(), jobTarget.getJobId());
+                if( resp != null) {
+                    System.out.println("Report deleted successfully: " + resp);
+                } else {
+                    System.out.println("No report to delete for jobId: " + jobTarget.getJobId());
+                }
+                jobReplacement.setPrevStatus(jobTarget.getStatus());
                 jobReplacement.setStatus("Pending");
                 jobTable.updateItem(jobReplacement);
                 System.out.println("Job updated  successfully.");
