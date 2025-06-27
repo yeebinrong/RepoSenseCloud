@@ -281,6 +281,7 @@ class LoginComponent extends React.Component {
             style={{
               backgroundColor: "transparent",
               color: "#F7A81B",
+              fontfamily: "DM Sans",
               fontWeight: "bold",
               width: "145px",
               marginLeft: "240px",
@@ -313,6 +314,7 @@ class LoginComponent extends React.Component {
               alignItems: "baseline",
               marginTop: "12px",
               color: "#7F5305",
+              fontfamily: "DM Sans",
             }}
           >
             Don't have an account?
@@ -321,6 +323,7 @@ class LoginComponent extends React.Component {
               disableRipple
               style={{
                 backgroundColor: "transparent",
+                fontfamily: "DM Sans",
               }}
               text={
                 <inline
@@ -405,6 +408,7 @@ class LoginComponent extends React.Component {
               alignItems: "baseline",
               marginTop: "12px",
               color: "#7F5305",
+              fontfamily: "DM Sans",
             }}
           >
             Already have an account?
@@ -418,6 +422,7 @@ class LoginComponent extends React.Component {
                 <inline
                   style={{
                     color: "#F7A81B",
+                    fontfamily: "DM Sans",
                     fontWeight: "bold",
                   }}
                 >

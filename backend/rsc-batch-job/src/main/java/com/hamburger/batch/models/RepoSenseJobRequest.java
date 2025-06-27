@@ -19,13 +19,15 @@ public class RepoSenseJobRequest {
     private String until;
     private String formats;
     private String timezone;
-    private Integer originalityThreshold;
+    private Float originalityThreshold;
+    private String period;
 
     // Boolean flags
-    private Boolean ignoreConfig = true;
+    private Boolean ignoreFileSizeLimit = true;
     private Boolean lastModDate = false;
     private Boolean findPrevAuthors = false;
     private Boolean analyzeAuthorship = true;
+    private Boolean shallowClone = false;
 
     // Getters and setters omitted for brevity
 
