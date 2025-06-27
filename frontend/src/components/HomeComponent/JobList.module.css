@@ -13,7 +13,7 @@
     border-radius: 8px;
     background-color: #fff;
     table-layout: fixed;
-    min-height: 733px;
+    /*min-height: 733px;*/
     width: 100%;
     padding: 20px 0;
     border: 1px solid #eaeaea;
@@ -33,8 +33,8 @@
 }
 
 .jobListHeader {
-    display: flex;
-    align-items: center;
+    /*display: flex;*/
+    /*align-items: center;*/
     justify-content: space-between;
     color: #000;
     flex-wrap: nowrap;
@@ -43,9 +43,9 @@
 }
 
 th {
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
+    /*display: flex;*/
+    /*align-items: center;*/
+    /*white-space: nowrap;*/
 }
 
 .checkBox {
@@ -64,6 +64,10 @@ th {
     font-family: "DM Sans", sans-serif !important;
     white-space: nowrap;
     padding: 0 15px;
+}
+
+.loadingJobItem {
+    padding: 15px;
 }
 
 .jobItem {
