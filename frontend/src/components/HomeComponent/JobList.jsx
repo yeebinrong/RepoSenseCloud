@@ -4,6 +4,7 @@ import JobItem from './JobItem';
 import axios from 'axios';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import {Skeleton} from "@mui/material";
 
 function JobList({ refreshKey, searchKeyword }) {
     const [jobData, setJobData] = useState([]);
@@ -85,7 +86,6 @@ function JobList({ refreshKey, searchKeyword }) {
         }
     };
 
-    if (loading) return <p style={{ fontFamily: "DM Sans" }}>Loading jobs...</p>;
     if (error) return <p style={{ fontFamily: "DM Sans" }}>Error loading jobs: {error.message}</p>;
 
     return (
@@ -93,7 +93,7 @@ function JobList({ refreshKey, searchKeyword }) {
             <table className={styles.jobListContainer}>
                 <thead>
                     <tr className={styles.jobListHeader}>
-                        <th style={{ width: '18%' }}>
+                        <th>
                             <input type="checkbox" className={styles.checkBox} />
                             <span className={styles.headerText} style={{ marginLeft: "15px" }}>Job Name</span>
                             <button
@@ -113,7 +113,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 />
                             </button>
                         </th>
-                        <th style={{ width: '15%' }}>
+                        <th>
                             <span className={styles.headerText}>Status</span>
                             <button
                                 type="button"
@@ -132,7 +132,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 />
                             </button>
                         </th>
-                        <th style={{ width: '15%' }}>
+                        <th>
                             <span className={styles.headerText}>Last Updated</span>
                             <button
                                 type="button"
@@ -151,7 +151,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 />
                             </button>
                         </th>
-                        <th style={{ width: '16%' }}>
+                        <th>
                             <span className={styles.headerText}>Next Scheduled Job</span>
                             <button
                                 type="button"
@@ -170,7 +170,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 />
                             </button>
                         </th>
-                        <th style={{ width: '16%' }}>
+                        <th>
                             <span className={styles.headerText}>Settings Updated At</span>
                             <button
                                 type="button"
@@ -189,7 +189,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 />
                             </button>
                         </th>
-                        <th style={{ width: '20%' }}>
+                        <th>
                             <span className={styles.actionText}>View</span>
                             <span className={styles.actionText}>Edit</span>
                             <span className={styles.actionText}>Run</span>
@@ -201,6 +201,16 @@ function JobList({ refreshKey, searchKeyword }) {
                     {sortedJobData?.map((job, index) => (
                         <JobItem key={index} {...job} />
                     ))}
+                    {loading &&
+                        <tr>
+                            <td className={styles.loadingJobItem}><Skeleton sx={{ bgcolor: '#f7a81b'}} /></td>
+                            <td className={styles.loadingJobItem}><Skeleton sx={{ bgcolor: '#f7a81b'}} /></td>
+                            <td className={styles.loadingJobItem}><Skeleton sx={{ bgcolor: '#f7a81b'}} /></td>
+                            <td className={styles.loadingJobItem}><Skeleton sx={{ bgcolor: '#f7a81b'}} /></td>
+                            <td className={styles.loadingJobItem}><Skeleton sx={{ bgcolor: '#f7a81b'}} /></td>
+                            <td className={styles.loadingJobItem}><Skeleton sx={{ bgcolor: '#f7a81b'}} /></td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </section>
