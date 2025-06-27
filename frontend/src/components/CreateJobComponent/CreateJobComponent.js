@@ -12,6 +12,9 @@ import { v4 as uuidv4 } from 'uuid';
 const useStyles = makeStyles(() => ({
     autocomplete: {
         width: '100%',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        border: '1px solid #D5D8E2',
     },
     chip: {
         margin: '4px',
@@ -19,7 +22,12 @@ const useStyles = makeStyles(() => ({
         color: '#00695c',
     },
     textField: {
-        fontFamily: 'DM Sans',
+        font: "DM Sans",
+        '& .MuiFilledInput-input::placeholder': {
+            fontSize: '14px',
+            color: '#888888',    
+            opacity: 1,             
+        },
     },
     modal: {
         position: 'relative',
@@ -27,7 +35,7 @@ const useStyles = makeStyles(() => ({
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: '1115px',
-        height: '95vh',
+        height: '800px',
         //overflowY: 'auto', 
         backgroundColor: 'white',
         padding: '16px',
@@ -87,6 +95,7 @@ const CreateJobComponent = ({
     const [ignoreFileSizeLimit, setIgnoreFileSizeLimit] = useState(false);
     const [addLastMod, setAddLastMod] = useState(false);
     const [formatChipValues, setFormatChipValues] = useState([]);
+    const [inputValue, setInputValue] = useState("");
 
     //Page 2 States
     const [jobType, setJobType] = useState("manual");
@@ -169,8 +178,8 @@ const CreateJobComponent = ({
                 setPeriod("");
             }
             setPeriodModifier(checkEditPeriodModifier() || "latest");
-            setSinceDate(jobData.sinceDate || "");
-            setUntilDate(jobData.untilDate || "");
+            setSinceDate(moment(jobData.sinceDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
+            setUntilDate(moment(jobData.untilDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
             setOriginalityThreshold(
                 typeof jobData.originalityThreshold === "number" ? jobData.originalityThreshold : 0.5
             );
@@ -234,11 +243,11 @@ const CreateJobComponent = ({
                 }
                 case "before": {
                     setSinceDate("");
-                    setUntilDate(jobData.untilDate || "");
+                    setUntilDate(moment(jobData.untilDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
                     break;
                 }
                 default: {
-                    setSinceDate(jobData.sinceDate || "");
+                    setSinceDate(moment(jobData.sinceDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
                     setUntilDate("");
                 }
             }
@@ -246,8 +255,8 @@ const CreateJobComponent = ({
         } else if (mode === "edit" && periodMode === "Specific Date Range") {
             setPeriod("");
             setPeriodModifier("latest");
-            jobData ? setSinceDate(jobData.sinceDate) : setSinceDate("");
-            jobData ? setUntilDate(jobData.untilDate) : setUntilDate("");
+            jobData ? setSinceDate(moment(jobData.sinceDate, "DD/MM/YYYY").format("YYYY-MM-DD")) : setSinceDate("");
+            jobData ? setUntilDate(moment(jobData.untilDate, "DD/MM/YYYY").format("YYYY-MM-DD")) : setUntilDate("");
         }
     }, [mode, periodMode,periodModifier, jobData]);
 
@@ -263,6 +272,12 @@ const CreateJobComponent = ({
             setFrequency("weekly");
         }
     }, [jobType]);
+
+    // useEffect(() => {
+    //     console.log("Period Mode:", periodMode);
+    //     console.log("Since Date:", sinceDate);
+    //     console.log("Until Date:", untilDate);
+    // }, [sinceDate, untilDate]);
 
     //State Change Functions
     ///Repo Link Input
@@ -281,6 +296,23 @@ const CreateJobComponent = ({
     ///Format Chip Input
     const handleChipChange = (event, value) => {
         setFormatChipValues(value);
+    };
+
+  const handleAddChip = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const value = inputValue.trim();
+      
+      // Validate and add chip
+      if (value && !formatChipValues.includes(value)) {
+        setFormatChipValues([...formatChipValues, value]);
+        setInputValue('');
+      }
+    }
+  };
+
+    const handleDeleteChip = (chipToDelete) => {
+        setFormatChipValues(formatChipValues.filter(chip => chip !== chipToDelete));
     };
 
     //Sub-Component Rendering Functions
@@ -485,7 +517,7 @@ const CreateJobComponent = ({
                                             {timeZoneError && page1Error && <span className="error-message">Please select a time zone</span>}
                                         </Grid2>
                                         <Grid2 size={6} marginTop={2} className="left-checklist-container">
-                                            <Grid2 container spacing={1} justifyContent="space-between">
+                                            <Grid2 container spacing={2} justifyContent="space-between">
                                                 <Grid2 size={10}>
                                                     <text className="authorship-label">Analyse authorship:</text>
                                                 </Grid2>
@@ -507,7 +539,7 @@ const CreateJobComponent = ({
                                             </Grid2>
                                         </Grid2>
                                         <Grid2 size={6} marginTop={2} paddingLeft={6} className="right-checklist-container">
-                                            <Grid2 container spacing={1} justifyContent="space-between">
+                                            <Grid2 container spacing={2} justifyContent="space-between">
                                                 <Grid2 size={10} >
                                                     <text className="ignore-size-limit-label">Ignore file size limit:</text>
                                                 </Grid2>
@@ -523,37 +555,56 @@ const CreateJobComponent = ({
 
                                             </Grid2>
                                         </Grid2>
-                                        <Grid2 size={2} marginTop={2}>
+                                        <Grid2 size={2} marginTop={2} container alignItems="center">
                                             <text className="format-label">Format:</text>
                                         </Grid2>
-                                        <Grid2 size={10}>
+                                        <Grid2 size={10} marginTop={2}>
                                             <Autocomplete
                                                 multiple
                                                 freeSolo
-                                                id="tags-filled"
                                                 options={["js", "java", "python", "c", "cpp", "html", "css"]}
                                                 value={formatChipValues}
-                                                onChange={handleChipChange}
+                                                onChange={(event, newValue) => setFormatChipValues(newValue)}
+                                                inputValue={inputValue}
+                                                onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
                                                 renderTags={(value, getTagProps) =>
                                                     value.map((option, index) => (
                                                         <Chip
                                                             variant="outlined"
                                                             label={option}
                                                             {...getTagProps({ index })}
-                                                            className={classes.chip}
+                                                            size="small"
                                                         />
                                                     ))
                                                 }
                                                 renderInput={(params) => (
                                                     <TextField
                                                         {...params}
-                                                        variant="filled"
-                                                        label="Enter File Format(s) To Scan"
-                                                        placeholder="e.g. js, py"
-                                                        className={classes.textField}
+                                                        //label="Enter File Format(s) To Scan"
+                                                        placeholder={formatChipValues.length < 1? "e.g. js, py, java":""}
+                                                        sx={{
+                                                            '& label.MuiInputLabel-root': {
+                                                                background: 'white',
+                                                                px: 0.5,
+                                                                left: '-7px',
+                                                                fontSize: '14px',
+                                                            },
+                                                            '& .MuiInputBase-root': {
+                                                                flexDirection: 'wrap',
+                                                                alignItems: 'flex-start',
+                                                                paddingTop: 1,
+                                                                fontFamily: 'DM Sans',
+                                                                fontSize: '14px',
+                                                                minHeight: '40px',
+                                                            },
+                                                            '& .MuiInputBase-input': {
+                                                                padding: 0,
+                                                                paddingBottom: '5px',
+                                                            },
+                                                        }}
+                                                        fullWidth
                                                     />
                                                 )}
-                                                className={classes.autocomplete}
                                             />
                                         </Grid2>
                                     </Grid2>
@@ -619,8 +670,8 @@ const CreateJobComponent = ({
                         onChange={(e) => setPeriod(e.target.value)}>
                         <option value="7d">7 days</option>
                         <option value="30d">30 days</option>
-                        <option value="3-month">3 Months</option>
-                        <option value="6-month">6 Months</option>
+                        <option value="12w">12 Weeks</option>
+                        <option value="24w">24 Weeks</option>
                     </select>
                 </Grid2>
                 <Grid2 size={3} container alignItems="center">
@@ -701,7 +752,7 @@ const CreateJobComponent = ({
         console.log("status:" +jobData.status);
         return (
             <Grid2 container spacing={2} style={{ width: "580px" }}>
-                <Grid2 item size={4}>
+                <Grid2 item size={4} container alignItems="center">
                     <text className="schedule-settings-labels">Frequency:</text>
                 </Grid2>
                 <Grid2 item size={8}>
@@ -712,7 +763,7 @@ const CreateJobComponent = ({
                         <option value={"minutely"}>Every 5 Mins</option>
                     </select>
                 </Grid2>
-                <Grid2 item size={4}>
+                <Grid2 item size={4} container alignItems="center"> 
                     <text className="schedule-settings-labels" >Start Time:</text>
                 </Grid2>
                 <Grid2 item size={2}>
@@ -878,8 +929,8 @@ const CreateJobComponent = ({
                 jobId: mode === "edit" && jobData ? jobData.jobId : uuidv4(),
                 jobName,
                 repoLink: repoLink.map(link => link.value).join(" "),
-                sinceDate,
-                untilDate,
+                sinceDate: sinceDate ? moment(sinceDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+                untilDate: untilDate ? moment(untilDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
                 period,
                 originalityThreshold,
                 timeZone,
@@ -893,8 +944,8 @@ const CreateJobComponent = ({
                 frequency,
                 startHour,
                 startMinute,
-                startDate,
-                endDate,
+                startDate: startDate ? moment(startDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+                endDate: endDate ? moment(endDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
                 lastUpdated: {
                     time: timeZone
                         ? getTimeWithUtcOffset(timeZone)
@@ -916,7 +967,7 @@ const CreateJobComponent = ({
                         : moment().format("YYYY-MM-DD")
                 },
             };
-            //console.log(JSON.stringify(formData));
+            // console.log(JSON.stringify(formData));
             let response;
             if (mode === "edit" && jobData) {
                 if(jobData.status === "Running"){

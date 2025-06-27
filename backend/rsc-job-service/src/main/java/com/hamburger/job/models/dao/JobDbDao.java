@@ -200,7 +200,6 @@ public class JobDbDao {
                 job.setLastUpdated(latestDateTime);
 
                 jobTable.updateItem(job);
-
                 String messageBody = "{"
                     + "\"owner\": \"" + job.getOwner() + "\","
                     + "\"id\": \"" + job.getJobId() + "\","
