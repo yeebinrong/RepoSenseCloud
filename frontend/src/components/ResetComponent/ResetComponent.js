@@ -141,103 +141,79 @@ class ResetComponent extends React.Component {
     });
   };
 
-  renderShowPasswordIcon = (target) => {
-    return (
-      <InputAdornment position="end">
-        <IconButton
-          disableRipple
-          aria-label="toggle password visibility"
-          onClick={() => this.inverseState(target)}
-          onMouseDown={(e) => e.preventDefault}
-          edge="end"
-        >
-          {this.state[target] ? <VisibilityOffIcon /> : <VisibilityIcon />}
-        </IconButton>
-      </InputAdornment>
-    );
-  };
+  renderShowPasswordIcon = (target) => (
+    <InputAdornment position="end">
+      <IconButton
+        disableRipple
+        aria-label="toggle password visibility"
+        onClick={() => this.inverseState(target)}
+        onMouseDown={(e) => e.preventDefault()}
+        edge="end"
+      >
+        {this.state[target] ? <VisibilityOffIcon /> : <VisibilityIcon />}
+      </IconButton>
+    </InputAdornment>
+  );
 
-  renderTextField = (
+  renderTextField = ({
     target,
     value,
     label,
     errorMessage,
     showPassword,
-    showPassTarget
-  ) => {
-    return (
-      <>
-        <TextField
-          size="medium"
-          className="reset-panel-text-field"
-          onChange={(e) => this.updateState(target, e.target.value)}
-          value={value}
-          label={label}
-          type={showPassTarget && !showPassword ? "password" : "text"}
-          error={!!errorMessage}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                {(target === "password" || target === "confirmPassword") && (
-                  <LockIcon />
-                )}
-              </InputAdornment>
-            ),
-            endAdornment: showPassTarget
-              ? this.renderShowPasswordIcon(showPassTarget)
-              : "",
-          }}
-          required
-        />
-        {Array.isArray(errorMessage) &&
-          errorMessage.map((message) => {
-            return (
-              <Alert
-                key={message}
-                className="reset-input-error-message"
-                severity="error"
-              >
-                {message}
-              </Alert>
-            );
-          })}
-      </>
-    );
-  };
+    showPassTarget,
+  }) => (
+    <>
+      <TextField
+        size="medium"
+        className="reset-panel-text-field"
+        onChange={(e) => this.updateState(target, e.target.value)}
+        value={value}
+        label={label}
+        type={showPassTarget && !showPassword ? "password" : "text"}
+        error={!!errorMessage}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              {(target === "password" || target === "confirmPassword") && <LockIcon />}
+            </InputAdornment>
+          ),
+          endAdornment: showPassTarget ? this.renderShowPasswordIcon(showPassTarget) : "",
+        }}
+        required
+      />
+      {Array.isArray(errorMessage) &&
+        errorMessage.map((message) => (
+          <Alert key={message} className="reset-input-error-message" severity="error">
+            {message}
+          </Alert>
+        ))}
+    </>
+  );
 
   renderResetForm = () => {
+    const passwordFieldProps = {
+      target: "password",
+      value: this.state.password,
+      label: "Password",
+      errorMessage: this.state.passwordErrorMessage,
+      showPassword: this.state.showPassword,
+      showPassTarget: "showPassword",
+    };
+    const confirmPasswordFieldProps = {
+      target: "confirmPassword",
+      value: this.state.confirmPassword,
+      label: "Retype password",
+      errorMessage: this.state.confirmPasswordErrorMessage,
+      showPassword: this.state.showConfirmPassword,
+      showPassTarget: "showConfirmPassword",
+    };
     return (
       <>
-        {this.renderTextField(
-          "password",
-          this.state.password,
-          "Password",
-          this.state.passwordErrorMessage,
-          this.state.showPassword,
-          "showPassword"
-        )}
-        {this.renderTextField(
-          "confirmPassword",
-          this.state.confirmPassword,
-          "Retype password",
-          this.state.confirmPasswordErrorMessage,
-          this.state.showConfirmPassword,
-          "showConfirmPassword"
-        )}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div
-            style={{
-              marginTop: "12px",
-              display: "flex",
-              width: "100%",
-              justifyContent: "center",
-            }}
-          >
+        {this.renderTextField(passwordFieldProps)}
+        {this.renderTextField(confirmPasswordFieldProps)}
+        <div className="reset-flex-column">
+          <div className="reset-center-button">
             <Button
               type="submit"
               size="large"
@@ -248,36 +224,15 @@ class ResetComponent extends React.Component {
               Reset Password
             </Button>
           </div>
-          <inline
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "baseline",
-              marginTop: "12px",
-              color: "#7F5305",
-              fontfamily: "DM Sans",
-            }}
-          >
+          <span className="reset-inline-text">
             Already have an account?
             <NavigateButton
               url="/login"
               disableRipple
-              style={{
-                backgroundColor: "transparent",
-              }}
-              text={
-                <inline
-                  style={{
-                    color: "#F7A81B",
-                    fontfamily: "DM Sans",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Log in
-                </inline>
-              }
+              style={{ backgroundColor: "transparent" }}
+              text={<span className="reset-login-text">Log in</span>}
             />
-          </inline>
+          </span>
         </div>
       </>
     );

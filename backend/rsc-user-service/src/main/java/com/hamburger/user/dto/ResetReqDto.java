@@ -16,7 +16,7 @@ public class ResetReqDto {
         if (email == null) {
             return false;
         }
-        String regex = "[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
+        String regex = "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$";
         return email.matches(regex);
     }
 

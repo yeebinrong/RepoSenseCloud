@@ -80,3 +80,30 @@
   border-radius: 8px !important;
   margin: -32px 0 32px 0 !important;
 }
+
+.reset-flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.reset-center-button {
+  margin-top: 12px;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.reset-inline-text {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  margin-top: 12px;
+  color: #7f5305;
+  font-family: "DM Sans";
+}
+
+.reset-login-text {
+  color: #f7a81b;
+  font-family: "DM Sans";
+  font-weight: bold;
+}
