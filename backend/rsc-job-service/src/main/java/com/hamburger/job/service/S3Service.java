@@ -55,4 +55,22 @@ public class S3Service {
         PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
         return presignedRequest.url().toString();
     }
+
+    public String deleteReport(String owner, String jobId) {
+        String prefix = owner + "/" + jobId + "/";
+        ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .prefix(prefix)
+                .maxKeys(1)
+                .build();
+        System.out.println("@S3Service: Deleting report for owner: " + owner + ", jobId: " + jobId);
+        ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
+        if (listResponse.contents().isEmpty()) {
+        System.out.println("@S3Service: No report found for owner: " + owner + ", jobId: " + jobId);
+            return null;
+        }
+        String key = prefix + "reposense-report.zip";
+        s3Client.deleteObject(builder -> builder.bucket(bucketName).key(key));
+        return key;
+    }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, use } from "react";
 import moment from "moment-timezone";
 import axios from "axios";
-import { Autocomplete, TextField, Grid2, Chip, Modal, Box, 
+import { Alert, Autocomplete, TextField, Grid2, Chip, Modal, Box, 
     Button, Select, FormControl, InputLabel, MenuItem, Stack, CircularProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
@@ -117,6 +117,7 @@ const CreateJobComponent = ({
     const [startHourError, setStartHourError] = useState(true);
     const [startMinuteError, setStartMinuteError] = useState(true);
     const [dateError, setDateError] = useState(false);
+    const [submissionError, setSubmissionError] = useState(false);
 
     // Reset state when modal closes
     useEffect(() => {
@@ -334,6 +335,18 @@ const CreateJobComponent = ({
                     className={currentPage === 1 ? "page-icon2" : "page-icon1"}
                 />
                 </span>
+                <div>
+                    {submissionError ? <Alert
+                        severity="warning"
+                        sx={{
+                            color: "black",
+                            backgroundColor: "#F7A81B",
+                            "& .MuiAlert-icon": {
+                                color: "black"
+                            }
+                        }}
+                    > An error occured saving the job, please contact the administrator.</Alert> : null}
+                </div>
             </div>
         );
     };
@@ -736,7 +749,6 @@ const CreateJobComponent = ({
     const renderScheduledSettings = () => {
         const hours = ["--", ...Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'))];
         const minutes = ["--", ...Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'))];
-
         return (
             <Grid2 container spacing={2} style={{ width: "580px" }}>
                 <Grid2 item size={4} container alignItems="center">
@@ -957,6 +969,17 @@ const CreateJobComponent = ({
             // console.log(JSON.stringify(formData));
             let response;
             if (mode === "edit" && jobData) {
+                if(jobData.status === "Running"){
+                    // pop up to confirm if user wants to update a running job
+                    console.log("Job is currently running, prompting user for confirmation.");
+                    const confirmUpdate = window.confirm("This job is currently running. Are you sure you want to update it?");
+                    if (!confirmUpdate) {
+                        console.log("User cancelled the update.");
+                        setIsLoading(false);
+                        return;
+                    }
+                }
+                console.log("Updating job with ID:", jobData.jobId);
                 response = await axios.patch(
                 `${jobServiceUrl}/edit/${jobData.jobId}`,
                 formData,
@@ -982,6 +1005,7 @@ const CreateJobComponent = ({
                 );
             }
             if (response.status === 201 || response.status === 200) {
+                console.log("Job created/updated successfully:", response.status);
                 showSuccessBar(
                 mode === "edit" ? "Job Updated Successfully" : "Job Created Successfully"
                 );
@@ -991,6 +1015,7 @@ const CreateJobComponent = ({
                 showErrorBar(mode === "edit" ? "Error Updating Job" : "Error Creating Job");
             }
         } catch (error) {
+            setSubmissionError(true);
             showErrorBar(error.message);
         } finally {
             setIsLoading(false);
