@@ -749,7 +749,6 @@ const CreateJobComponent = ({
     const renderScheduledSettings = () => {
         const hours = ["--", ...Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'))];
         const minutes = ["--", ...Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'))];
-        console.log("status:" +jobData.status);
         return (
             <Grid2 container spacing={2} style={{ width: "580px" }}>
                 <Grid2 item size={4} container alignItems="center">
