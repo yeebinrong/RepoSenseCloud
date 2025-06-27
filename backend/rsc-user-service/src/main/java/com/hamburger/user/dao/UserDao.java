@@ -33,7 +33,7 @@ public interface UserDao {
 
         @Autowired
         public UserDaoAWSDynamoDB(DynamoDbClient dynamoDbClient, DynamoDbEnhancedClient enhancedDynamoDbClient) {
-            this.userTable = enhancedDynamoDbClient.table("rsc-localhost-user-data", TableSchema.fromBean(User.class));
+            this.userTable = enhancedDynamoDbClient.table("rsc-" + System.getenv("STAGE") +"-user-data", TableSchema.fromBean(User.class));
             this.dynamoDbClient = dynamoDbClient;
         }
 
@@ -59,7 +59,7 @@ public interface UserDao {
         @Override
         public User findByUserName(String userName) {
             String indexName = "UserNameIndex";
-            String tableName = "rsc-localhost-user-data";
+            String tableName = "rsc-" + System.getenv("STAGE") +"-user-data";
             Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
             expressionAttributeValues.put(":userName", AttributeValue.builder().s(userName).build());
 

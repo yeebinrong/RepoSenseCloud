@@ -13,7 +13,11 @@ module "ddb_user_data" {
     {
       name = "userName"
       type = "S"
-    }
+    },
+    {
+      name = "email"
+      type = "S"
+    },
   ]
   global_secondary_indexes = [
     {
@@ -45,14 +49,6 @@ module "ddb_reset_password_data" {
       name = "email"
       type = "S"
     },
-    {
-      name = "token"
-      type = "S"
-    },
-    {
-      name = "expiresAt"
-      type = "N"
-    }
   ]
   tags = {
     Opentofu   = "true"

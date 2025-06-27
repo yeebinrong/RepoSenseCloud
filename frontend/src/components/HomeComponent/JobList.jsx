@@ -45,7 +45,7 @@ function JobList({ refreshKey, searchKeyword }) {
     useEffect(() => {
         function UpdateJobData() {
             const token = localStorage.getItem('token');
-            let url = `${process.env.REACT_APP_JOB_SERVICE_URL}/`;
+            let url = `${process.env.REACT_APP_JOB_SERVICE_URL}`;
             if (searchKeyword && searchKeyword.trim() !== "") {
                 url = `${process.env.REACT_APP_JOB_SERVICE_URL}/search/${searchKeyword.trim()}`;
             }

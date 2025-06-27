@@ -66,7 +66,7 @@ if aws s3 cp --recursive "$OUTPUT" "s3://$REPORT_BUCKET/$OWNER/$JOBID/"; then
     --output text)
 
     aws dynamodb update-item \
-        --table-name rsc-localhost-job-data \
+        --table-name rsc-$STAGE-job-data \
         --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
         --update-expression "SET #s = :completed, #ps = :prev" \
         --expression-attribute-names '{"#s": "status", "#ps": "prevStatus"}' \
@@ -98,7 +98,7 @@ else
     --output text)
 
     aws dynamodb update-item \
-        --table-name rsc-localhost-job-data \
+        --table-name rsc-$STAGE-job-data \
         --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
         --update-expression "SET #s = :failed, #ps = :prev" \
         --expression-attribute-names '{"#s": "status", "#ps": "prevStatus"}' \

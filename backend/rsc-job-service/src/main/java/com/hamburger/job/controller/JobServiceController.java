@@ -42,7 +42,7 @@ public class JobServiceController {
     }
 
 
-    @GetMapping(value = "/", params = {"page", "limit"})
+    @GetMapping(value = "", params = {"page", "limit"})
     public ResponseEntity<List<Job>> getJobsByPage( @RequestParam int page, @RequestParam int limit, HttpServletRequest request) {
         System.out.println("retrieving " + page + " of jobs with " + limit + " jobs per page");
         try {
@@ -74,7 +74,7 @@ public class JobServiceController {
         }
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<Optional<List<Job>>> getAllJobs(HttpServletRequest request) {
         System.out.println("retrieving jobs");
         try {
@@ -207,7 +207,7 @@ public class JobServiceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
+
     @GetMapping("/s3-presigned-url")
     public ResponseEntity<String> getS3PresignedUrl(@RequestParam String jobId, HttpServletRequest request) {
         try {

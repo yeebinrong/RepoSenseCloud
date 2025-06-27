@@ -25,8 +25,8 @@ const useStyles = makeStyles(() => ({
         font: "DM Sans",
         '& .MuiFilledInput-input::placeholder': {
             fontSize: '14px',
-            color: '#888888',    
-            opacity: 1,             
+            color: '#888888',
+            opacity: 1,
         },
     },
     modal: {
@@ -36,7 +36,7 @@ const useStyles = makeStyles(() => ({
         transform: 'translate(-50%, -50%)',
         width: '1115px',
         height: '800px',
-        //overflowY: 'auto', 
+        //overflowY: 'auto',
         backgroundColor: 'white',
         padding: '16px',
         borderRadius: '16px',
