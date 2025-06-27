@@ -10,6 +10,9 @@ provider:
       Action:
         - batch:SubmitJob
         - batch:DescribeJobs
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - sqs:SendMessage
       Resource: "*"
   stage: ${opt:stage, 'localhost'}
   environment:
@@ -17,6 +20,8 @@ provider:
     BATCH_JOB_QUEUE: !Ref BatchJobQueue
     BATCH_JOB_DEFINITION: !Ref BatchJobDefinition
     REPORT_BUCKET: !Ref PublicS3Bucket
+    TABLE_NAME: rsc-localhost-job-data
+    QUEUE_URL: https://sqs.ap-southeast-1.amazonaws.com/904233118848/rsc-sqs-queue-${self:provider.stage}.fifo
 
 resources:
   Resources:
@@ -227,3 +232,7 @@ functions:
               - SqsQueue
               - Arn
           batchSize: 5
+  pollPendingTasks:
+    handler: com.hamburger.batch.scheduler.TaskDispatcherHandler
+    events:
+      - schedule: rate(5 minutes)

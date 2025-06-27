@@ -68,7 +68,7 @@ jobs:
             -Dsonar.projectName=RepoSenseCloud_backend \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+            -Dsonar.coverage.jacoco.xmlReportPaths=rsc-batch-job/target/site/jacoco/jacoco.xml
 
 
       # Run Frontend Tests with Coverage
