@@ -15,6 +15,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import LockIcon from "@mui/icons-material/Lock";
 import { showSuccessBar } from "../../constants/snack-bar";
 import axios from "axios";
+import PropTypes from "prop-types";
 
 class ResetComponent extends React.Component {
   constructor(props) {
@@ -175,43 +176,64 @@ class ResetComponent extends React.Component {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              {(target === "password" || target === "confirmPassword") && <LockIcon />}
+              {(target === "password" || target === "confirmPassword") && (
+                <LockIcon />
+              )}
             </InputAdornment>
           ),
-          endAdornment: showPassTarget ? this.renderShowPasswordIcon(showPassTarget) : "",
+          endAdornment: showPassTarget
+            ? this.renderShowPasswordIcon(showPassTarget)
+            : "",
         }}
         required
       />
       {Array.isArray(errorMessage) &&
         errorMessage.map((message) => (
-          <Alert key={message} className="reset-input-error-message" severity="error">
+          <Alert
+            key={message}
+            className="reset-input-error-message"
+            severity="error"
+          >
             {message}
           </Alert>
         ))}
     </>
   );
 
+  renderPasswordField = (
+    field,
+    label,
+    errorMessage,
+    showPassword,
+    showPassTarget
+  ) => {
+    return this.renderTextField({
+      target: field,
+      value: this.state[field],
+      label: label,
+      errorMessage: this.state[errorMessage],
+      showPassword: this.state[showPassword],
+      showPassTarget: showPassTarget,
+    });
+  };
+
   renderResetForm = () => {
-    const passwordFieldProps = {
-      target: "password",
-      value: this.state.password,
-      label: "Password",
-      errorMessage: this.state.passwordErrorMessage,
-      showPassword: this.state.showPassword,
-      showPassTarget: "showPassword",
-    };
-    const confirmPasswordFieldProps = {
-      target: "confirmPassword",
-      value: this.state.confirmPassword,
-      label: "Retype password",
-      errorMessage: this.state.confirmPasswordErrorMessage,
-      showPassword: this.state.showConfirmPassword,
-      showPassTarget: "showConfirmPassword",
-    };
     return (
       <>
-        {this.renderTextField(passwordFieldProps)}
-        {this.renderTextField(confirmPasswordFieldProps)}
+        {this.renderPasswordField(
+          "password",
+          "Password",
+          "passwordErrorMessage",
+          "showPassword",
+          "showPassword"
+        )}
+        {this.renderPasswordField(
+          "confirmPassword",
+          "Retype password",
+          "confirmPasswordErrorMessage",
+          "showConfirmPassword",
+          "showConfirmPassword"
+        )}
         <div className="reset-flex-column">
           <div className="reset-center-button">
             <Button
@@ -267,5 +289,9 @@ class ResetComponent extends React.Component {
     );
   }
 }
+
+ResetComponent.propTypes = {
+  navigate: PropTypes.func.isRequired,
+};
 
 export default ResetComponent;

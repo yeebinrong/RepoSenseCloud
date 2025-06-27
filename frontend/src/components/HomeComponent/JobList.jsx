@@ -4,6 +4,7 @@ import JobItem from './JobItem';
 import axios from 'axios';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import PropTypes from 'prop-types';
 
 function SortButton({ column, sortColumn, sortOrder, onSort, label }) {
     return (
@@ -25,6 +26,14 @@ function SortButton({ column, sortColumn, sortOrder, onSort, label }) {
         </button>
     );
 }
+
+SortButton.propTypes = {
+    column: PropTypes.string.isRequired,
+    sortColumn: PropTypes.string.isRequired,
+    sortOrder: PropTypes.string.isRequired,
+    onSort: PropTypes.func.isRequired,
+    label: PropTypes.string.isRequired,
+};
 
 function JobList({ refreshKey, searchKeyword }) {
     const [jobData, setJobData] = useState([]);

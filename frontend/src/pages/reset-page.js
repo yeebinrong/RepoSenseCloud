@@ -1,6 +1,9 @@
 import React from "react";
+import PropTypes from "prop-types";
 import ResetComponent from "../components/ResetComponent/ResetComponent";
 import BasePage from "./base-page";
+
+const ResetComponentWrapper = (props) => <ResetComponent {...props} />;
 
 class ResetPage extends React.Component {
   render() {
@@ -8,12 +11,14 @@ class ResetPage extends React.Component {
       <BasePage
         navigate={this.props.navigate}
         isLoginPage
-        component={(props) => {
-          return <ResetComponent {...props} />;
-        }}
+        component={ResetComponentWrapper}
       />
     );
   }
 }
+
+ResetPage.propTypes = {
+  navigate: PropTypes.func.isRequired,
+};
 
 export default ResetPage;
