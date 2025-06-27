@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './JobManagement.module.css';
 import JobList from './JobList';
-import {Autocomplete, Button, TextField} from "@mui/material";
+import {Autocomplete, TextField} from "@mui/material";
 import CreateJobComponent from "../CreateJobComponent/CreateJobComponent";
 
 function JobManagement() {
@@ -31,12 +31,9 @@ function JobManagement() {
                     <img src="filter.svg" alt="" className={styles.filterIcon}/>
                     Filters
                 </button> */}
-                <Button
-                    variant="contained"
-                    sx={{ backgroundColor: "#F7A81B"}}
-                    className={styles.filterButton} onClick={() => setJobListRefreshKey(k => k + 1)}>
+                <button className={styles.filterButton} onClick={() => setJobListRefreshKey(k => k + 1)}>
                     Refresh Job List
-                </Button>
+                </button>
                 <div className={styles.searchContainer}>
                     <img src="search.svg" alt="" className={styles.searchIcon} />
                     <input

@@ -1026,12 +1026,9 @@ const CreateJobComponent = ({
     return (
         <div>
         {!isControlled && (
-            <Button
-                variant="contained"
-                sx={{ backgroundColor: "#F7A81B"}}
-                onClick={handleModalOpen}>
+            <button className="create-job-button" onClick={handleModalOpen}>
             {mode === "edit" ? "Edit Job" : "Create Job"}
-            </Button>
+            </button>
         )}
         <Modal
             open={modalOpen}

@@ -4,7 +4,6 @@ import JobItem from './JobItem';
 import axios from 'axios';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import {Skeleton} from "@mui/material";
 import PropTypes from 'prop-types';
 
 function SortButton({ column, sortColumn, sortOrder, onSort, label }) {
@@ -116,6 +115,7 @@ function JobList({ refreshKey, searchKeyword }) {
         }
     };
 
+    if (loading) return <p style={{ fontFamily: "DM Sans" }}>Loading jobs...</p>;
     if (error) return <p style={{ fontFamily: "DM Sans" }}>Error loading jobs: {error.message}</p>;
 
     return (
@@ -123,7 +123,7 @@ function JobList({ refreshKey, searchKeyword }) {
             <table className={styles.jobListContainer}>
                 <thead>
                     <tr className={styles.jobListHeader}>
-                        <th>
+                        <th style={{ width: '18%' }}>
                             <input type="checkbox" className={styles.checkBox} />
                             <span className={styles.headerText} style={{ marginLeft: "15px" }}>Job Name</span>
                             <SortButton
@@ -134,7 +134,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 label="job name"
                             />
                         </th>
-                        <th>
+                        <th style={{ width: '15%' }}>
                             <span className={styles.headerText}>Status</span>
                             <SortButton
                                 column="status"
@@ -144,7 +144,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 label="status"
                             />
                         </th>
-                        <th>
+                        <th style={{ width: '15%' }}>
                             <span className={styles.headerText}>Last Updated</span>
                             <SortButton
                                 column="lastUpdated"
@@ -154,7 +154,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 label="last updated"
                             />
                         </th>
-                        <th>
+                        <th style={{ width: '16%' }}>
                             <span className={styles.headerText}>Next Scheduled Job</span>
                             <SortButton
                                 column="nextScheduledJob"
@@ -164,7 +164,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 label="next scheduled job"
                             />
                         </th>
-                        <th>
+                        <th style={{ width: '16%' }}>
                             <span className={styles.headerText}>Settings Updated At</span>
                             <SortButton
                                 column="settingsUpdatedAt"
@@ -174,7 +174,7 @@ function JobList({ refreshKey, searchKeyword }) {
                                 label="settings updated at"
                             />
                         </th>
-                        <th>
+                        <th style={{ width: '20%' }}>
                             <span className={styles.actionText}>View</span>
                             <span className={styles.actionText}>Edit</span>
                             <span className={styles.actionText}>Run</span>
@@ -186,15 +186,6 @@ function JobList({ refreshKey, searchKeyword }) {
                     {sortedJobData?.map((job, index) => (
                         <JobItem key={index} {...job} />
                     ))}
-                    {loading &&
-                        <tr>
-                            {Array.from({ length: 6 }).map((_, index) => (
-                                <td key={index} className={styles.loadingJobItem}>
-                                    <Skeleton sx={{ bgcolor: '#f7a81b' }} />
-                                </td>
-                            ))}
-                        </tr>
-                    }
                 </tbody>
             </table>
         </section>
