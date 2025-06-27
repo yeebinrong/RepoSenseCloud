@@ -22,7 +22,7 @@ class JobUserAuthTest {
     @Mock
     private WebClient.Builder webClientBuilder;
     
-    @Mock
+    @Mock 
     private WebClient webClient;
     
     @Mock
