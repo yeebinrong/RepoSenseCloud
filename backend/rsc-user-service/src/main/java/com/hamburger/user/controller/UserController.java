@@ -73,12 +73,13 @@ public class UserController {
     @PostMapping("/auth")
     public ResponseEntity<Map<String, Object>> validateToken(@RequestBody AuthReqDto requestBody) {
         String token = requestBody.getToken();
+        System.out.println("Received token for validation: " + token);
         if (token == null || !JwtUtil.validateToken(token)) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid or expired token"));
         }
 
         String username = JwtUtil.extractUsername(token);
-
+        System.out.println("Token validated for user: " + username);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", "Valid token");
         responseBody.put("username", username);
