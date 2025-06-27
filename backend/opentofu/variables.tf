@@ -3,8 +3,8 @@ variable "environment" {
     type        = string
 
     validation {
-        condition = contains(["localhost", "production"], var.environment)
-        error_message = "Invalid environment. Must be one of: localhost, production"
+        condition = contains(["localhost", "dev", "production"], var.environment)
+        error_message = "Invalid environment. Must be one of: localhost, dev, production"
     }
 }
 

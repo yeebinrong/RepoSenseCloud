@@ -8,6 +8,8 @@ STACK_NAME="rsc-infra-nat-${STAGE}"
 
 echo "Deploying stack ${STACK_NAME} for stage ${STAGE}..."
 
+IS_UPDATE=false
+
 # Check if stack already exists
 if aws cloudformation describe-stacks --stack-name ${STACK_NAME} > /dev/null 2>&1; then
     echo "Stack ${STACK_NAME} already exists. Updating existing stack..."
@@ -32,13 +34,14 @@ if aws cloudformation describe-stacks --stack-name ${STACK_NAME} > /dev/null 2>&
     fi
 
     echo "Update initiated successfully."
+    IS_UPDATE=true
 else
     echo "Creating new stack ${STACK_NAME}..."
     CREATE_OUTPUT=$(aws cloudformation create-stack \
       --stack-name ${STACK_NAME} \
       --template-body file://./nat-setup.yml \
       --parameters ParameterKey=Stage,ParameterValue="${STAGE}" \
-      --capabilities CAPABILITY_IAM 2>&1)
+      --capabilities CAPABILITY_NAMED_IAM 2>&1)
 
     if [ $? -ne 0 ]; then
         echo "Stack creation failed:"
@@ -49,13 +52,16 @@ fi
 
 echo "Waiting for stack operation to complete..."
 
-# Wait for the stack to complete
-aws cloudformation wait stack-create-complete --stack-name ${STACK_NAME} >/dev/null 2>&1 || \
-aws cloudformation wait stack-update-complete --stack-name ${STACK_NAME} >/dev/null 2>&1
+# Wait for the correct operation to complete
+if [ "$IS_UPDATE" = true ]; then
+    aws cloudformation wait stack-update-complete --stack-name ${STACK_NAME}
+else
+    aws cloudformation wait stack-create-complete --stack-name ${STACK_NAME}
+fi
 
 if [ $? -eq 0 ]; then
-    echo "Stack ${STACK_NAME} deployed successfully!"
+    echo "✅ Stack ${STACK_NAME} deployed successfully!"
 else
-    echo "Stack operation failed or timed out. Check cloudformation for errors..."
+    echo "❌ Stack operation failed or timed out. Check CloudFormation console for more details..."
     exit 1
 fi

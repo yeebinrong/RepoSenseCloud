@@ -176,9 +176,35 @@ Resources:
       VpcId:
         Ref: NATVpc
 
+  NATSSMInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "rsc-${Stage}-nat-ssm-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Tags:
+        - Key: Name
+          Value: !Sub "rsc-${Stage}-nat-ssm-role"
+
+  NATSSMInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref NATSSMInstanceRole
+
   NATInstance:
     Type: AWS::EC2::Instance
     Properties:
+      IamInstanceProfile: !Ref NATSSMInstanceProfile
       ImageId: !FindInMap
         - RegionMap
         - !Ref 'AWS::Region'
@@ -239,6 +265,13 @@ Resources:
     Properties:
       RouteTableId: !Ref NATEnvPrivateRouteTable
       SubnetId: !Ref NATVpcPrivateSubnet3
+
+  NATEnvPrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref NATEnvPrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      InstanceId: !Ref NATInstance
 
   NATEnvPublicRouteTable:
     Type: AWS::EC2::RouteTable
