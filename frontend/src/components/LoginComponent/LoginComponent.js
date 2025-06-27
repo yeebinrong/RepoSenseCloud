@@ -19,6 +19,10 @@ import { initialLoginPageState } from "../../constants/constants";
 import { showSuccessBar } from "../../constants/snack-bar";
 import axios from "axios";
 import PropTypes from "prop-types";
+import {
+  validatePassword,
+  validateConfirmPassword,
+} from "../../constants/passwordValidation";
 
 class LoginComponent extends React.Component {
   constructor(props) {
@@ -53,51 +57,10 @@ class LoginComponent extends React.Component {
     return null;
   };
 
-  validatePassword = (password) => {
-    const regexUppercase = /[A-Z]/;
-    const regexLowercase = /[a-z]/;
-    const regexDigit = /\d/;
-    const regexSpecialChar = /[~!@#$%^&*()]/;
-    const validationErrors = [];
-
-    if (password.length > 0) {
-      if (password.length < 8) {
-        validationErrors.push("Must be a minimum of 8 characters in length");
-      }
-      if (!regexUppercase.test(password)) {
-        validationErrors.push("Must contain at least 1 uppercase letter");
-      }
-      if (!regexLowercase.test(password)) {
-        validationErrors.push("Must contain at least 1 lowercase letter");
-      }
-      if (!regexDigit.test(password)) {
-        validationErrors.push("Must contain at least 1 digit");
-      }
-      if (!regexSpecialChar.test(password)) {
-        validationErrors.push(
-          "Must contain at least 1 special character ~!@#$%^&*()"
-        );
-      }
-
-      if (validationErrors.length > 0) {
-        return validationErrors;
-      }
-    }
-    return null;
-  };
-
-  validateConfirmPassword = (password, confirmPassword) => {
-    if (password !== confirmPassword && confirmPassword.length > 0) {
-      return ["Passwords did not match"];
-    }
-    return null;
-  };
-
   handleSubmit = async (e) => {
     e.preventDefault();
     this.setState({
       errorMessage: "",
-      emailErrorMessage: "",
       passwordErrorMessage: "",
       confirmPasswordErrorMessage: "",
       isButtonClicked: true,
@@ -108,8 +71,8 @@ class LoginComponent extends React.Component {
 
     if (isRegisterPage) {
       const emailErrorMessage = this.validateEmail(email);
-      const passwordErrorMessage = this.validatePassword(password);
-      const confirmPasswordErrorMessage = this.validateConfirmPassword(
+      const passwordErrorMessage = validatePassword(password);
+      const confirmPasswordErrorMessage = validateConfirmPassword(
         password,
         confirmPassword
       );
