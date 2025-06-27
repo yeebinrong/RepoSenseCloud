@@ -17,11 +17,21 @@ import java.util.stream.Collectors;
 
 public class TaskDispatcherHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
 
-    private final DynamoDbClient dynamoDb = DynamoDbClient.create();
-    private final SqsClient sqs = SqsClient.create();
+    private final DynamoDbClient dynamoDb;
+    private final SqsClient sqs;
+    private final String tableName;
+    private final String queueUrl;
 
-    private final String tableName = System.getenv("TABLE_NAME");
-    private final String queueUrl = System.getenv("QUEUE_URL");
+    public TaskDispatcherHandler() {
+        this(DynamoDbClient.create(), SqsClient.create(), System.getenv("TABLE_NAME"), System.getenv("QUEUE_URL"));
+    }
+
+    public TaskDispatcherHandler(DynamoDbClient dynamoDb, SqsClient sqs, String tableName, String queueUrl) {
+        this.dynamoDb = dynamoDb;
+        this.sqs = sqs;
+        this.tableName = tableName;
+        this.queueUrl = queueUrl;
+    }
 
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
