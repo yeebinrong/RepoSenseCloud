@@ -31,7 +31,7 @@ public class JobServiceController {
     private final JobUserAuth jobUserAuth;
     private final JwtHelper jwtHelper;
     private final S3Service s3Service;
-    private static final String env = "prod"; // change to prod to use auth
+    // private static final String env = "prod"; // change to prod to use auth
 
     @Autowired
     public JobServiceController(JobService jobService, JobUserAuth jobUserAuth, JwtHelper jwtHelper, S3Service s3Service) {
@@ -48,7 +48,7 @@ public class JobServiceController {
         try {
             String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
+            String owner = jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -64,7 +64,7 @@ public class JobServiceController {
         try {
             String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
+            String owner = jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -80,7 +80,7 @@ public class JobServiceController {
         try {
             String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
+            String owner = jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -96,7 +96,7 @@ public class JobServiceController {
         try {
             String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
+            String owner = jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -140,7 +140,7 @@ public class JobServiceController {
         try {
             String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
+            String owner = jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -158,7 +158,7 @@ public class JobServiceController {
         try {
             String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
+            String owner = jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -179,7 +179,7 @@ public class JobServiceController {
         try {
             String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
+            String owner = jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -197,7 +197,7 @@ public class JobServiceController {
         try {
             String jwtToken;
             jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
+            String owner = jobUserAuth.authorizeAction(jwtToken).getBody();
             if(owner == null){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -212,7 +212,7 @@ public class JobServiceController {
     public ResponseEntity<String> getS3PresignedUrl(@RequestParam String jobId, HttpServletRequest request) {
         try {
             String jwtToken = jwtHelper.extractJwtFromRequest(request);
-            String owner = env.equals("dev") ? "*" : jobUserAuth.authorizeAction(jwtToken).getBody();
+            String owner = jobUserAuth.authorizeAction(jwtToken).getBody();
             if (owner == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
