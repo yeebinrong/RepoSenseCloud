@@ -5,41 +5,46 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "../../pages/login-page";
 import axios from "axios";
 
+const TEST_USERNAME = "name";
+const TEST_PASSWORD = "Password!1";
+const TEST_INVALID_PASSWORD = "Password!2";
+const TEST_EMAIL = "name@email.com";
+
 jest.mock("axios");
 
-describe("LoginComponent", () => {
-  const navigate = jest.fn();
-  const mainProps = {
-    navigate: navigate,
-  };
+const renderWithRoute = ({
+  route = "/login",
+  isRegisterPage = false,
+  extraRoutes = null,
+  props = {},
+} = {}) => {
+  const mainProps = { navigate: jest.fn(), ...props };
+  return render(
+    <MemoryRouter initialEntries={[route]}>
+      <Routes>
+        <Route path="/login" element={<LoginPage {...mainProps} />} />
+        <Route
+          path="/register"
+          element={<LoginPage {...mainProps} isRegisterPage />}
+        />
+        {extraRoutes}
+      </Routes>
+    </MemoryRouter>
+  );
+};
 
+describe("LoginComponent", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it("renders Login Page Title", () => {
-    render(
-      <MemoryRouter initialEntries={["/login"]}>
-        <Routes>
-          <Route path="/login" element={<LoginPage {...mainProps} />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute();
     expect(screen.getByText("Login to your account")).toBeInTheDocument();
   });
 
   it("navigates to Register Page", () => {
-    render(
-      <MemoryRouter initialEntries={["/login"]}>
-        <Routes>
-          <Route path="/login" element={<LoginPage {...mainProps} />} />
-          <Route
-            path="/register"
-            element={<LoginPage {...mainProps} isRegisterPage />}
-          />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute();
     const registerButton = screen.getByRole("button", {
       name: "Sign up",
     });
@@ -48,13 +53,7 @@ describe("LoginComponent", () => {
   });
 
   it("shows error on empty login field", () => {
-    render(
-      <MemoryRouter initialEntries={["/login"]}>
-        <Routes>
-          <Route path="/login" element={<LoginPage {...mainProps} />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute();
     const submitButton = screen.getByRole("button", {
       name: "Log in to continue",
     });
@@ -64,43 +63,31 @@ describe("LoginComponent", () => {
   });
 
   it("submits login form with valid username", () => {
-    render(
-      <MemoryRouter initialEntries={["/login"]}>
-        <Routes>
-          <Route path="/login" element={<LoginPage {...mainProps} />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute();
     const usernameInput = screen.getByLabelText(/Username/i);
     const submitButton = screen.getByRole("button", {
       name: "Log in to continue",
     });
-    fireEvent.change(usernameInput, { target: { value: "name" } });
-    expect(usernameInput.value).toBe("name");
+    fireEvent.change(usernameInput, { target: { value: TEST_USERNAME } });
+    expect(usernameInput.value).toBe(TEST_USERNAME);
     fireEvent.click(submitButton);
   });
 
   it("handles valid credentails from login API", async () => {
     const token = "mocked_token";
     axios.post.mockResolvedValueOnce({ data: { token } });
-    render(
-      <MemoryRouter initialEntries={["/login"]}>
-        <Routes>
-          <Route path="/login" element={<LoginPage {...mainProps} />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute();
     fireEvent.change(screen.getByLabelText(/Username/i), {
-      target: { value: "name" },
+      target: { value: TEST_USERNAME },
     });
     fireEvent.change(screen.getAllByLabelText(/Password/i)[0], {
-      target: { value: "Password1!" },
+      target: { value: TEST_PASSWORD },
     });
     fireEvent.click(screen.getByRole("button", { name: "Log in to continue" }));
     await waitFor(() => {
       expect(axios.post).toHaveBeenCalledWith(
         `${process.env.REACT_APP_USER_SERVICE_URL}/login`,
-        { userName: "name", password: "Password1!" },
+        { userName: TEST_USERNAME, password: TEST_PASSWORD },
         expect.objectContaining({ headers: expect.any(Object) })
       );
     });
@@ -108,18 +95,12 @@ describe("LoginComponent", () => {
 
   it("handles invalid credentails from login API", async () => {
     axios.post.mockRejectedValueOnce({ response: { status: 400 } });
-    render(
-      <MemoryRouter initialEntries={["/login"]}>
-        <Routes>
-          <Route path="/login" element={<LoginPage {...mainProps} />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute();
     fireEvent.change(screen.getByLabelText(/Username/i), {
-      target: { value: "name" },
+      target: { value: TEST_USERNAME },
     });
     fireEvent.change(screen.getAllByLabelText(/Password/i)[0], {
-      target: { value: "Password2!" },
+      target: { value: TEST_INVALID_PASSWORD },
     });
     fireEvent.click(screen.getByRole("button", { name: "Log in to continue" }));
     await waitFor(() => {
@@ -130,31 +111,12 @@ describe("LoginComponent", () => {
   });
 
   it("renders Register Page Title", () => {
-    render(
-      <MemoryRouter initialEntries={["/register"]}>
-        <Routes>
-          <Route
-            path="/register"
-            element={<LoginPage {...mainProps} isRegisterPage />}
-          />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute({ route: "/register", isRegisterPage: true });
     expect(screen.getByText("Create your account")).toBeInTheDocument();
   });
 
   it("navigates to Login Page", () => {
-    render(
-      <MemoryRouter initialEntries={["/register"]}>
-        <Routes>
-          <Route
-            path="/register"
-            element={<LoginPage {...mainProps} isRegisterPage />}
-          />
-          <Route path="/login" element={<LoginPage {...mainProps} />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute({ route: "/register", isRegisterPage: true });
     const loginButton = screen.getByRole("button", {
       name: "Log in",
     });
@@ -163,16 +125,7 @@ describe("LoginComponent", () => {
   });
 
   it("shows error on empty register field", () => {
-    render(
-      <MemoryRouter initialEntries={["/register"]}>
-        <Routes>
-          <Route
-            path="/register"
-            element={<LoginPage {...mainProps} isRegisterPage />}
-          />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute({ route: "/register", isRegisterPage: true });
     const submitButton = screen.getByRole("button", { name: "Sign up" });
     fireEvent.click(submitButton);
     const usernameInput = screen.getByLabelText(/Username/i);
@@ -180,36 +133,18 @@ describe("LoginComponent", () => {
   });
 
   it("submits register form with valid username", () => {
-    render(
-      <MemoryRouter initialEntries={["/register"]}>
-        <Routes>
-          <Route
-            path="/register"
-            element={<LoginPage {...mainProps} isRegisterPage />}
-          />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute({ route: "/register", isRegisterPage: true });
     const usernameInput = screen.getByLabelText(/Username/i);
     const submitButton = screen.getByRole("button", {
       name: "Sign up",
     });
-    fireEvent.change(usernameInput, { target: { value: "name" } });
-    expect(usernameInput.value).toBe("name");
+    fireEvent.change(usernameInput, { target: { value: TEST_USERNAME } });
+    expect(usernameInput.value).toBe(TEST_USERNAME);
     fireEvent.click(submitButton);
   });
 
   it("toggles password visibility", () => {
-    render(
-      <MemoryRouter initialEntries={["/register"]}>
-        <Routes>
-          <Route
-            path="/register"
-            element={<LoginPage {...mainProps} isRegisterPage />}
-          />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute({ route: "/register", isRegisterPage: true });
     const button = screen.getAllByLabelText("toggle password visibility")[0];
     fireEvent.click(button);
     expect(button).toBeInTheDocument();
@@ -218,33 +153,24 @@ describe("LoginComponent", () => {
   it("handles success from register API", async () => {
     const token = "mocked_token";
     axios.post.mockResolvedValueOnce({ data: { token } });
-    render(
-      <MemoryRouter initialEntries={["/register"]}>
-        <Routes>
-          <Route
-            path="/register"
-            element={<LoginPage {...mainProps} isRegisterPage />}
-          />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute({ route: "/register", isRegisterPage: true });
     fireEvent.change(screen.getByLabelText(/Username/i), {
-      target: { value: "name" },
+      target: { value: TEST_USERNAME },
     });
     fireEvent.change(screen.getByLabelText(/Email/i), {
-      target: { value: "name@email.com" },
+      target: { value: TEST_EMAIL },
     });
     fireEvent.change(screen.getAllByLabelText(/Password/i)[0], {
-      target: { value: "Password1!" },
+      target: { value: TEST_PASSWORD },
     });
     fireEvent.change(screen.getByLabelText(/Retype password/i), {
-      target: { value: "Password1!" },
+      target: { value: TEST_PASSWORD },
     });
     fireEvent.click(screen.getByRole("button", { name: "Sign up" }));
     await waitFor(() => {
       expect(axios.post).toHaveBeenCalledWith(
         `${process.env.REACT_APP_USER_SERVICE_URL}/register`,
-        { userName: "name", email: "name@email.com", password: "Password1!" },
+        { userName: TEST_USERNAME, email: TEST_EMAIL, password: TEST_PASSWORD },
         expect.objectContaining({ headers: expect.any(Object) })
       );
     });
@@ -252,27 +178,18 @@ describe("LoginComponent", () => {
 
   it("handles user already exists from register API", async () => {
     axios.post.mockRejectedValueOnce({ response: { status: 409 } });
-    render(
-      <MemoryRouter initialEntries={["/register"]}>
-        <Routes>
-          <Route
-            path="/register"
-            element={<LoginPage {...mainProps} isRegisterPage />}
-          />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithRoute({ route: "/register", isRegisterPage: true });
     fireEvent.change(screen.getByLabelText(/Username/i), {
-      target: { value: "name" },
+      target: { value: TEST_USERNAME },
     });
     fireEvent.change(screen.getByLabelText(/Email/i), {
-      target: { value: "name@email.com" },
+      target: { value: TEST_EMAIL },
     });
     fireEvent.change(screen.getAllByLabelText(/Password/i)[0], {
-      target: { value: "Password1!" },
+      target: { value: TEST_PASSWORD },
     });
     fireEvent.change(screen.getByLabelText(/Retype password/i), {
-      target: { value: "Password1!" },
+      target: { value: TEST_PASSWORD },
     });
     fireEvent.click(screen.getByRole("button", { name: "Sign up" }));
     await waitFor(() => {
