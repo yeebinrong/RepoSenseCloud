@@ -441,11 +441,10 @@ const CreateJobComponent = ({
                             <div className="job-name-container">
                                 <text className="job-name-label">Job Name</text>
                                 <TextField className="job-name-textbox" placeholder="Enter Job Name" value = {jobName} 
-                                    //onChange={(e)=> { validateJobName(); setJobName(e.target.value)}} 
+                                    data-testid="job-name-input"
                                     onInput={(e)=> {setJobName(e.target.value)}}
                                     onPaste={(e)=> {setJobName(e.target.value)}}
                                     autoComplete="off"
-
                                     error={(jobNameError && page1Error)}        
                                     helperText={(jobNameError && page1Error) ? "Please Enter Job Name" : ""}
                                     disabled={mode === "edit"}
@@ -456,7 +455,7 @@ const CreateJobComponent = ({
                                 {repoLink.map((link, index) => (
                                     <span key={link.id}>
                                         <TextField className="target-repo-textbox" placeholder="Paste Repo URL here" value={link.value}
-                                            //onChange={(e) => { validateRepoLink(link.id); handleRepoLinkChange(link.id, e.target.value) }}
+                                            data-testid={`repo-link-input-${index}`}
                                             onInput={(e) => {handleRepoLinkChange(link.id, e.target.value) }}
                                             onPaste={(e) => {handleRepoLinkChange(link.id, e.target.value) }}
                                             autoComplete="off"
@@ -467,7 +466,7 @@ const CreateJobComponent = ({
                                         {index > 0 && (<button className="delete-repo-link-button" onClick={() => deleteRepoLink(link.id)} disabled={mode === "edit"}>✕</button>)}
                                     </span>
                                 ))}
-                                <button className="add-repo-link-button" onClick={addRepoLink} disabled={mode === "edit"}> + Add repository</button>
+                                <button className="add-repo-link-button" data-testid="add-repo-button" onClick={addRepoLink} disabled={mode === "edit"}> + Add repository</button>
                             </div>
                         </div>
                         <div className="dotted-line-down" />
@@ -481,7 +480,7 @@ const CreateJobComponent = ({
                                         </Grid2>
                                         <Grid2 size={6}>
                                             <Grid2 size={6}>
-                                                <select className="period-mode-dropdown" value = {periodMode} 
+                                                <select className="period-mode-dropdown" data-testid="period-mode-dropdown" value = {periodMode} 
                                                     onChange={(e) => setPeriodMode(e.target.value)}>
                                                     <option value="Specific Date Range">Specific Date Range</option>
                                                     <option value="By Days/Weeks">By Days/Weeks</option>
@@ -493,7 +492,7 @@ const CreateJobComponent = ({
                                             <text className="originality-label">Originality Threshold:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <TextField type="text" className="originality-input" value = {originalityThreshold} 
+                                            <TextField type="text" className="originality-input" data-testid="originality-threshold-input" value = {originalityThreshold} 
                                             onChange={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}} placeholder="0.5" 
                                                 helperText="Input between 0.0 to 1.0" />
                                         </Grid2>
@@ -502,6 +501,7 @@ const CreateJobComponent = ({
                                         </Grid2>
                                         <Grid2 size={6}>
                                             <select
+                                                data-testid="timezone-dropdown"
                                                 className={`timezone-dropdown ${timeZoneError && page1Error ? 'error' : ''}`}
                                                 value={timeZone}
                                                 onChange={(e) => {
@@ -522,19 +522,19 @@ const CreateJobComponent = ({
                                                     <text className="authorship-label">Analyse authorship:</text>
                                                 </Grid2>
                                                 <Grid2 size={2}>
-                                                    <input type="checkbox" className="authorship-checkbox" checked={authorship} onChange={(e) => setAuthorship(e.target.checked)} />
+                                                    <input type="checkbox" data-testid="authorship-checkbox" className="authorship-checkbox" checked={authorship} onChange={(e) => setAuthorship(e.target.checked)} />
                                                 </Grid2>
                                                 <Grid2 size={10}>
                                                     <text className="prev-author-label">Find previous authors:</text>
                                                 </Grid2>
                                                 <Grid2 size={2}>
-                                                    <input type="checkbox" className="prev-author-checkbox" checked={prevAuthors} onChange={(e) => setPrevAuthors(e.target.checked)} />
+                                                    <input type="checkbox" data-testid="prev-authors-checkbox" className="prev-author-checkbox" checked={prevAuthors} onChange={(e) => setPrevAuthors(e.target.checked)} />
                                                 </Grid2>
                                                 <Grid2 size={10}>
                                                     <text className="shallow-clone-label">Shallow cloning:</text>
                                                 </Grid2>
                                                 <Grid2 size={2} >
-                                                    <input type="checkbox" className="shallow-clone-checkbox" checked={shallowClone} onChange={(e) => setShallowClone(e.target.checked)}/>
+                                                    <input type="checkbox" data-testid="shallow-clone-checkbox" className="shallow-clone-checkbox" checked={shallowClone} onChange={(e) => setShallowClone(e.target.checked)}/>
                                                 </Grid2>
                                             </Grid2>
                                         </Grid2>
@@ -544,13 +544,13 @@ const CreateJobComponent = ({
                                                     <text className="ignore-size-limit-label">Ignore file size limit:</text>
                                                 </Grid2>
                                                 <Grid2 size={2} >
-                                                    <input type="checkbox" className="ignore-size-limit-checkbox" checked={ignoreFileSizeLimit} onChange={(e) => setIgnoreFileSizeLimit(e.target.checked)} />
+                                                    <input type="checkbox" data-testid="ignore-file-size-limit-checkbox" className="ignore-size-limit-checkbox" checked={ignoreFileSizeLimit} onChange={(e) => setIgnoreFileSizeLimit(e.target.checked)} />
                                                 </Grid2>
                                                 <Grid2 size={10}>
                                                     <text className="Add-last-mod-label">Add last modified date:</text>
                                                 </Grid2>
                                                 <Grid2 size={2} >
-                                                    <input type="checkbox" className="add-last-mod-checkbox" checked={addLastMod} onChange={(e) => setAddLastMod(e.target.checked)} />
+                                                    <input type="checkbox" data-testid="add-last-mod-checkbox" className="add-last-mod-checkbox" checked={addLastMod} onChange={(e) => setAddLastMod(e.target.checked)} />
                                                 </Grid2>
 
                                             </Grid2>
@@ -560,6 +560,7 @@ const CreateJobComponent = ({
                                         </Grid2>
                                         <Grid2 size={10} marginTop={2}>
                                             <Autocomplete
+                                                data-testid="format-autocomplete"
                                                 multiple
                                                 freeSolo
                                                 options={["js", "java", "python", "c", "cpp", "html", "css"]}
@@ -625,7 +626,7 @@ const CreateJobComponent = ({
                     <text className="since-label">Since:</text>
                 </Grid2>
                 <Grid2 size={6}>
-                    <TextField type="date" className="since-date-input" value={sinceDate} 
+                    <TextField type="date" className="since-date-input" data-testid="since-date-input" value={sinceDate} 
                     onChange={(e) => setSinceDate(e.target.value)} 
                     onBlur={(e) => { validateSinceUntilDate(); setSinceDate(e.target.value); }}
                     placeholder="DD/MM/YYYY" />
@@ -635,7 +636,7 @@ const CreateJobComponent = ({
                     <text className="until-label">Until:</text>
                 </Grid2>
                 <Grid2 size={6}>
-                    <TextField type="date" className="until-date-input" value={untilDate} 
+                    <TextField type="date" className="until-date-input" data-testid="until-date-input" value={untilDate} 
                         onChange={(e) => {validateSinceUntilDate(); setUntilDate(e.target.value)}} 
                         onBlur={(e) => { validateSinceUntilDate(); setUntilDate(e.target.value); }}
                         placeholder="DD/MM/YYYY" 
@@ -649,10 +650,10 @@ const CreateJobComponent = ({
         let mod = periodModifier;
         switch (mod) {
             case "before":
-                return <TextField type="date" className="until-date-input2" value={untilDate} onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                return <TextField type="date" className="until-date-input2" data-testid="until-date-input2" value={untilDate} onChange={(e) => setUntilDate(e.target.value)} placeholder="DD/MM/YYYY" />
 
             case "after":
-                return <TextField type="date" className="since-date-input2" value={sinceDate} onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
+                return <TextField type="date" className="since-date-input2" data-testid="since-date-input2" value={sinceDate} onChange={(e) => setSinceDate(e.target.value)} placeholder="DD/MM/YYYY" />
 
             default:
                 return <text style={{ fontFamily: "DM Sans" }}> **{period} from date of job run</text>
@@ -666,7 +667,7 @@ const CreateJobComponent = ({
                     <text className="period-label">Period:</text>
                 </Grid2>
                 <Grid2 size={6}>
-                    <select className="period-range-dropdown" value = {period} 
+                    <select className="period-range-dropdown" data-testid="period-range-dropdown" value = {period} 
                         onChange={(e) => setPeriod(e.target.value)}>
                         <option value="7d">7 days</option>
                         <option value="30d">30 days</option>
@@ -676,7 +677,7 @@ const CreateJobComponent = ({
                 </Grid2>
                 <Grid2 size={3} container alignItems="center">
                     
-                    <select className="period-modifier-dropdown" value = {periodModifier} 
+                    <select className="period-modifier-dropdown" data-testid="period-modifier-dropdown" value = {periodModifier} 
                         onChange={(e) => setPeriodModifier(e.target.value)}>
                         <option value="latest">Latest</option>
                         <option value="before">Before Date:</option>
@@ -726,6 +727,7 @@ const CreateJobComponent = ({
                         <FormControl fullWidth>
                             <InputLabel id="demo-simple-select-label">Job Type</InputLabel>
                             <Select
+                                data-testid="job-type-select"
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
                                 value={jobType}
@@ -755,7 +757,7 @@ const CreateJobComponent = ({
                     <text className="schedule-settings-labels">Frequency:</text>
                 </Grid2>
                 <Grid2 item size={8}>
-                    <select className="frequency-dropdown"
+                    <select className="frequency-dropdown" data-testid="frequency-dropdown"
                         onChange={(e) => setFrequency(e.target.value)}>
                         <option value={"daily"}>Daily</option>
                         <option value={"hourly"}>Hourly</option>
@@ -767,6 +769,7 @@ const CreateJobComponent = ({
                 </Grid2>
                 <Grid2 item size={2}>
                     <select
+                        data-testid="start-hour-dropdown"
                         className={`time-dropdown  ${startHourError && page2Error ? 'error' : ''}`}
                         value={startHour}
                         onChange={(e) => { setStartHour(e.target.value); validateStartHour(e.target.value);}}
@@ -783,6 +786,7 @@ const CreateJobComponent = ({
                 </Grid2>
                 <Grid2 item size={2}>
                     <select
+                            data-testid="start-minute-dropdown"
                             className={`time-dropdown ${startMinuteError && page2Error ? 'error' : ''}`}
                             value={startMinute}
                             onChange={(e) => { setStartMinute(e.target.value); validateStartMinute(e.target.value)}}
@@ -798,7 +802,7 @@ const CreateJobComponent = ({
                     <text className="start-date-label">Start Date:</text>
                 </Grid2>
                 <Grid2 item size={6}>
-                    <TextField type="date" className="start-date-input" value = {startDate}
+                    <TextField type="date" className="start-date-input" data-testid="start-date-input" value = {startDate}
                         onChange={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}} 
                         onInput={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}} 
                         error = {dateError && page2Error } placeholder="DD/MM/YYYY" />
@@ -807,7 +811,7 @@ const CreateJobComponent = ({
                     <text className="end-date-label">End Date:</text>
                 </Grid2>
                 <Grid2 item size={6}>
-                    <TextField type="date" className="end-date-input" value = {endDate} 
+                    <TextField type="date" className="end-date-input" data-testid="end-date-input" value = {endDate} 
                         onChange={(e) => { setEndDate(e.target.value); validateDate(startDate, e.target.value)}} placeholder="DD/MM/YYYY" 
                         onInput={(e) => {setEndDate(e.target.value); validateDate(startDate, e.target.value) }} 
                         error = {dateError && page2Error}
