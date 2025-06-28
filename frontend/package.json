@@ -64,6 +64,7 @@
     "serverless-finch": "^4.0.4"
   },
   "jest": {
+
     "moduleNameMapper": {
       "\\.(css|scss)$": "identity-obj-proxy",
       "\\.(jpg|jpeg|png|gif|svg)$": "<rootDir>/src/__mocks__/fileMock.js"

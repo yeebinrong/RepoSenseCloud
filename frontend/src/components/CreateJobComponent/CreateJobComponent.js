@@ -492,9 +492,11 @@ const CreateJobComponent = ({
                                             <text className="originality-label">Originality Threshold:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <TextField type="text" className="originality-input" data-testid="originality-threshold-input" value = {originalityThreshold} 
-                                            onChange={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}} placeholder="0.5" 
-                                                helperText="Input between 0.0 to 1.0" />
+                                            <TextField type="number" className="originality-input" inputProps={{'data-testid':"originality-threshold-input"}} value = {originalityThreshold} 
+                                            onInput={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}}
+                                            onChange={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}}
+                                            onBlur={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}} placeholder="0.5" 
+                                                helperText={(originalityThreshold && page1Error) ? "Input between 0.0 to 1.0" : "" }/>
                                         </Grid2>
                                         <Grid2 size={6} container alignItems="center">
                                             <text className="timezone-label">Time Zone:</text>
@@ -626,7 +628,7 @@ const CreateJobComponent = ({
                     <text className="since-label">Since:</text>
                 </Grid2>
                 <Grid2 size={6}>
-                    <TextField type="date" className="since-date-input" data-testid="since-date-input" value={sinceDate} 
+                    <TextField type="date" className="since-date-input" inputProps={{ 'data-testid': 'since-date-input' }} value={sinceDate} 
                     onChange={(e) => setSinceDate(e.target.value)} 
                     onBlur={(e) => { validateSinceUntilDate(); setSinceDate(e.target.value); }}
                     placeholder="DD/MM/YYYY" />
@@ -636,7 +638,7 @@ const CreateJobComponent = ({
                     <text className="until-label">Until:</text>
                 </Grid2>
                 <Grid2 size={6}>
-                    <TextField type="date" className="until-date-input" data-testid="until-date-input" value={untilDate} 
+                    <TextField type="date" className="until-date-input" inputProps={{'data-testid': "until-date-input"}} value={untilDate} 
                         onChange={(e) => {validateSinceUntilDate(); setUntilDate(e.target.value)}} 
                         onBlur={(e) => { validateSinceUntilDate(); setUntilDate(e.target.value); }}
                         placeholder="DD/MM/YYYY" 
@@ -802,7 +804,7 @@ const CreateJobComponent = ({
                     <text className="start-date-label">Start Date:</text>
                 </Grid2>
                 <Grid2 item size={6}>
-                    <TextField type="date" className="start-date-input" data-testid="start-date-input" value = {startDate}
+                    <TextField type="date" className="start-date-input" inputProps = {{'data-testid':"start-date-input"}} value = {startDate}
                         onChange={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}} 
                         onInput={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}} 
                         error = {dateError && page2Error } placeholder="DD/MM/YYYY" />
@@ -811,7 +813,7 @@ const CreateJobComponent = ({
                     <text className="end-date-label">End Date:</text>
                 </Grid2>
                 <Grid2 item size={6}>
-                    <TextField type="date" className="end-date-input" data-testid="end-date-input" value = {endDate} 
+                    <TextField type="date" className="end-date-input" inputProps= {{'data-testid':"end-date-input"}} value = {endDate} 
                         onChange={(e) => { setEndDate(e.target.value); validateDate(startDate, e.target.value)}} placeholder="DD/MM/YYYY" 
                         onInput={(e) => {setEndDate(e.target.value); validateDate(startDate, e.target.value) }} 
                         error = {dateError && page2Error}
