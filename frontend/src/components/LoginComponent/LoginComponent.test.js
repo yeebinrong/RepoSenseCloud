@@ -7,7 +7,7 @@ import axios from "axios";
 
 const TEST_USERNAME = "name";
 const TEST_PASSWORD = "Password!1"; // NOSONAR
-const TEST_INVALID_PASSWORD = "Password!2";
+const TEST_INVALID_PASSWORD = "Password!2"; // NOSONAR
 const TEST_EMAIL = "name@email.com";
 
 jest.mock("axios");
