@@ -494,9 +494,13 @@ const CreateJobComponent = ({
                                             <text className="originality-label">Originality Threshold:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <TextField type="text" className="originality-input" value = {originalityThreshold} 
-                                            onChange={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}} placeholder="0.5" 
-                                                helperText="Input between 0.0 to 1.0" />
+                                            <TextField type="number" className="originality-input" data-testid="originality-threshold-input" value = {originalityThreshold} 
+                                            onInput={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}}
+                                            onChange={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}}
+                                            onBlur={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}} placeholder="0.5" 
+                                            error={originalityThresholdError && page1Error}
+                                            helperText={(originalityThresholdError && page1Error) ? "Input between 0.0 to 1.0" : ""}
+                                            />
                                         </Grid2>
                                         <Grid2 size={6} container alignItems="center">
                                             <text className="timezone-label">Time Zone:</text>
