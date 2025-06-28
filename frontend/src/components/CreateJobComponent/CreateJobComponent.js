@@ -156,6 +156,7 @@ const CreateJobComponent = ({
             setStartHourError(true);
             setStartMinuteError(true);
             setDateError(false);
+            setSubmissionError(false);
         }
     }, [open]);
 
@@ -336,7 +337,7 @@ const CreateJobComponent = ({
                 />
                 </span>
                 <div>
-                    {submissionError ? <Alert
+                    {(submissionError && mode === "edit") ? <Alert
                         severity="warning"
                         sx={{
                             color: "black",
