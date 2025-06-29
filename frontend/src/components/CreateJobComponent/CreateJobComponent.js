@@ -117,7 +117,7 @@ const CreateJobComponent = ({
     const [startHourError, setStartHourError] = useState(true);
     const [startMinuteError, setStartMinuteError] = useState(true);
     const [dateError, setDateError] = useState(false);
-    const [submissionError, setSubmissionError] = useState(false);
+
 
     // Reset state when modal closes
     useEffect(() => {
@@ -156,7 +156,6 @@ const CreateJobComponent = ({
             setStartHourError(true);
             setStartMinuteError(true);
             setDateError(false);
-            setSubmissionError(false);
         }
     }, [open]);
 
@@ -337,7 +336,7 @@ const CreateJobComponent = ({
                 />
                 </span>
                 <div>
-                    {submissionError ? <Alert
+                    {(mode === "edit" && jobData.status === "Failed") ? <Alert
                         severity="warning"
                         sx={{
                             color: "black",
@@ -346,7 +345,7 @@ const CreateJobComponent = ({
                                 color: "black"
                             }
                         }}
-                    > An error occured saving the job, please contact the administrator.</Alert> : null}
+                    > An error occured running the job, please contact the administrator.</Alert> : null}
                 </div>
             </div>
         );
@@ -1020,7 +1019,6 @@ const CreateJobComponent = ({
                 showErrorBar(mode === "edit" ? "Error Updating Job" : "Error Creating Job");
             }
         } catch (error) {
-            setSubmissionError(true);
             showErrorBar(error.message);
         } finally {
             setIsLoading(false);
