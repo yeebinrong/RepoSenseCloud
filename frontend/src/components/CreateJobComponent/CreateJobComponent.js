@@ -337,7 +337,7 @@ const CreateJobComponent = ({
                 />
                 </span>
                 <div>
-                    {(submissionError && mode === "edit") ? <Alert
+                    {submissionError ? <Alert
                         severity="warning"
                         sx={{
                             color: "black",
