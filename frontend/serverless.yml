@@ -26,6 +26,12 @@ custom:
 
 resources:
   Resources:
+    # Need to add another bucket to redirect non-www to www
+    # You can setup another Cloudfront distribution that targets the redirect bucket URL (not the bucket itself, it's important), which will target the website you want to redirect to.
+    # 1. Create a website bucket with it's name being the domain that will redirect
+    # 2. Set it's redirect rule to target the domain it's supposed to redirect to
+    # 3. Create a Cloudfront distribution in front of the bucket you just created. But instead of targeting the S3 bucket, you target the S3 website URL
+    # 4. Create a record in Route53 that targets your new Cloudfront distribution
     WebsiteBucket:
       Type: AWS::S3::Bucket
       Properties:

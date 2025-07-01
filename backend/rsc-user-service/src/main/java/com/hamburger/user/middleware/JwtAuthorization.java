@@ -20,11 +20,14 @@ public class JwtAuthorization extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         // Exclude specific URL patterns
-
-        if (requestURI.endsWith("/api/user/register") || requestURI.endsWith("/api/user/login")) {
+        System.out.println("Request URI: " + requestURI);
+        System.out.println("Authorization Header: " + request.getHeader("Authorization"));
+        if (requestURI.equals("/api/user/register") || requestURI.equals("/api/user/login")) {
+            System.out.println("Skipping JWT validation for: " + requestURI);
             filterChain.doFilter(request, response);
             return;
         }
+        System.out.println("Validating JWT for: " + requestURI);
 
         String token = null;
 

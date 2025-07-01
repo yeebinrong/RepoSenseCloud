@@ -149,18 +149,19 @@ fi
 
 SECRET_KEY=$(openssl rand -base64 32)
 
+USER_SVC_PORT=3001
+JOB_SVC_PORT=3002
+
 # === Deploy Services ===
 for SERVICE in "${SERVICES[@]}"; do
   echo "Processing $SERVICE..."
 
   if [ "$SERVICE" == "rsc-user-service" ]; then
-    PORT_NAME=USER_SVC_PORT
     PATH_PREFIX=user
-    PORT=3001
+    PORT=$USER_SVC_PORT
   elif [ "$SERVICE" == "rsc-job-service" ]; then
-    PORT_NAME=JOB_SVC_PORT
     PATH_PREFIX=jobs
-    PORT=3002
+    PORT=$JOB_SVC_PORT
   fi
 
 # === Generate Kubernetes manifest ===
@@ -191,10 +192,14 @@ spec:
               value: $SERVICE
             - name: SERVICE_VERSION
               value: 1.0-SNAPSHOT
-            - name: $PORT_NAME
-              value: "$PORT"
+            - name: USER_SVC_PORT
+              value: "$USER_SVC_PORT"
+            - name: JOB_SVC_PORT
+              value: "$JOB_SVC_PORT"
             - name: STAGE
               value: "$STAGE"
+            - name: FRONTEND_ORIGIN
+              value: "https://www.$HOST_NAME"
             - name: JWT_SECRET_KEY
               value: "$SECRET_KEY"
 ---
@@ -238,7 +243,7 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:$AWS_ACCOUNT_ID:certificate/ce1fa35d-dd6e-4447-9bdd-076384588ef0
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:$AWS_ACCOUNT_ID:certificate/f15ad783-86fa-4674-936a-a236d1316b10
     alb.ingress.kubernetes.io/listen-https: "443"
     alb.ingress.kubernetes.io/healthcheck-path: /api/health
 spec:

@@ -23,7 +23,7 @@ services:
     networks:
       - rsc-network
 
-  user-service-app:
+  rsc-user-service:
     build:
       context: ./
       dockerfile: ./infra/docker-images/rsc-local-backend-image/Dockerfile
@@ -41,7 +41,7 @@ services:
     networks:
       - rsc-network
 
-  job-service-app:
+  rsc-job-service:
     build:
       context: ./
       dockerfile: ./infra/docker-images/rsc-local-backend-image/Dockerfile

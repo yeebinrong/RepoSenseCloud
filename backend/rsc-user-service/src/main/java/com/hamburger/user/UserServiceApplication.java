@@ -46,9 +46,9 @@ public class UserServiceApplication {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+                String JOB_ORIGIN = "http://rsc-job-service:" + System.getenv("JOB_SVC_PORT");
                 registry.addMapping("/**")
-                        .allowedOrigins(System.getenv("FRONTEND_ORIGIN"),
-                            System.getenv("REACT_APP_JOB_SERVICE_URL"))
+                        .allowedOrigins(System.getenv("FRONTEND_ORIGIN"), JOB_ORIGIN)
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true);

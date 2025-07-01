@@ -17,7 +17,7 @@ import java.time.Duration;
 public class S3Service {
     private final S3Presigner s3Presigner;
     private final S3Client s3Client;
-    private final String bucketName = "rsc-reports-localhost";
+    private final String bucketName = "rsc-reports-" + System.getenv("STAGE");
 
     public S3Service() {
         this.s3Presigner = S3Presigner.builder()
