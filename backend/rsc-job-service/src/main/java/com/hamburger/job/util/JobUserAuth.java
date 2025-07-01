@@ -32,6 +32,12 @@ public class JobUserAuth extends OncePerRequestFilter {
                                     FilterChain filterChain)
         throws ServletException, IOException {
 
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             String token = extractJwtFromRequest(request);
             System.out.println("Extracted JWT token: " + token);
