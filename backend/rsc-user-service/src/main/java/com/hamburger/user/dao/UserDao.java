@@ -87,7 +87,7 @@ public interface UserDao {
         @Override
         public User findByEmail(String email) {
             String indexName = "EmailIndex";
-            String tableName = "rsc-localhost-user-data";
+            String tableName = "rsc-$STAGE-user-data";
             Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
             expressionAttributeValues.put(":email", AttributeValue.builder().s(email).build());
 

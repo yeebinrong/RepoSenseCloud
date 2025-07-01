@@ -60,7 +60,7 @@ if aws s3 cp --recursive "$OUTPUT" "s3://$REPORT_BUCKET/$OWNER/$JOBID/"; then
     echo "Report successfully uploaded to S3."
     # Update DDB job to Completed
     CUR_STATUS=$(aws dynamodb get-item \
-    --table-name rsc-localhost-job-data \
+    --table-name rsc-$STAGE-job-data \
     --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
     --query "Item.status.S" \
     --output text)
@@ -92,7 +92,7 @@ if aws s3 cp --recursive "$OUTPUT" "s3://$REPORT_BUCKET/$OWNER/$JOBID/"; then
 else
     # Update DDB job to Failed
     CUR_STATUS=$(aws dynamodb get-item \
-    --table-name rsc-localhost-job-data \
+    --table-name rsc-$STAGE-job-data \
     --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
     --query "Item.status.S" \
     --output text)
@@ -110,7 +110,7 @@ fi
 # Always update lastUpdated at the end
 # Get the timeZone value from DynamoDB
 RAW_TIMEZONE=$(aws dynamodb get-item \
-    --table-name rsc-localhost-job-data \
+    --table-name rsc-$STAGE-job-data \
     --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
     --query "Item.timeZone.S" \
     --output text)
@@ -128,7 +128,7 @@ TIME="${TIME_ONLY} UTC${UTC_OFFSET}"
 DATE=$(TZ="$TIMEZONE" date +%F)
 
 aws dynamodb update-item \
-    --table-name rsc-localhost-job-data \
+    --table-name rsc-$STAGE-job-data \
     --key "{\"owner\": {\"S\": \"$OWNER\"}, \"jobId\": {\"S\": \"$JOBID\"}}" \
     --update-expression "SET #s = :lastUpdated" \
     --expression-attribute-names '{"#s": "lastUpdated"}' \

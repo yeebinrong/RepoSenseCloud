@@ -943,8 +943,8 @@ const CreateJobComponent = ({
                 frequency,
                 startHour,
                 startMinute,
-                startDate: startDate ? moment(startDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
-                endDate: endDate ? moment(endDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+                startDate: startDate && startDate !== '' ? moment(startDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+                endDate: endDate && endDate !== '' ? moment(endDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
                 lastUpdated: {
                     time: timeZone
                         ? getTimeWithUtcOffset(timeZone)

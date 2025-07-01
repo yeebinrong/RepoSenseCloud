@@ -18,7 +18,7 @@ public interface ResetPasswordDao {
 
         @Autowired
         public ResetPasswordDaoAWSDynamoDB(DynamoDbEnhancedClient enhancedDynamoDbClient) {
-            this.tokenTable = enhancedDynamoDbClient.table("rsc-localhost-reset-password-data", TableSchema.fromBean(ResetPassword.class));
+            this.tokenTable = enhancedDynamoDbClient.table("rsc-" + System.getenv("STAGE") +"-reset-password-data", TableSchema.fromBean(ResetPassword.class));
         }
 
         @Override

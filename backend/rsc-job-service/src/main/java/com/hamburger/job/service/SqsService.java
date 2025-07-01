@@ -12,7 +12,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 @Service
 public class SqsService {
     private final SqsClient sqsClient;
-    private final String queueUrl = "https://sqs.ap-southeast-1.amazonaws.com/904233118848/rsc-sqs-queue-localhost.fifo";
+    private final String queueUrl = "https://sqs.ap-southeast-1.amazonaws.com/904233118848/rsc-sqs-queue-" + System.getenv("STAGE") +".fifo";
 
     @Autowired
     public SqsService() {
@@ -26,7 +26,7 @@ public class SqsService {
         SendMessageRequest request = SendMessageRequest.builder()
                 .queueUrl(queueUrl)
                 .messageBody(messageBody)
-                .messageGroupId("rsc-batch-localhost") // FIFO queue requires a message group ID
+                .messageGroupId("rsc-batch-" + System.getenv("STAGE")) // FIFO queue requires a message group ID
                 .messageDeduplicationId(jobId + "_" + System.currentTimeMillis()) // Unique ID for deduplication
                 .delaySeconds(0)
                 .build();
