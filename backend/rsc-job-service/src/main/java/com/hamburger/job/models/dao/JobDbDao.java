@@ -47,7 +47,7 @@ public class JobDbDao {
     @Autowired
     public JobDbDao(DynamoDbClient dynamoDbClient, DynamoDbEnhancedClient enhancedDynamoDbClient, 
         SqsService sqsService, BatchService batchService, S3Service s3Service) {
-        this.jobTable = enhancedDynamoDbClient.table("rsc-localhost-job-data", TableSchema.fromBean(Job.class));
+        this.jobTable = enhancedDynamoDbClient.table("rsc-" + System.getenv("STAGE") + "-job-data", TableSchema.fromBean(Job.class));
         this.dynamoDbClient = dynamoDbClient;
         this.sqsService = sqsService;
         this.batchService = batchService;

@@ -23,6 +23,7 @@ resources:
           - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
           - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
           - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+          - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
         Policies:
           - PolicyName: AllowS3ForJar
             PolicyDocument:
@@ -32,6 +33,33 @@ resources:
                   Action:
                     - s3:GetObject
                   Resource: arn:aws:s3:::rsc-shipment-bucket/*
+          - PolicyName: ALBControllerExtraEC2Access
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - ec2:DescribeAvailabilityZones
+                    - ec2:DescribeSubnets
+                    - ec2:DescribeVpcs
+                    - ec2:DescribeInternetGateways
+                    - ec2:Create*
+                    - ec2:Delete*
+                    - ec2:AuthorizeSecurityGroupIngress
+                    - ec2:RevokeSecurityGroupIngress
+                    - ec2:AuthorizeSecurityGroupEgress
+                    - ec2:RevokeSecurityGroupEgress
+                  Resource: "*"
+          - PolicyName: EKSMicroserviceAccess
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:*
+                    - s3:*
+                    - sqs:*
+                  Resource: "*"
 
     EKSNodeInstanceProfile:
       Type: AWS::IAM::InstanceProfile
@@ -60,9 +88,9 @@ resources:
         RoleArn: !GetAtt EKSClusterRole.Arn
         ResourcesVpcConfig:
           SubnetIds:
-            - Fn::ImportValue: rsc-common-NATVpcPublicSubnet1
-            - Fn::ImportValue: rsc-common-NATVpcPublicSubnet2
-            - Fn::ImportValue: rsc-common-NATVpcPublicSubnet3
+            - Fn::ImportValue: rsc-common-NATVpcPrivateSubnet1
+            - Fn::ImportValue: rsc-common-NATVpcPrivateSubnet2
+            - Fn::ImportValue: rsc-common-NATVpcPrivateSubnet3
           SecurityGroupIds:
             - Fn::ImportValue: rsc-common-NATEnvInternalSecurityGroup
           # EndpointPublicAccess: false # cannot deploy manifest from local cli if set to false
@@ -74,19 +102,21 @@ resources:
         ClusterName: !Ref EKSCluster
         NodeRole: !GetAtt EKSNodeInstanceRole.Arn
         Subnets:
-          - Fn::ImportValue: rsc-common-NATVpcPublicSubnet1
-          - Fn::ImportValue: rsc-common-NATVpcPublicSubnet2
-          - Fn::ImportValue: rsc-common-NATVpcPublicSubnet3
+          - Fn::ImportValue: rsc-common-NATVpcPrivateSubnet1
+          - Fn::ImportValue: rsc-common-NATVpcPrivateSubnet2
+          - Fn::ImportValue: rsc-common-NATVpcPrivateSubnet3
         ScalingConfig:
           MinSize: 1
           MaxSize: 3
           DesiredSize: 1
         AmiType: AL2_x86_64
         InstanceTypes:
-          - t3.medium
+          - t3.small
         DiskSize: 20
         NodegroupName: rsc-node-group-${self:provider.stage}
         Labels:
           role: worker
         Tags:
           Name: rsc-node-group-${self:provider.stage}
+        RemoteAccess:
+          Ec2SshKey: rsc-${self:provider.stage}

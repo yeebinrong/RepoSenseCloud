@@ -18,6 +18,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <aws.sdk.version>2.20.102</aws.sdk.version> <!-- or latest -->
+        <aws.lambda.core.version>1.2.2</aws.lambda.core.version>
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/lambda -->
@@ -68,7 +71,20 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
         </dependency>
-            <!-- JUnit 5 -->
+                <!-- AWS SDK v2 DynamoDB -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb</artifactId>
+            <version>${aws.sdk.version}</version>
+        </dependency>
+
+        <!-- AWS SDK v2 SQS -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sqs</artifactId>
+            <version>${aws.sdk.version}</version>
+        </dependency>
+        <!-- JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -81,7 +97,6 @@
             <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
-        
         <!-- Mockito -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -101,7 +116,6 @@
             <version>4.5.1</version>
             <scope>test</scope>
         </dependency>
-
 
     </dependencies>
     <build>

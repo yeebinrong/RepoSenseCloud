@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   FormControl,
   InputAdornment,
@@ -9,6 +10,8 @@ import React from "react";
 import "./ForgotComponent.scss";
 import NavigateButton from "../NavigateButton";
 import EmailIcon from "@mui/icons-material/Email";
+import { showSuccessBar } from "../../constants/snack-bar";
+import axios from "axios";
 
 class ForgotComponent extends React.Component {
   constructor(props) {
@@ -17,7 +20,31 @@ class ForgotComponent extends React.Component {
     this.state = {
       email: "",
       isButtonClicked: false,
+      errorMessage: "",
     };
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  async handleSubmit(e) {
+    e.preventDefault();
+    this.setState({ isButtonClicked: true, errorMessage: "" });
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_USER_SERVICE_URL}/forgot-password`,
+        { email: this.state.email }
+      );
+
+      if (response.status === 200) {
+        showSuccessBar(response.data.message);
+        this.setState({ email: "", isButtonClicked: false });
+      }
+    } catch (error) {
+      this.setState({
+        errorMessage:
+          error.response?.data.error || "An error occurred. Please try again.",
+        isButtonClicked: false,
+      });
+    }
   }
 
   render() {
@@ -37,6 +64,11 @@ class ForgotComponent extends React.Component {
             <Typography className={"forgot-panel-sub-title"}>
               Enter your email to reset your password
             </Typography>
+            {this.state.errorMessage !== "" && (
+              <Alert className="main-panel-error" severity="error">
+                {this.state.errorMessage}
+              </Alert>
+            )}
             <TextField
               size="medium"
               className="forgot-panel-text-field"
@@ -75,7 +107,7 @@ class ForgotComponent extends React.Component {
                   className={"forgot-panel-main-button"}
                   variant="contained"
                 >
-                  Reset Password
+                  Send Link to Email
                 </Button>
               </div>
               <inline
