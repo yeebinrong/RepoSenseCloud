@@ -42,15 +42,15 @@ public class JobServiceControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        jobServiceController = new JobServiceController(jobService, jobUserAuth, jwtHelper, s3Service);
+        jobServiceController = new JobServiceController(jobService, s3Service);
         request = new MockHttpServletRequest();
         
-        try {
-            when(jwtHelper.extractJwtFromRequest(any(HttpServletRequest.class))).thenReturn("mockToken");
-            when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok("testUser"));
-        } catch (Exception e) {
-            fail("Mocking setup failed: " + e.getMessage());
-        }
+        // try {
+        //     when(jwtHelper.extractJwtFromRequest(any(HttpServletRequest.class))).thenReturn("mockToken");
+        //     when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok("testUser"));
+        // } catch (Exception e) {
+        //     fail("Mocking setup failed: " + e.getMessage());
+        // }
     }
 
     @Test
@@ -70,18 +70,18 @@ public class JobServiceControllerTest {
         verify(jobService).getJobsByPage("testUser", 1, 10);
     }
 
-    @Test
-    void getJobsByPage_Unauthorized() {
-        // Arrange
-        when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
+    // @Test
+    // void getJobsByPage_Unauthorized() {
+    //     // Arrange
+    //     when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
         
-        // Act
-        ResponseEntity<List<Job>> response = jobServiceController.getJobsByPage(1, 10, request);
+    //     // Act
+    //     ResponseEntity<List<Job>> response = jobServiceController.getJobsByPage(1, 10, request);
         
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        verify(jobService, never()).getJobsByPage(anyString(), anyInt(), anyInt());
-    }
+    //     // Assert
+    //     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    //     verify(jobService, never()).getJobsByPage(anyString(), anyInt(), anyInt());
+    // }
 
     @Test
     void getJobsByPage_Exception() {
@@ -125,18 +125,18 @@ public class JobServiceControllerTest {
         assertTrue(response.getBody().isEmpty());
     }
 
-    @Test
-    void getJobById_Unauthorized() {
-        // Arrange
-        when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
+    // @Test
+    // void getJobById_Unauthorized() {
+    //     // Arrange
+    //     when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
         
-        // Act
-        ResponseEntity<Optional<Job>> response = jobServiceController.getJobById("job123", request);
+    //     // Act
+    //     ResponseEntity<Optional<Job>> response = jobServiceController.getJobById("job123", request);
         
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        verify(jobService, never()).getJobsById(anyString(), anyString());
-    }
+    //     // Assert
+    //     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    //     verify(jobService, never()).getJobsById(anyString(), anyString());
+    // }
 
     @Test
     void getJobById_Exception() {
@@ -180,18 +180,18 @@ public class JobServiceControllerTest {
         assertEquals(0, response.getBody().get().size());
     }
 
-    @Test
-    void getAllJobs_Unauthorized() {
-        // Arrange
-        when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
+    // @Test
+    // void getAllJobs_Unauthorized() {
+    //     // Arrange
+    //     when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
         
-        // Act
-        ResponseEntity<Optional<List<Job>>> response = jobServiceController.getAllJobs(request);
+    //     // Act
+    //     ResponseEntity<Optional<List<Job>>> response = jobServiceController.getAllJobs(request);
         
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        verify(jobService, never()).getAllJobs(anyString());
-    }
+    //     // Assert
+    //     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    //     verify(jobService, never()).getAllJobs(anyString());
+    // }
 
     @Test
     void getAllJobs_Exception() {
@@ -235,18 +235,18 @@ public class JobServiceControllerTest {
         assertEquals(0, response.getBody().get().size());
     }
 
-    @Test
-    void getJobsByKeyword_Unauthorized() {
-        // Arrange
-        when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
+    // @Test
+    // void getJobsByKeyword_Unauthorized() {
+    //     // Arrange
+    //     when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
         
-        // Act
-        ResponseEntity<Optional<List<Job>>> response = jobServiceController.getJobsByKeyword("test", request);
+    //     // Act
+    //     ResponseEntity<Optional<List<Job>>> response = jobServiceController.getJobsByKeyword("test", request);
         
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        verify(jobService, never()).getJobsByKeyword(anyString(), anyString());
-    }
+    //     // Assert
+    //     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    //     verify(jobService, never()).getJobsByKeyword(anyString(), anyString());
+    // }
 
     @Test
     void getJobsByKeyword_Exception() {
@@ -300,19 +300,19 @@ public class JobServiceControllerTest {
         verify(jobService).createJob(job);
     }
 
-    @Test
-    void createJob_Unauthorized() {
-        // Arrange
-        when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
-        Job job = new Job();
+    // @Test
+    // void createJob_Unauthorized() {
+    //     // Arrange
+    //     when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
+    //     Job job = new Job();
         
-        // Act
-        ResponseEntity<Void> response = jobServiceController.createJob(job, request);
+    //     // Act
+    //     ResponseEntity<Void> response = jobServiceController.createJob(job, request);
         
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        verify(jobService, never()).createJob(any(Job.class));
-    }
+    //     // Assert
+    //     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    //     verify(jobService, never()).createJob(any(Job.class));
+    // }
 
     @Test
     void createJob_Exception() {
@@ -340,18 +340,18 @@ public class JobServiceControllerTest {
         verify(jobService).startJob("testUser", "job123");
     }
 
-    @Test
-    void startJob_Unauthorized() {
-        // Arrange
-        when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
+    // @Test
+    // void startJob_Unauthorized() {
+    //     // Arrange
+    //     when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
         
-        // Act
-        ResponseEntity<Void> response = jobServiceController.startJob("job123", request);
+    //     // Act
+    //     ResponseEntity<Void> response = jobServiceController.startJob("job123", request);
         
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        verify(jobService, never()).startJob(anyString(), anyString());
-    }
+    //     // Assert
+    //     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    //     verify(jobService, never()).startJob(anyString(), anyString());
+    // }
 
     @Test
     void startJob_BadRequest() {
@@ -394,19 +394,19 @@ public class JobServiceControllerTest {
         verify(jobService).editJob(job);
     }
 
-    @Test
-    void updateJob_Unauthorized() {
-        // Arrange
-        when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
-        Job job = new Job();
+    // @Test
+    // void updateJob_Unauthorized() {
+    //     // Arrange
+    //     when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
+    //     Job job = new Job();
         
-        // Act
-        ResponseEntity<Void> response = jobServiceController.updateJob(job, request);
+    //     // Act
+    //     ResponseEntity<Void> response = jobServiceController.updateJob(job, request);
         
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        verify(jobService, never()).editJob(any(Job.class));
-    }
+    //     // Assert
+    //     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    //     verify(jobService, never()).editJob(any(Job.class));
+    // }
 
     @Test
     void updateJob_Exception() {
@@ -434,18 +434,18 @@ public class JobServiceControllerTest {
         verify(jobService).deleteJob("testUser", "job123");
     }
 
-    @Test
-    void deleteJob_Unauthorized() {
-        // Arrange
-        when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
+    // @Test
+    // void deleteJob_Unauthorized() {
+    //     // Arrange
+    //     when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
         
-        // Act
-        ResponseEntity<Void> response = jobServiceController.deleteJob("job123", request);
+    //     // Act
+    //     ResponseEntity<Void> response = jobServiceController.deleteJob("job123", request);
         
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        verify(jobService, never()).deleteJob(anyString(), anyString());
-    }
+    //     // Assert
+    //     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    //     verify(jobService, never()).deleteJob(anyString(), anyString());
+    // }
 
     @Test
     void deleteJob_Exception() {
@@ -486,18 +486,18 @@ public class JobServiceControllerTest {
         assertEquals("Folder or report not found", response.getBody());
     }
 
-    @Test
-    void getS3PresignedUrl_Unauthorized() {
-        // Arrange
-        when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
+    // @Test
+    // void getS3PresignedUrl_Unauthorized() {
+    //     // Arrange
+    //     when(jobUserAuth.authorizeAction(anyString())).thenReturn(ResponseEntity.ok(null));
         
-        // Act
-        ResponseEntity<String> response = jobServiceController.getS3PresignedUrl("job123", request);
+    //     // Act
+    //     ResponseEntity<String> response = jobServiceController.getS3PresignedUrl("job123", request);
         
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        verify(s3Service, never()).generateS3PresignedUrl(anyString(), anyString(), anyInt());
-    }
+    //     // Assert
+    //     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    //     verify(s3Service, never()).generateS3PresignedUrl(anyString(), anyString(), anyInt());
+    // }
 
     @Test
     void getS3PresignedUrl_Exception() {
@@ -524,16 +524,16 @@ public class JobServiceControllerTest {
         verify(jobService, never()).getJobsByPage(anyString(), anyInt(), anyInt());
     }
 
-    @Test
-    void authenticationFails() throws Exception {
-        // Arrange
-        when(jobUserAuth.authorizeAction(anyString())).thenThrow(new RuntimeException("Authentication failed"));
+    // @Test
+    // void authenticationFails() throws Exception {
+    //     // Arrange
+    //     when(jobUserAuth.authorizeAction(anyString())).thenThrow(new RuntimeException("Authentication failed"));
         
-        // Act
-        ResponseEntity<List<Job>> response = jobServiceController.getJobsByPage(1, 10, request);
+    //     // Act
+    //     ResponseEntity<List<Job>> response = jobServiceController.getJobsByPage(1, 10, request);
         
-        // Assert
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        verify(jobService, never()).getJobsByPage(anyString(), anyInt(), anyInt());
-    }
+    //     // Assert
+    //     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    //     verify(jobService, never()).getJobsByPage(anyString(), anyInt(), anyInt());
+    // }
 }
