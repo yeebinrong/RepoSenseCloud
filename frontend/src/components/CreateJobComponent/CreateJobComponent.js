@@ -117,7 +117,7 @@ const CreateJobComponent = ({
     const [startHourError, setStartHourError] = useState(true);
     const [startMinuteError, setStartMinuteError] = useState(true);
     const [dateError, setDateError] = useState(false);
-    const [submissionError, setSubmissionError] = useState(false);
+
 
     // Reset state when modal closes
     useEffect(() => {
@@ -336,7 +336,7 @@ const CreateJobComponent = ({
                 />
                 </span>
                 <div>
-                    {submissionError ? <Alert
+                    {(mode === "edit" && jobData.status === "Failed") ? <Alert
                         severity="warning"
                         sx={{
                             color: "black",
@@ -345,7 +345,7 @@ const CreateJobComponent = ({
                                 color: "black"
                             }
                         }}
-                    > An error occured saving the job, please contact the administrator.</Alert> : null}
+                    > An error occured running the job, please contact the administrator.</Alert> : null}
                 </div>
             </div>
         );
@@ -493,9 +493,13 @@ const CreateJobComponent = ({
                                             <text className="originality-label">Originality Threshold:</text>
                                         </Grid2>
                                         <Grid2 size={6}>
-                                            <TextField type="text" className="originality-input" value = {originalityThreshold} 
-                                            onChange={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}} placeholder="0.5" 
-                                                helperText="Input between 0.0 to 1.0" />
+                                            <TextField type="number" className="originality-input" data-testid="originality-threshold-input" value = {originalityThreshold} 
+                                            onInput={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}}
+                                            onChange={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}}
+                                            onBlur={(e) => {validateOriginalityThreshold(); setOriginalityThreshold(e.target.value)}} placeholder="0.5" 
+                                            error={originalityThresholdError && page1Error}
+                                            helperText={(originalityThresholdError && page1Error) ? "Input between 0.0 to 1.0" : ""}
+                                            />
                                         </Grid2>
                                         <Grid2 size={6} container alignItems="center">
                                             <text className="timezone-label">Time Zone:</text>
@@ -1015,7 +1019,6 @@ const CreateJobComponent = ({
                 showErrorBar(mode === "edit" ? "Error Updating Job" : "Error Creating Job");
             }
         } catch (error) {
-            setSubmissionError(true);
             showErrorBar(error.message);
         } finally {
             setIsLoading(false);
