@@ -55,6 +55,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody LoginReqDto req, HttpServletResponse response) {
+        System.out.println("Received login request for user: " + req.getUserName());
         User user = userService.getUser(req.getUserName());
         if (user == null || !req.isPasswordValid(req.getPassword(), user.getHashedPassword())) {
             return ResponseEntity.status(400).body(Map.of("error", "Invalid username or password"));

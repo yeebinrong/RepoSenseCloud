@@ -20,7 +20,7 @@ provider:
     BATCH_JOB_QUEUE: !Ref BatchJobQueue
     BATCH_JOB_DEFINITION: !Ref BatchJobDefinition
     REPORT_BUCKET: !Ref PublicS3Bucket
-    TABLE_NAME: rsc-localhost-job-data
+    TABLE_NAME: rsc-${self:provider.stage}-job-data
     QUEUE_URL: https://sqs.ap-southeast-1.amazonaws.com/904233118848/rsc-sqs-queue-${self:provider.stage}.fifo
 
 resources:
@@ -109,7 +109,7 @@ resources:
         Tags:
           - Key: Name
             Value: "rsc-batch-sg-${self:provider.stage}"
- 
+
     # Batch Job Queue
     BatchJobQueue:
       Type: AWS::Batch::JobQueue

@@ -18,10 +18,10 @@ function JobManagement() {
                     </p>
                 </div>
                 <div className={styles.actionButtons}>
-                    <button className={styles.downloadButton}>
+                    {/* <button className={styles.downloadButton}>
                         <img src="download.svg" alt="" className={styles.buttonIcon} />
                         Download All
-                    </button>
+                    </button> */}
                     {/* <button className={styles.createJobButton}>Create Job</button> */}
                     <CreateJobComponent/>
                 </div>
