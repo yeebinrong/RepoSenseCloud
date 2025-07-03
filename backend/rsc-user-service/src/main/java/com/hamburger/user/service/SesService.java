@@ -30,8 +30,24 @@ public class SesService {
         Content subject = Content.builder()
                 .data("RepoSenseCloud Password Reset Request")
                 .build();
+        String htmlContent = String.format("""
+            <html>
+            <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 24px;">
+                <div style="max-width: 480px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 32px;">
+                    <h2 style="color: #2d3748;">Reset Your RepoSenseCloud Password</h2>
+                    <p style="color: #4a5568;">Hello,</p>
+                    <p style="color: #4a5568;">We received a request to reset your password. Click the button below to set a new password. If you did not request this, you can safely ignore this email.</p>
+                    <div style="text-align: center; margin: 32px 0;">
+                        <a href="%s" style="background: #3182ce; color: #fff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold;">Reset Password</a>
+                    </div>
+                    <p style="color: #a0aec0; font-size: 12px;">This link will expire in 15 minutes.</p>
+                    <p style="color: #a0aec0; font-size: 12px;">If you have any questions, please contact support at <a href="mailto:support@hamb-urger.com">support@hamb-urger.com</a>.</p>
+                </div>
+            </body>
+            </html>
+        """, resetLink);
         Content htmlBody = Content.builder()
-                .data("<p>Click <a href='" + resetLink + "'>here</a> to reset your password.</p>")
+                .data(htmlContent)
                 .build();
         Body body = Body.builder()
                 .html(htmlBody)
