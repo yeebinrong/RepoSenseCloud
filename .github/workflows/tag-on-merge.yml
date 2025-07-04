@@ -78,3 +78,12 @@ jobs:
         run: |
           git tag ${{ steps.bump.outputs.new_tag }}
           git push origin ${{ steps.bump.outputs.new_tag }}
+
+      - name: Save tag to artifact
+        run: echo "${{ steps.bump.outputs.new_tag }}" > tag.txt
+
+      - name: Upload tag artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: version-tag
+          path: tag.txt
