@@ -74,16 +74,13 @@ jobs:
           new_tag="v$major.$minor.$patch"
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
-      - name: Create and push tag
+      - name: Create tag
         run: |
           git tag ${{ steps.bump.outputs.new_tag }}
+
+      - name: Push tag
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          git remote set-url origin https://x-access-token:$PAT_TOKEN@github.com/${{ github.repository }}.git
           git push origin ${{ steps.bump.outputs.new_tag }}
-
-      - name: Save tag to artifact
-        run: echo "${{ steps.bump.outputs.new_tag }}" > tag.txt
-
-      - name: Upload tag artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: version-tag
-          path: tag.txt
