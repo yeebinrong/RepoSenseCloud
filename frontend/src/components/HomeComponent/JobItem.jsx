@@ -180,8 +180,8 @@ function JobItem(props) {
             </td>
             <td className={styles.jobTiming} style={{ width: '16%' }}>
                 <div className={styles.timeInfo}>
-                    <span className={styles.time}>{settingsUpdatedAt.time}</span>
-                    <span className={styles.date}>{settingsUpdatedAt.date}</span>
+                    <span className={styles.time}>{settingsUpdatedAt?.time}</span>
+                    <span className={styles.date}>{settingsUpdatedAt?.date}</span>
                 </div>
             </td>
             <td className={styles.jobActions}>

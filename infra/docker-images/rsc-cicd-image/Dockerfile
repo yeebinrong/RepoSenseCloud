@@ -6,7 +6,7 @@ FROM ubuntu:20.04 AS base
 WORKDIR /home
 
 # Defining default versions as per https://github.com/moby/moby/issues/37345
-ARG AWS_CLI_VERSION="2.4.15"
+ARG AWS_CLI_VERSION="2.22.20"
 ARG SLS_CLI_VERSION="4.4.0"
 ARG NODE_VERSION="18.18.2"
 # 21.0.4.7.1-amzn
@@ -40,10 +40,27 @@ RUN set -eux && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install
     && apt-get clean && rm -rf /var/lib/apt/lists/* /var/cache/* /tmp/* \
     && node -v && npm -v && python --version && pip --version && python3 --version && pip3 --version && aws --version && jq --version && yq --version
 
+# Install kubectl, eksctl, and helm
+RUN set -eux \
+    && curl -LO "https://dl.k8s.io/release/$(curl -sL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
+    && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
+    && curl -LO "https://get.helm.sh/helm-v3.14.4-linux-amd64.tar.gz" \
+    && tar -zxvf helm-v3.14.4-linux-amd64.tar.gz \
+    && mv linux-amd64/helm /usr/local/bin/helm \
+    && rm -rf linux-amd64 helm-v3.14.4-linux-amd64.tar.gz \
+    && curl -LO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz" \
+    && tar -xzf eksctl_Linux_amd64.tar.gz \
+    && mv eksctl /usr/local/bin \
+    && rm -f eksctl_Linux_amd64.tar.gz \
+    && kubectl version --client=true --output=yaml \
+    && helm version \
+    && eksctl version
+
 # Install sls and plugins, npm modules
 RUN set -eux \
     && npm config set legacy-peer-deps true -g \
     && npm install -g serverless@~${SLS_CLI_VERSION} \
+    && npm install -g serverless-finch@4.0.4 \
     && sls --version
 
 # Install OpenTofu
