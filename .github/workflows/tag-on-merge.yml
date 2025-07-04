@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   tag:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout code
@@ -32,8 +32,10 @@ jobs:
     - name: Calculate next version
       id: bump
       run: |
-        # Simple patch bump logic; use conventional commits or PR labels for smarter bump
-        IFS='.' read -r major minor patch <<<"${{ steps.get_tag.outputs.latest#v }}"
+        latest="${{ steps.get_tag.outputs.latest }}"
+        # Remove the leading 'v'
+        version="${latest#v}"
+        IFS='.' read -r major minor patch <<<"$version"
         patch=$((patch + 1))
         new_tag="v$major.$minor.$patch"
         echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
