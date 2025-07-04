@@ -4,82 +4,62 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  build:
-    name: Build and analyze
+  detect-changes:
     runs-on: ubuntu-22.04
-
+    outputs:
+      frontend_changed: ${{ steps.changes.outputs.frontend }}
+      backend_changed: ${{ steps.changes.outputs.backend }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Required for proper PR analysis
+      - name: Detect changed files
+        id: changes
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          changed_files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
 
-      # Set up Java for backend
-      - name: Set up Java Corretto 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'corretto'
+          echo "Changed files:"
+          echo "$changed_files"
 
-      # Set up Node.js for frontend
+          if echo "$changed_files" | grep -q '^frontend/'; then
+            echo "frontend=true" >> $GITHUB_OUTPUT
+          else
+            echo "frontend=false" >> $GITHUB_OUTPUT
+          fi
+
+          if echo "$changed_files" | grep -q '^backend/'; then
+            echo "backend=true" >> $GITHUB_OUTPUT
+          else
+            echo "backend=false" >> $GITHUB_OUTPUT
+          fi
+
+  frontend:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.frontend_changed == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.18.2'
 
-      # Cache SonarCloud packages
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      # Cache Maven dependencies
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-
-      # Cache node_modules
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-modules
-
-      # Run Backend Tests with Coverage + Sonar Analysis
-      - name: Backend SonarCloud Analysis with Coverage
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          cd backend
-          mvn -B clean org.jacoco:jacoco-maven-plugin:prepare-agent verify \
-            org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar \
-            -Dsonar.projectKey=RepoSenseCloud_backend \
-            -Dsonar.sources=src/main \
-            -Dsonar.projectBaseDir=$(pwd) \
-            -Dsonar.projectName=RepoSenseCloud_backend \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.coverage.jacoco.xmlReportPaths=rsc-batch-job/target/site/jacoco/jacoco.xml
-
-
-      # Run Frontend Tests with Coverage
-      - name: Run Frontend Tests with Coverage
+      - name: Run Frontend Tests
         run: |
           cd frontend
           npm ci
           npm run test -- --coverage
 
-      # Frontend SonarCloud Analysis with Coverage
-      - name: Frontend SonarCloud Analysis with Coverage
+      - name: Frontend SonarCloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -92,3 +72,30 @@ jobs:
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+
+  backend:
+      needs: detect-changes
+      if: needs.detect-changes.outputs.backend_changed == 'true'
+      runs-on: ubuntu-22.04
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Set up Java Corretto 21
+          uses: actions/setup-java@v4
+          with:
+            java-version: '21'
+            distribution: 'corretto'
+
+        - name: Run Backend Tests with Coverage
+          env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          run: |
+            cd backend
+            mvn -B clean org.jacoco:jacoco-maven-plugin:prepare-agent verify \
+              org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar \
+              -Dsonar.projectKey=RepoSenseCloud_backend \
+              -Dsonar.sources=src/main \
+              -Dsonar.projectName=RepoSenseCloud_backend \
+              -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+              -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+              -Dsonar.coverage.jacoco.xmlReportPaths=rsc-batch-job/target/site/jacoco/jacoco.xml
