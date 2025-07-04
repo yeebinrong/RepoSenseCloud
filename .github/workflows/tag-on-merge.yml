@@ -1,9 +1,9 @@
-name: Tag on Merge
+name: tag on merge
 
 on:
   push:
     branches:
-      - main
+      - master
 
 permissions:
   contents: write  # Needed to push a tag
