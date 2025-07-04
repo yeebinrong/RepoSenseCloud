@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Skipping install, using Docker image
+  pre_build:
+    commands:
+      - aws s3 cp s3://$ARTIFACT_BUCKET/trigger/tag.txt tag.txt
+      - TAG=$(cat tag.txt)
+      - echo "Using tag $TAG"
+      - echo "https://$GITHUB_TOKEN@github.com" > ~/.git-credentials
+      - git config --global credential.helper store
+  build:
+    commands:
+      - git clone https://github.com/yeebinrong/RepoSenseCloud.git repo
+      - cd repo && git checkout $TAG
+      - cd backend && mvn clean install -DskipTests && cd ..
+      - cd frontend && npm ci && npm run build && cd ..
+  post_build:
+    commands:
+      - aws s3 cp backend/rsc-user-service/target/rsc-user-service-1.0-SNAPSHOT.jar s3://$ARTIFACT_BUCKET/backend/$TAG/
+      - aws s3 cp backend/rsc-job-service/target/rsc-job-service-1.0-SNAPSHOT.jar s3://$ARTIFACT_BUCKET/backend/$TAG/
+      - aws s3 cp backend/rsc-batch-job/target/rsc-batch-job-1.0-SNAPSHOT.jar s3://$ARTIFACT_BUCKET/backend/$TAG/
+      - aws s3 cp --recursive frontend/build/ s3://$ARTIFACT_BUCKET/frontend/$TAG/
+      - echo $TAG > ready.txt
+      - echo Trigger DeployPipeline for dev stage
+      - aws s3 cp ready.txt s3://$ARTIFACT_BUCKET/trigger/dev.txt
