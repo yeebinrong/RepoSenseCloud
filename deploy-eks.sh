@@ -12,6 +12,13 @@ if [ "$STAGE" != "dev" ] && [ "$STAGE" != "prod" ]; then
   echo "Invalid stage. Use 'dev' or 'prod'."
   exit 1
 fi
+
+TAG=$2
+if [ -z "$TAG" ]; then
+  echo "Usage: missing tag argument"
+  exit 1
+fi
+
 AWS_REGION="ap-southeast-1"
 EKS_CLUSTER_NAME="rsc-eks-cluster-${STAGE}"
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
@@ -192,6 +199,8 @@ spec:
               value: $SERVICE
             - name: SERVICE_VERSION
               value: 1.0-SNAPSHOT
+            - name: TAG
+              value: "$TAG"
             - name: USER_SVC_PORT
               value: "$USER_SVC_PORT"
             - name: JOB_SVC_PORT

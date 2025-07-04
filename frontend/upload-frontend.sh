@@ -10,6 +10,7 @@ if [ -z "$1" ]; then
 fi
 
 STAGE="$1"
+REBUILD_PROJECT="${2:-true}"
 
 if [[ "$STAGE" != "dev" && "$STAGE" != "production" ]]; then
   echo "Error: Invalid stage '$STAGE'. Allowed values are 'dev' or 'production'."
@@ -31,7 +32,13 @@ fi
 REACT_APP_USER_SERVICE_URL=api/user \
 REACT_APP_JOB_SERVICE_URL=api/jobs \
 REACT_APP_REPORT_BUCKET_URL=https://rsc-reports-$STAGE.s3.ap-southeast-1.amazonaws.com \
-npm run build
+
+if [ "$REBUILD_PROJECT" == "true" ]; then
+  echo "Rebuilding frontend project..."
+  npm run build
+else
+  echo "Skipping frontend project rebuild."
+fi
 
 # Deploy frontend using serverless client deploy for the given stage
 serverless client deploy --stage "$STAGE" --no-confirm
