@@ -62,18 +62,26 @@ public class TaskDispatcherHandler implements RequestHandler<Map<String, Object>
                 String startHourStr = item.getOrDefault("startHour", AttributeValue.builder().s("--").build()).s();
                 String startMinuteStr = item.getOrDefault("startMinute", AttributeValue.builder().s("--").build()).s();
                 Map<String, AttributeValue> lastUpdatedMap = item.getOrDefault("lastUpdated", AttributeValue.builder().m(Collections.emptyMap()).build()).m();
+                Map<String, AttributeValue> settingsUpdatedAtMap = item.getOrDefault("settingsUpdatedAt", AttributeValue.builder().m(Collections.emptyMap()).build()).m();
 
                 String dateStr = lastUpdatedMap.getOrDefault("date", AttributeValue.builder().s("").build()).s();
                 String timeStr = lastUpdatedMap.getOrDefault("time", AttributeValue.builder().s("").build()).s();
+                String settingsDateStr = settingsUpdatedAtMap.getOrDefault("date", AttributeValue.builder().s("").build()).s();
+                String settingsTimeStr = settingsUpdatedAtMap.getOrDefault("time", AttributeValue.builder().s("").build()).s();
 
                 ZonedDateTime lastUpdated;
+                ZonedDateTime settingsUpdatedAt;
                 try {
                     String timestampStr = dateStr + " " + timeStr; // e.g. "2025-07-04 01:33 UTC+0800"
+                    String settingsTimestampStr = settingsDateStr + " " + settingsTimeStr; // e.g. "2025-07-04 01:33 UTC+0800"
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm 'UTC'Z");
                     lastUpdated = ZonedDateTime.parse(timestampStr, formatter);
+                    settingsUpdatedAt = ZonedDateTime.parse(settingsTimestampStr, formatter);
+
                 } catch (Exception ex) {
                     // fallback to epoch if parsing fails
                     lastUpdated = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC+8"));
+                    settingsUpdatedAt = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC+8"));
                 }
 
                 if (
@@ -94,14 +102,14 @@ public class TaskDispatcherHandler implements RequestHandler<Map<String, Object>
                 switch (frequency) {
                     case "minutely" -> {
                         Duration diff = Duration.between(lastUpdated, now);
-                        shouldRun = diff.toMinutes() >= 5;
+                        shouldRun = diff.toMinutes() >= 5 || lastUpdated.isEqual(settingsUpdatedAt);
                     }
                     case "hourly" -> {
                         int minute = Integer.parseInt(startMinuteStr);
                         ZonedDateTime scheduledTime = now.withMinute(minute).withSecond(0).withNano(0);
                         if (now.isAfter(scheduledTime)) {
                             ZonedDateTime lastHour = scheduledTime.minusHours(1);
-                            shouldRun = lastUpdated.isBefore(lastHour);
+                            shouldRun = lastUpdated.isBefore(lastHour) || lastUpdated.isEqual(settingsUpdatedAt);
                         }
                     }
                     case "daily" -> {
@@ -110,14 +118,14 @@ public class TaskDispatcherHandler implements RequestHandler<Map<String, Object>
                         ZonedDateTime scheduledTime = now.withHour(hour).withMinute(minute).withSecond(0).withNano(0);
                         if (now.isAfter(scheduledTime)) {
                             ZonedDateTime yesterday = scheduledTime.minusDays(1);
-                            shouldRun = lastUpdated.isBefore(yesterday);
+                            shouldRun = lastUpdated.isBefore(yesterday) || lastUpdated.isEqual(settingsUpdatedAt);
                         }
                     }
                 }
 
                 // if status is already running, skip
                 String status = item.getOrDefault("status", AttributeValue.builder().s("Pending").build()).s();
-                if (status.equals("Running")) {
+                if (shouldRun && status.equals("Running")) {
                     shouldRun = false; // Skip if already running
                     context.getLogger().log("Job " + item.get("jobId").s() + " is already running, skipping.\n");
                 }
