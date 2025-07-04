@@ -40,6 +40,7 @@
     flex-wrap: nowrap;
     font: 500 16px DM Sans, sans-serif;
     width: 100%;
+    margin-left: 30px;
 }
 
 th {
@@ -74,19 +75,31 @@ th {
     margin-top: 20px;
     font: 400 16px DM Sans, sans-serif;
     width: 100%;
-
+    margin-left: 30px;
 }
 
 .moreOptionsButton {
-    background-color: #fff;
-    border: none;
-    cursor: pointer;
-    color: #ada7a7;
-    font: 400 20px DM Sans, sans-serif;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    padding: 0 0 13px 36px;
+  background-color: #fff;
+  border: none;
+  cursor: pointer;
+  color: #ada7a7;
+  font: 400 20px "DM Sans", sans-serif;
+  padding: 0 0 13px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease, transform 0.15s ease;
+  user-select: none;
+}
+
+.moreOptionsButton:hover {
+  color: #7a7575;
+  transform: scale(1.15);
+}
+
+.moreOptionsButton:active {
+  transform: scale(0.95);
+  color: #6b6666;
 }
 
 .jobInfo {
@@ -139,6 +152,14 @@ th {
     background-color: #ab0f22;
 }
 
+.pending {
+    color: #545151;
+}
+
+.pending .statusIndicator {
+    background-color: #ada7a7;
+}
+
 .timeInfo {
     display: flex;
     flex-direction: column;
@@ -166,6 +187,34 @@ th {
 .actionIcon {
     width: 24px;
     height: 24px;
+    cursor: 'not-allowed' !important;
+}
+
+.actionIcon:not(actionIconDisabled) {
+    transition: transform 0.3s ease;
+}
+
+/* Hover: scale up and slight rotation */
+.actionIcon:not(.actionIconDisabled):hover {
+    transform: scale(1.2) rotate(15deg);
+}
+
+/* Click (active): quick pulse */
+.actionIcon:not(.actionIconDisabled):active {
+    animation: pulse 0.3s ease;
+}
+
+/* Pulse keyframes */
+@keyframes pulse {
+    0% {
+        transform: scale(1.2) rotate(15deg);
+    }
+    50% {
+        transform: scale(1.1) rotate(10deg);
+    }
+    100% {
+        transform: scale(1.2) rotate(15deg);
+    }
 }
 
 .iconButton {
@@ -178,4 +227,55 @@ th {
 .iconButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Hover effect */
+.sortButton:hover {
+    background-color: #f4f4f4;
+    border-color: #ccc;
+}
+
+.sortButton {
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Click (active) effect */
+.sortButton:active {
+    background-color: #e6e6e6;
+    transform: scale(0.97);
+    border-color: #bbb;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeletonBox {
+  height: 14px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #eee 25%, #ddd 37%, #eee 63%);
+  background-size: 400% 100%;
+  animation: shimmer ease-in-out infinite;
+}
+
+.skeletonCircle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #eee 25%, #ddd 37%, #eee 63%);
+  background-size: 400% 100%;
+  animation: shimmer ease-in-out infinite;
+}
+
+.skeletonIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #eee 25%, #ddd 37%, #eee 63%);
+  background-size: 400% 100%;
+  animation: shimmer ease-in-out infinite;
+  display: inline-block;
 }

@@ -6,14 +6,12 @@ body {
     --placeholder-color: #ADA7A7; 
     --input-border-color: #D5D8E2;
     --input-background-color: #F6F7F9;
-    
     .navigation-buttons-container {
     display: flex;
     margin-top: auto; // Push the container to the bottom
     justify-content: flex-end; // Align buttons to the right
     padding: 20px;
     }
-    
 }
 
 .create-job-button {
@@ -27,7 +25,20 @@ body {
     padding: 14px 15px;
     border: none;
     cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
+
+/* Hover effect */
+.create-job-button:hover {
+    background-color: #e69712; /* slightly darker shade */
+}
+
+/* Click (active) effect */
+.create-job-button:active {
+    background-color: #cc850f; /* even darker shade */
+    transform: scale(0.97);
+}
+
 
 .create-job-header {
     margin: 0, 5%, 5%, 5%;

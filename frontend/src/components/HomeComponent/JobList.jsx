@@ -10,16 +10,17 @@ function SortButton({ column, sortColumn, sortOrder, onSort, label }) {
     return (
         <button
             type="button"
-            className={styles.sortButton}
             onClick={() => onSort(column)}
             aria-label={`Sort by ${label} (${sortOrder === 'asc' && sortColumn === column ? 'ascending' : 'descending'})`}
             style={{ background: 'none', border: 'none', padding: 0, marginLeft: 4, cursor: 'pointer' }}
         >
             <ArrowUpwardIcon
+                className={styles.sortButton}
                 fontSize="small"
                 style={{ color: sortColumn === column && sortOrder === 'asc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
             />
             <ArrowDownwardIcon
+                className={styles.sortButton}
                 fontSize="small"
                 style={{ color: sortColumn === column && sortOrder === 'desc' ? '#444' : '#B3B3B3', verticalAlign: 'middle' }}
             />
@@ -44,6 +45,7 @@ function JobList({ refreshKey, searchKeyword }) {
 
     useEffect(() => {
         function UpdateJobData() {
+            setLoading(true);
             const token = localStorage.getItem('token');
             let url = `${process.env.REACT_APP_JOB_SERVICE_URL}`;
             if (searchKeyword && searchKeyword.trim() !== "") {
@@ -56,7 +58,9 @@ function JobList({ refreshKey, searchKeyword }) {
             })
                 .then(res => {
                     setJobData(res.data);
-                    setLoading(false);
+                    setTimeout(() => {
+                        setLoading(false);
+                    }, 500);
                 })
                 .catch(err => {
                     console.error('Error fetching jobs:', err);
@@ -89,7 +93,7 @@ function JobList({ refreshKey, searchKeyword }) {
         jobName: job => job.jobName || '',
         status: job => job.status || '',
         lastUpdated: job => parseJobDateTime(job, 'lastUpdated'),
-        nextScheduledJob: job => parseJobDateTime(job, 'nextScheduledJob'),
+        nextScheduledJob: job => job.frequency || '',
         settingsUpdatedAt: job => parseJobDateTime(job, 'settingsUpdatedAt'),
     };
 
@@ -115,7 +119,6 @@ function JobList({ refreshKey, searchKeyword }) {
         }
     };
 
-    if (loading) return <p style={{ fontFamily: "DM Sans" }}>Loading jobs...</p>;
     if (error) return <p style={{ fontFamily: "DM Sans" }}>Error loading jobs: {error.message}</p>;
 
     return (
@@ -124,8 +127,8 @@ function JobList({ refreshKey, searchKeyword }) {
                 <thead>
                     <tr className={styles.jobListHeader}>
                         <th style={{ width: '18%' }}>
-                            <input type="checkbox" className={styles.checkBox} />
-                            <span className={styles.headerText} style={{ marginLeft: "15px" }}>Job Name</span>
+                            {/* <input type="checkbox" className={styles.checkBox} /> */}
+                            <span className={styles.headerText} style={{ marginLeft: "30px" }}>Job Name</span>
                             <SortButton
                                 column="jobName"
                                 sortColumn={sortColumn}
@@ -183,9 +186,111 @@ function JobList({ refreshKey, searchKeyword }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {sortedJobData?.map((job, index) => (
+                    {!loading && sortedJobData.length === 0 && (
+                        <tr>
+                            <td style={{ padding: "40px 0", textAlign: "center" }}>
+                            <div style={{ marginTop: "-150px", color: "#888", fontFamily: "DM Sans", fontSize: "16px" }}>
+                                <strong>No jobs found</strong>
+                                <div style={{ fontSize: "14px", color: "#aaa" }}>
+                                Try adjusting your search term or create a new job.
+                                </div>
+                            </div>
+                            </td>
+                        </tr>
+                    )}
+                    {!loading && sortedJobData?.map((job, index) => (
                         <JobItem key={index} {...job} />
                     ))}
+                    {loading  &&
+                        Array(6).fill(0).map((_, i) => (
+                        <tr key={i} className={styles.jobItem}>
+                            {/* Job Name */}
+                            <td className={styles.jobInfo}>
+                            <div
+                                className={styles.skeletonBox}
+                                style={{ marginLeft: "30px", width: "140px", animationDuration: "1.4s" }}
+                            />
+                            </td>
+
+                            {/* Status */}
+                            <td className={styles.jobStatus}>
+                            <div
+                                className={styles.skeletonCircle}
+                                style={{ animationDuration: "1.6s" }}
+                            />
+                            <div
+                                className={styles.skeletonBox}
+                                style={{ width: "60px", animationDuration: "1.6s" }}
+                            />
+                            </td>
+
+                            {/* Last Updated */}
+                            <td className={styles.jobTiming} style={{ width: '15%' }}>
+                            <div className={styles.timeInfo}>
+                                <div
+                                className={styles.skeletonBox}
+                                style={{ width: "120px", animationDuration: "1.5s" }}
+                                />
+                                <div
+                                className={styles.skeletonBox}
+                                style={{ width: "80px", animationDuration: "1.7s" }}
+                                />
+                            </div>
+                            </td>
+
+                            {/* Flavor Text */}
+                            <td className={styles.jobTiming} style={{ width: '16%' }}>
+                            <div className={styles.timeInfo}>
+                                <div
+                                className={styles.skeletonBox}
+                                style={{ width: "120px", animationDuration: "1.6s" }}
+                                />
+                                <div
+                                className={styles.skeletonBox}
+                                style={{ width: "80px", animationDuration: "1.8s" }}
+                                />
+                            </div>
+                            </td>
+
+                            {/* Settings Updated */}
+                            <td className={styles.jobTiming} style={{ width: '16%' }}>
+                            <div className={styles.timeInfo}>
+                                <div
+                                className={styles.skeletonBox}
+                                style={{ width: "120px", animationDuration: "1.5s" }}
+                                />
+                                <div
+                                className={styles.skeletonBox}
+                                style={{ width: "80px", animationDuration: "1.7s" }}
+                                />
+                            </div>
+                            </td>
+
+                            {/* Action Icons */}
+                            <td className={styles.jobActions}>
+                            <div
+                                className={styles.skeletonIcon}
+                                style={{ animationDuration: "1.3s" }}
+                            />
+                            <div
+                                className={styles.skeletonIcon}
+                                style={{ animationDuration: "1.4s" }}
+                            />
+                            <div
+                                className={styles.skeletonIcon}
+                                style={{ animationDuration: "1.5s" }}
+                            />
+                            </td>
+
+                            {/* More Options */}
+                            <td style={{ width: "5%", justifyItems: "center" }}>
+                            <div
+                                className={styles.skeletonCircle}
+                                style={{ animationDuration: "1.6s" }}
+                            />
+                            </td>
+                        </tr>
+                        ))}
                 </tbody>
             </table>
         </section>

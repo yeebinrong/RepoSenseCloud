@@ -3,6 +3,7 @@ import styles from './JobManagement.module.css';
 import JobList from './JobList';
 import {Autocomplete, TextField} from "@mui/material";
 import CreateJobComponent from "../CreateJobComponent/CreateJobComponent";
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 function JobManagement() {
     const [jobListRefreshKey, setJobListRefreshKey] = useState(0);
@@ -17,7 +18,7 @@ function JobManagement() {
                         {/* Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text. */}
                     </p>
                 </div>
-                <div className={styles.actionButtons}>
+                <div className={styles.actionButtons} style={{ justifyContent: 'end' }}>
                     {/* <button className={styles.downloadButton}>
                         <img src="download.svg" alt="" className={styles.buttonIcon} />
                         Download All
@@ -33,6 +34,7 @@ function JobManagement() {
                 </button> */}
                 <button className={styles.filterButton} onClick={() => setJobListRefreshKey(k => k + 1)}>
                     Refresh Job List
+                    <RefreshIcon className={styles.refreshIcon} />
                 </button>
                 <div className={styles.searchContainer}>
                     <img src="search.svg" alt="" className={styles.searchIcon} />

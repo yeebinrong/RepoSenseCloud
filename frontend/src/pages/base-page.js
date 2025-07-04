@@ -137,7 +137,7 @@ class BasePage extends React.Component {
 
                                         <img
                                             style={{width: 40, height: 40}}
-                                            src="imageicone.svg"
+                                            src="hambuser.jpg"
                                         ></img>
                                         {/*<span style={{margin: "0 8px"}}>Username</span>*/}
                                         <ExpandMoreIcon style={{marginRight: "8px", color: "gray"}}/>

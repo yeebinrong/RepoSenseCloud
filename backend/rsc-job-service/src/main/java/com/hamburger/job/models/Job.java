@@ -46,7 +46,6 @@ public class Job {
     private String status;
     private String prevStatus;
     private Map<String,String> lastUpdated;
-    private Map<String,String> nextScheduled;
     private Map<String,String> settingsUpdatedAt;
 
     public Job () {
