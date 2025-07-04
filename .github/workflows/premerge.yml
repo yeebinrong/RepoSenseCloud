@@ -5,9 +5,9 @@ on:
     branches:
       - master
     types: [opened, synchronize, reopened]
-    paths:
-      - 'frontend/**'
-      - 'backend/**'
+    # paths:
+    #   - 'frontend/**'
+    #   - 'backend/**'
 
 
 jobs:

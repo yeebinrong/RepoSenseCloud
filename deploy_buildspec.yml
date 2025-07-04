@@ -1,0 +1,40 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Setting up environment
+
+  pre_build:
+    commands:
+      - echo Downloading tag...
+      - aws s3 cp s3://$ARTIFACT_BUCKET/trigger/$STAGE.txt tag.txt
+      - TAG=$(cat tag.txt)
+      - echo "Tag is $TAG for stage $STAGE"
+
+  build:
+    commands:
+      - git clone https://github.com/yeebinrong/RepoSenseCloud.git repo
+      - cd repo && git checkout $TAG
+
+      - echo Downloading backend artifacts...
+      - aws s3 cp s3://$ARTIFACT_BUCKET/backend/$TAG/rsc-batch-job-1.0-SNAPSHOT.jar backend/rsc-batch-job/target/rsc-batch-job-1.0-SNAPSHOT.jar
+      - aws s3 cp s3://$ARTIFACT_BUCKET/backend/$TAG/rsc-user-service-1.0-SNAPSHOT.jar backend/rsc-user-service/target/rsc-user-service-1.0-SNAPSHOT.jar
+      - aws s3 cp s3://$ARTIFACT_BUCKET/backend/$TAG/rsc-job-service-1.0-SNAPSHOT.jar backend/rsc-job-service/target/rsc-job-service-1.0-SNAPSHOT.jar
+
+      - echo Logging in to Serverless...
+      - cd backend/rsc-batch-job
+      - export SERVERLESS_ACCESS_KEY=$(aws ssm get-parameter --name "/serverless/key" --with-decryption --query "Parameter.Value" --output text)
+      - serverless login
+      - echo Deploying rsc-batch-job
+      - sls deploy --stage $STAGE
+
+      - cd ../../
+      - echo Deploying EKS services...
+      - bash deploy-eks.sh $STAGE $TAG
+
+      - echo Uploading frontend build...
+      - cd frontend
+      - aws s3 cp --recursive s3://$ARTIFACT_BUCKET/frontend/$TAG/ ./build/
+      - npm i serverless-finch
+      - bash upload-frontend.sh $STAGE false
