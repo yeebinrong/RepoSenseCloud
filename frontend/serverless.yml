@@ -12,7 +12,7 @@ plugins:
 custom:
   domain:
     dev: reposensecloud-dev.hamb-urger.com
-    eval: reposensecloud.hamb-urger.com
+    production: reposensecloud.hamb-urger.com
   client:
     bucketName: ${sls:stage}-static-rsc-frontend-bucket
     distributionFolder: build

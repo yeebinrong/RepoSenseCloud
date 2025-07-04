@@ -1,14 +1,14 @@
 name: premerge
 
 on:
-  push:
+  pull_request:
     branches:
       - master
+    types: [opened, synchronize, reopened]
     paths:
       - 'frontend/**'
       - 'backend/**'
-  pull_request:
-    types: [opened, synchronize, reopened]
+
 
 jobs:
   detect-changes:
