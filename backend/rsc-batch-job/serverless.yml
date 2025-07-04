@@ -80,7 +80,7 @@ resources:
     BatchComputeEnvironment:
       Type: AWS::Batch::ComputeEnvironment
       Properties:
-        ComputeEnvironmentName: rsc-batch-job-compute-env-V6-${self:provider.stage}
+        ComputeEnvironmentName: rsc-batch-job-compute-env-V7-${self:provider.stage}
         Type: MANAGED
         State: ENABLED
         ComputeResources:
@@ -88,7 +88,7 @@ resources:
           InstanceTypes:
             - m5.large
           MaxvCpus: 8  # Maximum vCPUs you want to allocate for the environment
-          MinvCpus: 0  # Minimum vCPUs to allocate
+          MinvCpus: 1  # Minimum vCPUs to allocate
           DesiredvCpus: 4  # Desired vCPUs, this controls the scaling of EC2 instances
           Subnets:
             - subnet-010584d62d7b83c1a # rsc-common-public-1

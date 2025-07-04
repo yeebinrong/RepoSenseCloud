@@ -8,8 +8,8 @@ if [ -z "$1" ]; then
   exit 1
 fi
 STAGE=$1
-if [ "$STAGE" != "dev" ] && [ "$STAGE" != "prod" ]; then
-  echo "Invalid stage. Use 'dev' or 'prod'."
+if [ "$STAGE" != "dev" ] && [ "$STAGE" != "production" ]; then
+  echo "Invalid stage. Use 'dev' or 'production'."
   exit 1
 fi
 
