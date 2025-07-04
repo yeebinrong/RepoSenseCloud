@@ -6,41 +6,75 @@ on:
       - master
 
 permissions:
-  contents: write  # Needed to push a tag
+  contents: write
+  pull-requests: read
 
 jobs:
   tag:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # important for git describe / tags
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Set up Git
-      run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
 
-    - name: Get latest tag
-      id: get_tag
-      run: |
-        latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-        echo "latest=$latest_tag" >> $GITHUB_OUTPUT
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "latest=$latest_tag" >> $GITHUB_OUTPUT
 
-    - name: Calculate next version
-      id: bump
-      run: |
-        latest="${{ steps.get_tag.outputs.latest }}"
-        # Remove the leading 'v'
-        version="${latest#v}"
-        IFS='.' read -r major minor patch <<<"$version"
-        patch=$((patch + 1))
-        new_tag="v$major.$minor.$patch"
-        echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+      - name: Install GitHub CLI
+        run: sudo apt-get update && sudo apt-get install -y gh jq
 
-    - name: Create and push tag
-      run: |
-        git tag ${{ steps.bump.outputs.new_tag }}
-        git push origin ${{ steps.bump.outputs.new_tag }}
+      - name: Get associated PR labels
+        id: pr_info
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pr=$(gh pr list --base master --state merged --limit 1 --json number,labels --jq '.[0]')
+          echo "$pr" > pr.json
+          bump="patch"  # default
+
+          if jq -e '.labels[] | select(.name == "bump:major")' pr.json > /dev/null; then
+            bump="major"
+          elif jq -e '.labels[] | select(.name == "bump:minor")' pr.json > /dev/null; then
+            bump="minor"
+          elif jq -e '.labels[] | select(.name == "bump:patch")' pr.json > /dev/null; then
+            bump="patch"
+          fi
+
+          echo "bump=$bump" >> $GITHUB_OUTPUT
+
+      - name: Calculate next version
+        id: bump
+        run: |
+          latest="${{ steps.get_tag.outputs.latest }}"
+          version="${latest#v}"
+          IFS='.' read -r major minor patch <<<"$version"
+
+          bump="${{ steps.pr_info.outputs.bump }}"
+          if [ "$bump" = "major" ]; then
+            major=$((major + 1))
+            minor=0
+            patch=0
+          elif [ "$bump" = "minor" ]; then
+            minor=$((minor + 1))
+            patch=0
+          else
+            patch=$((patch + 1))
+          fi
+
+          new_tag="v$major.$minor.$patch"
+          echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+
+      - name: Create and push tag
+        run: |
+          git tag ${{ steps.bump.outputs.new_tag }}
+          git push origin ${{ steps.bump.outputs.new_tag }}
