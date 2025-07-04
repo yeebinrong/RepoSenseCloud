@@ -1,0 +1,44 @@
+name: Tag on Merge
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write  # Needed to push a tag
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # important for git describe / tags
+
+    - name: Set up Git
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+
+    - name: Get latest tag
+      id: get_tag
+      run: |
+        latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+        echo "latest=$latest_tag" >> $GITHUB_OUTPUT
+
+    - name: Calculate next version
+      id: bump
+      run: |
+        # Simple patch bump logic; use conventional commits or PR labels for smarter bump
+        IFS='.' read -r major minor patch <<<"${{ steps.get_tag.outputs.latest#v }}"
+        patch=$((patch + 1))
+        new_tag="v$major.$minor.$patch"
+        echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+
+    - name: Create and push tag
+      run: |
+        git tag ${{ steps.bump.outputs.new_tag }}
+        git push origin ${{ steps.bump.outputs.new_tag }}
