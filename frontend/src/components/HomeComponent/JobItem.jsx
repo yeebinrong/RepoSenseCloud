@@ -8,9 +8,53 @@ import Tooltip from '@mui/material/Tooltip';
 import axios from 'axios';
 import CreateJobComponent from '../CreateJobComponent/CreateJobComponent';
 
-function JobItem({owner, jobName, jobId, status, prevStatus, lastUpdated, nextScheduled, settingsUpdatedAt, icon, view, edit, run, ...jobProps}) {
-    const statusClass = status.toLowerCase();
+function getJobFlavorTextA({ jobType, frequency, startHour, startMinute }) {
+    console.log("getJobFlavorText called with:", { jobType, frequency, startHour, startMinute });
+    if (jobType === 'manual') {
+        return 'Manual';
+    }
 
+    if (jobType !== 'scheduled') {
+        return '-';
+    }
+
+    switch (frequency) {
+        case 'minutely':
+            return `Run every 5 minutes`;
+
+        case 'hourly':
+            if (startMinute === '--' || isNaN(parseInt(startMinute))) {
+                return 'Runs hourly';
+            }
+            return `Runs hourly at HH:${startMinute.padStart(2, '0')}`;
+
+        case 'daily':
+            if (startHour === '--' || startMinute === '--' || isNaN(parseInt(startHour)) || isNaN(parseInt(startMinute))) {
+                return 'Runs daily';
+            }
+            return `Runs daily at ${startHour.padStart(2, '0')}:${startMinute.padStart(2, '0')}`;
+
+        default:
+            return 'Unknown frequency setting.';
+    }
+}
+
+function getJobFlavorTextB({ jobType, startDate, endDate }) {
+    if (jobType === 'manual') {
+        return '';
+    }
+
+    if (jobType !== 'scheduled') {
+        return '-';
+    }
+
+    return `${startDate || '--'} to ${endDate || '--'}`;
+}
+
+
+function JobItem(props) {
+    const {owner, jobName, jobId, status, prevStatus, lastUpdated, jobType, startHour, startMinute, frequency, settingsUpdatedAt, icon, view, edit, run, ...jobProps} = props;
+    const statusClass = status.toLowerCase();
 
     const handleViewReport = () => {
         window.open(`${process.env.REACT_APP_REPORT_BUCKET_URL}/${owner}/${jobId}/reposense-report/index.html`, '_blank');
@@ -104,19 +148,19 @@ function JobItem({owner, jobName, jobId, status, prevStatus, lastUpdated, nextSc
     };
 
     const jobData = {
+        ...props,
         jobId,
         jobName,
         status,
         prevStatus,
-        ...jobProps
     };
 
     return (
-
+        <>
         <tr className={styles.jobItem}>
             <td className={styles.jobInfo}>
-                <input type="checkbox" className={styles.checkBox}/>
-                <span className={styles.jobName} style={{ marginLeft: "15px" }}>{jobName}</span>
+                {/* <input type="checkbox" className={styles.checkBox}/> */}
+                <span className={styles.jobName} style={{ marginLeft: "30px" }}>{jobName}</span>
             </td>
             <td className={`${styles.jobStatus} ${styles[statusClass]}`}>
                 <div className={styles.statusIndicator}/>
@@ -130,8 +174,8 @@ function JobItem({owner, jobName, jobId, status, prevStatus, lastUpdated, nextSc
             </td>
             <td className={styles.jobTiming} style={{ width: '16%' }}>
                 <div className={styles.timeInfo}>
-                    <span className={styles.time}>{nextScheduled.time}</span>
-                    <span className={styles.date}>{nextScheduled.date}</span>
+                    <span className={styles.time}>{getJobFlavorTextA(jobData)}</span>
+                    <span className={styles.date}>{getJobFlavorTextB(jobData)}</span>
                 </div>
             </td>
             <td className={styles.jobTiming} style={{ width: '16%' }}>
@@ -142,19 +186,11 @@ function JobItem({owner, jobName, jobId, status, prevStatus, lastUpdated, nextSc
             </td>
             <td className={styles.jobActions}>
                 <button className={styles.iconButton} disabled = {status !== "Completed" && !(status === "Running" && prevStatus === "Completed")} onClick={() => handleViewReport()}>
-                    <img src="view.svg" alt="View" className={styles.actionIcon}/>
+                    <img src="view.svg" alt="View" className={`${styles.actionIcon} ${status !== "Completed" && !(status === "Running" && prevStatus === "Completed") ? styles.actionIconDisabled : ''}`}/>
                 </button>
                 <button className={styles.iconButton} onClick={() => setEditModalOpen(true)}>
                     <img src="edit.svg" alt="Edit" className={styles.actionIcon}/>
                 </button>
-                {editModalOpen && (
-                    <CreateJobComponent
-                        mode="edit"
-                        jobData={jobData}
-                        open={editModalOpen}
-                        onClose={() => setEditModalOpen(false)}
-                    />
-                )}
                 <button className={styles.iconButton} disabled = { status === "Running" } onClick={() => handleRun()}>
                     <img src="rerun.svg" alt="Run" className={styles.actionIcon} />
                 </button>
@@ -162,8 +198,11 @@ function JobItem({owner, jobName, jobId, status, prevStatus, lastUpdated, nextSc
             <td style={{ width: "5%"}}>
                 <div style={{ position: 'relative', display: 'inline-block' }}>
                     <Tooltip title="More options" arrow>
-                        <button className={styles.moreOptionsButton} onClick={handleOptionsOpen}>
-                            <span className={styles.moreOptionsText}>. . .</span>
+                        <button
+                        className={`${styles.moreOptionsButton}`}
+                        onClick={handleOptionsOpen}
+                        >
+                        <span className={styles.moreOptionsText}>. . .</span>
                         </button>
                     </Tooltip>
                     <Menu
@@ -182,6 +221,15 @@ function JobItem({owner, jobName, jobId, status, prevStatus, lastUpdated, nextSc
                 </div>
             </td>
         </tr>
+        {editModalOpen && (
+            <CreateJobComponent
+                mode="edit"
+                jobData={jobData}
+                open={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+            />
+        )}
+        </>
     );
 }
 

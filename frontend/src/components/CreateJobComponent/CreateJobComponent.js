@@ -1,8 +1,9 @@
 import React, { useState, useEffect, use } from "react";
 import moment from "moment-timezone";
 import axios from "axios";
-import { Alert, Autocomplete, TextField, Grid2, Chip, Modal, Box, 
-    Button, Select, FormControl, InputLabel, MenuItem, Stack, CircularProgress } from "@mui/material";
+import { Alert, Autocomplete, TextField, Grid2, Chip, Modal, Box,
+    Button, Select, FormControl, InputLabel, MenuItem, Stack, CircularProgress,
+    Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import PageIcon from "../../assets/icons/page-icon.svg";
 import "./CreateJobComponent.scss";
@@ -195,8 +196,8 @@ const CreateJobComponent = ({
             setFrequency(jobData.frequency || "");
             setStartMinute(jobData.startMinute || "--");
             setStartHour(jobData.startHour || "--");
-            setStartDate(jobData.startDate || "");
-            setEndDate(jobData.endDate || "");
+            setStartDate(moment(jobData.startDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
+            setEndDate(moment(jobData.endDate, "DD/MM/YYYY").format("YYYY-MM-DD") || "");
             // form validation states
             setPage1Error(false);
             setPage2Error(false);
@@ -268,8 +269,6 @@ const CreateJobComponent = ({
             setStartMinute("--"); 
             setStartDate("");
             setEndDate("");
-        } else if (mode !== "edit" && jobType === "scheduled") {
-            setFrequency("weekly");
         }
     }, [jobType]);
 
@@ -278,6 +277,36 @@ const CreateJobComponent = ({
     //     console.log("Since Date:", sinceDate);
     //     console.log("Until Date:", untilDate);
     // }, [sinceDate, untilDate]);
+
+    const changeFrequency = (f) => {
+        setFrequency(f);
+        setStartHourError(true);
+        setStartMinuteError(true);
+        setDateError(true);
+        setPage2Error(false);
+        switch (f) {
+            case 'daily':
+                setStartMinute("--");
+                setStartHour("--");
+                setStartDate("");
+                setEndDate("");
+                break;
+            case 'hourly':
+                setStartHour("--");
+                setStartMinute("--");
+                setStartDate("");
+                setEndDate("");
+                break;
+            case 'minutely':
+                setStartHour("--");
+                setStartMinute("--");
+                setStartDate("");
+                setEndDate("");
+                break;
+            default:
+                break;
+        }
+    }
 
     //State Change Functions
     ///Repo Link Input
@@ -292,28 +321,6 @@ const CreateJobComponent = ({
     const handleRepoLinkChange = (id, value) => {
         setRepoLink(repoLink.map(link => link.id === id ? { ...link, value } : link)); // Update the value of the repo link with the given id
     }
-
-    ///Format Chip Input
-    const handleChipChange = (event, value) => {
-        setFormatChipValues(value);
-    };
-
-  const handleAddChip = (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault();
-      const value = inputValue.trim();
-      
-      // Validate and add chip
-      if (value && !formatChipValues.includes(value)) {
-        setFormatChipValues([...formatChipValues, value]);
-        setInputValue('');
-      }
-    }
-  };
-
-    const handleDeleteChip = (chipToDelete) => {
-        setFormatChipValues(formatChipValues.filter(chip => chip !== chipToDelete));
-    };
 
     //Sub-Component Rendering Functions
     /// Header Render for both pages
@@ -406,7 +413,7 @@ const CreateJobComponent = ({
     };
 
     const validateStartHour = (sHour) => {
-        if (sHour === "--") {
+        if (sHour === "--" && frequency !== "hourly") {
             setStartHourError(true);
         } else {
             setStartHourError(false);
@@ -679,7 +686,6 @@ const CreateJobComponent = ({
                     </select>
                 </Grid2>
                 <Grid2 size={3} container alignItems="center">
-                    
                     <select className="period-modifier-dropdown" value = {periodModifier} 
                         onChange={(e) => setPeriodModifier(e.target.value)}>
                         <option value="latest">Latest</option>
@@ -734,7 +740,10 @@ const CreateJobComponent = ({
                                 id="demo-simple-select"
                                 value={jobType}
                                 label="Job Type"
-                                onChange={(e) => setJobType(e.target.value)}
+                                onChange={(e) => {
+                                    setJobType(e.target.value);
+                                    changeFrequency('daily');
+                                }}
                             >
                                 <MenuItem value={"manual"}>Manual</MenuItem>
                                 <MenuItem value={"scheduled"}>Scheduled</MenuItem>
@@ -752,7 +761,8 @@ const CreateJobComponent = ({
     /// Page 2 - Scheduled Settings Render
     const renderScheduledSettings = () => {
         const hours = ["--", ...Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'))];
-        const minutes = ["--", ...Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'))];
+        const minutes = ["--", ...Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'))];
+
         return (
             <Grid2 container spacing={2} style={{ width: "580px" }}>
                 <Grid2 item size={4} container alignItems="center">
@@ -760,18 +770,21 @@ const CreateJobComponent = ({
                 </Grid2>
                 <Grid2 item size={8}>
                     <select className="frequency-dropdown"
-                        onChange={(e) => setFrequency(e.target.value)}>
+                        onChange={(e) => changeFrequency(e.target.value)}>
                         <option value={"daily"}>Daily</option>
                         <option value={"hourly"}>Hourly</option>
                         <option value={"minutely"}>Every 5 Mins</option>
                     </select>
                 </Grid2>
+                {frequency !== 'minutely' &&
+                <>
                 <Grid2 item size={4} container alignItems="center"> 
                     <text className="schedule-settings-labels" >Start Time:</text>
                 </Grid2>
                 <Grid2 item size={2}>
                     <select
-                        className={`time-dropdown  ${startHourError && page2Error ? 'error' : ''}`}
+                        disabled={frequency === 'hourly' || frequency === 'minutely'}
+                        className={`time-dropdown  ${startHourError && page2Error && frequency !== 'hourly' && frequency !== 'minutely' ? 'error' : ''}`}
                         value={startHour}
                         onChange={(e) => { setStartHour(e.target.value); validateStartHour(e.target.value);}}
                     >
@@ -787,7 +800,8 @@ const CreateJobComponent = ({
                 </Grid2>
                 <Grid2 item size={2}>
                     <select
-                            className={`time-dropdown ${startMinuteError && page2Error ? 'error' : ''}`}
+                            disabled={frequency === 'minutely'}
+                            className={`time-dropdown ${startMinuteError && page2Error && frequency !== 'minutely' ? 'error' : ''}`}
                             value={startMinute}
                             onChange={(e) => { setStartMinute(e.target.value); validateStartMinute(e.target.value)}}
                         >
@@ -798,13 +812,15 @@ const CreateJobComponent = ({
                             ))}
                     </select>
                 </Grid2>
+                </>
+                }
                 <Grid2 item size={4} container alignItems="center">
                     <text className="start-date-label">Start Date:</text>
                 </Grid2>
                 <Grid2 item size={6}>
                     <TextField type="date" className="start-date-input" value = {startDate}
-                        onChange={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}} 
-                        onInput={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}} 
+                        onChange={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}}
+                        onBlur={(e) => {setStartDate(e.target.value); validateDate(e.target.value, endDate)}}
                         error = {dateError && page2Error } placeholder="DD/MM/YYYY" />
                 </Grid2>
                 <Grid2 item size={4} container alignItems="center">
@@ -812,12 +828,11 @@ const CreateJobComponent = ({
                 </Grid2>
                 <Grid2 item size={6}>
                     <TextField type="date" className="end-date-input" value = {endDate} 
-                        onChange={(e) => { setEndDate(e.target.value); validateDate(startDate, e.target.value)}} placeholder="DD/MM/YYYY" 
-                        onInput={(e) => {setEndDate(e.target.value); validateDate(startDate, e.target.value) }} 
+                        onChange={(e) => { setEndDate(e.target.value); validateDate(startDate, e.target.value)}} placeholder="DD/MM/YYYY"
+                        onBlur={(e) => {setEndDate(e.target.value); validateDate(startDate, e.target.value) }}
                         error = {dateError && page2Error}
                         helperText={(endDate!==""&& dateError )? "Improper Date Range":""}/>
                 </Grid2>
-                
             </Grid2>
         )
     }
@@ -890,7 +905,7 @@ const CreateJobComponent = ({
             }
 
             if (jobType === "scheduled"){
-                if (startHour === "--" || startMinute === "--") {
+                if (frequency !== "minutely" && ((startHour === "--" && frequency !== "hourly") || startMinute === "--")) {
                     return reject(new Error("Start Time is incomplete."))
                 }
     
@@ -932,8 +947,8 @@ const CreateJobComponent = ({
                 jobId: mode === "edit" && jobData ? jobData.jobId : uuidv4(),
                 jobName,
                 repoLink: repoLink.map(link => link.value).join(" "),
-                sinceDate: sinceDate ? moment(sinceDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
-                untilDate: untilDate ? moment(untilDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+                sinceDate: sinceDate && sinceDate !== 'Invalid date' ? moment(sinceDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+                untilDate: untilDate && untilDate !== 'Invalid date' ? moment(untilDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
                 period,
                 originalityThreshold,
                 timeZone,
@@ -957,10 +972,10 @@ const CreateJobComponent = ({
                         ? moment().tz(timeZone.replace("UTC", "Etc/GMT").replace("+", "-").replace("-", "+")).format("YYYY-MM-DD")
                         : moment().format("YYYY-MM-DD")
                 },
-                nextScheduled: {
-                    time: "",
-                    date: ""
-                },
+                // nextScheduled: {
+                //     time: "",
+                //     date: ""
+                // },
                 settingsUpdatedAt: {
                     time: timeZone
                         ? getTimeWithUtcOffset(timeZone)

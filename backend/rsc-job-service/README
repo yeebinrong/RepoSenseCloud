@@ -166,4 +166,3 @@ The service uses DynamoDB with the following schema:
 - endDate (String)
 - status (String)
 - lastUpdated (Map<String,String>)
-- nextScheduled (Map<String,String>)

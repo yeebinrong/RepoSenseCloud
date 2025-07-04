@@ -11,7 +11,9 @@ provider:
         - batch:SubmitJob
         - batch:DescribeJobs
         - dynamodb:Scan
+        - dynamodb:Query
         - dynamodb:GetItem
+        - dynamodb:UpdateItem
         - sqs:SendMessage
       Resource: "*"
   stage: ${opt:stage, 'localhost'}
@@ -64,7 +66,8 @@ resources:
                     - dynamodb:UpdateItem
                     - dynamodb:GetItem
                     - dynamodb:Scan
-                  Resource: arn:aws:dynamodb:${self:provider.region}:*:table/* # Replace with your DynamoDB table ARN
+                    - dynamodb:Query
+                  Resource: arn:aws:dynamodb:${self:provider.region}:*:table/*
 
     BatchInstanceProfile:
       Type: AWS::IAM::InstanceProfile
@@ -235,4 +238,4 @@ functions:
   pollPendingTasks:
     handler: com.hamburger.batch.scheduler.TaskDispatcherHandler
     events:
-      - schedule: rate(5 minutes)
+      - schedule: rate(1 minute)
